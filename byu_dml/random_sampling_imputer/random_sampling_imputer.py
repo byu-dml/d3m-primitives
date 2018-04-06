@@ -41,7 +41,7 @@ class RandomSamplingImputer(FeaturizationPrimitiveBase[Inputs, Outputs, Params, 
         'location_uris': [
             'https://github.com/byu-dml'
         ],
-        'python_path': 'd3m.primitives.byudml.RandomSamplingImputer',
+        'python_path': 'd3m.primitives.byudml.random_sampling_imputer.RandomSamplingImputer',
         'algorithm_types': [
             metadata.base.PrimitiveAlgorithmType.IMPUTATION
         ],
@@ -90,7 +90,7 @@ class RandomSamplingImputer(FeaturizationPrimitiveBase[Inputs, Outputs, Params, 
             if len(self._column_vals[i]) > 0:
                 col[feature_series.isnull()] = self._random_state.choice(self._column_vals[i], num_nan)
             else:
-                self.logger.warning('WARNING: %s column is completely empty - no values to impute.  This column contains no information and should be dropped by another primitive.', dataframe.columns[i])
+                self.logger.warning('\nWARNING: %s column is completely empty - no values to impute.  This column contains no information and should be dropped by another primitive.', dataframe.columns[i])
         outputs = dataframe
 
         outputs.metadata = outputs.metadata.update((), {

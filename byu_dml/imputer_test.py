@@ -3,7 +3,7 @@ import numpy as np
 
 from d3m.container.pandas import DataFrame
 
-from random_sampling_imputer import RandomSamplingImputer
+from random_sampling_imputer.random_sampling_imputer import RandomSamplingImputer
 
 def print_missing_vals_info(df, df_name):
     num_empty_cols = 0
@@ -23,10 +23,8 @@ if __name__ == '__main__':
     df = DataFrame(pd.read_csv(infile_path))
     df.drop("d3mIndex", axis=1, inplace=True)
     print_missing_vals_info(df, 'Input Dataset')
-    df.to_csv('input.csv', index=False)
     imputer = RandomSamplingImputer(hyperparams=None, random_seed=0)
     imputer.set_training_data(inputs=df)
     imputer.fit()
     new_df = imputer.produce(inputs=df).value
     print_missing_vals_info(new_df, 'Imputed Dataset')
-    new_df.to_csv('result.csv', index=False)
