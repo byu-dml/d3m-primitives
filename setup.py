@@ -5,7 +5,7 @@ setup(
 	name="byudml",
 	packages = find_packages(),
 	version = __version__,
-	description = "A repo of DARPA D3M wrappers for primitives developed by BYU",
+	description = "A collection of DARPA D3M primitives developed by BYU",
 	author = "Roland Laboulaye, Brandom Schoenfeld, Jarom Christensen",
 	url = "https://github.com/byu-dml/d3m-primitives",
 	keywords = ["d3m_primitive"],
