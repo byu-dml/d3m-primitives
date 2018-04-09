@@ -3,7 +3,7 @@ import numpy as np
 
 from d3m.container.pandas import DataFrame
 
-from random_sampling_imputer.random_sampling_imputer import RandomSamplingImputer
+from random_sampling_imputer import RandomSamplingImputer
 
 def print_missing_vals_info(df, df_name):
     num_empty_cols = 0
