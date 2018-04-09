@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: byudml
+Version: 0.1.0
+Summary: A repo of DARPA D3M wrappers for primitives developed by BYU
+Home-page: https://github.com/byu-dml/d3m-primitives
+Author: Roland Laboulaye, Brandom Schoenfeld, Jarom Christensen
+Author-email: UNKNOWN
+License: UNKNOWN
+Description: UNKNOWN
+Keywords: d3m_primitive
+Platform: UNKNOWN
