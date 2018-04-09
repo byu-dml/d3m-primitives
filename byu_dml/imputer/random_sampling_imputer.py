@@ -39,9 +39,9 @@ class RandomSamplingImputer(FeaturizationPrimitiveBase[Inputs, Outputs, Params, 
             }
         ],
         'location_uris': [
-            'https://github.com/byu-dml/d3m-primitives'
+            'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py'
         ],
-        'python_path': 'd3m.primitives.byudml.random_sampling_imputer.RandomSamplingImputer',
+        'python_path': 'd3m.primitives.byudml.imputer.RandomSamplingImputer',
         'algorithm_types': [
             metadata.base.PrimitiveAlgorithmType.IMPUTATION
         ],
