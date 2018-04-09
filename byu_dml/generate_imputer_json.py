@@ -1,6 +1,6 @@
 import json
 
-from random_sampling_imputer import RandomSamplingImputer
+from imputer import RandomSamplingImputer
 
 outfile = 'imputer_primitive.json'
 with open(outfile, 'w') as f:

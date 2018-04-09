@@ -16,10 +16,10 @@
         }
     ],
     "location_uris": [
-        "https://github.com/byu-dml/d3m-primitives"
+        "https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py"
     ],
     "name": "Random Sampling Imputer",
-    "original_python_path": "random_sampling_imputer.random_sampling_imputer.RandomSamplingImputer",
+    "original_python_path": "imputer.random_sampling_imputer.RandomSamplingImputer",
     "primitive_code": {
         "arguments": {
             "hyperparams": {
@@ -37,7 +37,11 @@
             },
             "params": {
                 "kind": "RUNTIME",
-                "type": "random_sampling_imputer.random_sampling_imputer.Params"
+                "type": "imputer.random_sampling_imputer.Params"
+            },
+            "produce_methods": {
+                "kind": "RUNTIME",
+                "type": "typing.Sequence[str]"
             },
             "random_seed": {
                 "default": 0,
@@ -72,7 +76,7 @@
             "Hyperparams": "d3m.metadata.hyperparams.Hyperparams",
             "Inputs": "d3m.container.pandas.DataFrame",
             "Outputs": "d3m.container.pandas.DataFrame",
-            "Params": "random_sampling_imputer.random_sampling_imputer.Params"
+            "Params": "imputer.random_sampling_imputer.Params"
         },
         "hyperparams": {},
         "instance_attributes": {
@@ -103,7 +107,18 @@
                 "arguments": [],
                 "description": "Returns parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nParameters should include all data which is necessary to create a new instance of this primitive\nbehaving exactly the same as this instance, when the new instance is created by passing the same\nparameters to the class constructor and calling ``set_params``.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nReturns\n-------\nParams\n    An instance of parameters.",
                 "kind": "OTHER",
-                "returns": "random_sampling_imputer.random_sampling_imputer.Params"
+                "returns": "imputer.random_sampling_imputer.Params"
+            },
+            "multi_produce": {
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "description": "A method calling multiple produce methods at once.\n\nWhen a primitive has multiple produce methods it is common that they might compute the\nsame internal results for same inputs but return different representations of those results.\nIf caller is interested in multiple of those representations, calling multiple produce\nmethods might lead to recomputing same internal results multiple times. To address this,\nthis method allows primitive author to implement an optimized version which computes\ninternal results only once for multiple calls of produce methods, but return those different\nrepresentations.\n\nIf any additional method arguments are added to primitive's produce method(s), they have\nto be added to this method as well. This method should accept an union of all arguments\naccepted by primitive's produce method(s) and then use them accordingly when computing\nresults.\n\nThe default implementation of this method just calls all produce methods listed in\n``produce_methods`` in order and is potentially inefficient.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to produce outputs for all produce methods\n    listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``.",
+                "kind": "OTHER",
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult"
             },
             "produce": {
                 "arguments": [
@@ -142,12 +157,12 @@
         }
     },
     "primitive_family": "DATA_PREPROCESSING",
-    "python_path": "d3m.primitives.byudml.random_sampling_imputer.RandomSamplingImputer",
+    "python_path": "d3m.primitives.byudml.imputer.RandomSamplingImputer",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
     "source": {
         "contact": "https://github.com/byu-dml/d3m-primitives",
         "name": "byu-dml"
     },
-    "structural_type": "random_sampling_imputer.random_sampling_imputer.RandomSamplingImputer",
+    "structural_type": "imputer.random_sampling_imputer.RandomSamplingImputer",
     "version": "v0.1.0"
 }
