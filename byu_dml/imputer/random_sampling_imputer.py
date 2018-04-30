@@ -1,5 +1,5 @@
 from d3m.primitive_interfaces.base import CallResult
-from d3m.primitive_interfaces.featurization import FeaturizationPrimitiveBase
+from d3m.primitive_interfaces.featurization import FeaturizationLearnerPrimitiveBase
 from d3m import metadata
 from d3m.metadata.hyperparams import Hyperparams
 from d3m.metadata.params import Params
@@ -16,7 +16,7 @@ Outputs = container.pandas.DataFrame
 class Params(Params):
     column_vals: container.list.List[pandas.core.series.Series]
 
-class RandomSamplingImputer(FeaturizationPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
+class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
     """
     A primitive which takes raw data and imputes missing values for each column by randomly sampling from the existing values of that column.

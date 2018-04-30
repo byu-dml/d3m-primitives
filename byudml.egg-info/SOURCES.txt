@@ -1,4 +1,5 @@
 README.md
+setup.py
 byu_dml/__init__.py
 byu_dml/generate_imputer_json.py
 byu_dml/imputer_test.py
