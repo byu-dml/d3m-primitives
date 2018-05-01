@@ -8,7 +8,8 @@ import numpy as np
 import pandas
 
 
-__version__ = '0.1.0'
+__primitive_version__ = '0.1.0'
+__package_version__ = '0.2.0'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -25,7 +26,7 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
 
     metadata = metadata.base.PrimitiveMetadata({
         'id': 'ebfeb6f0-e366-4082-b1a7-602fd50acc96',
-        'version': f'v{__version__}',
+        'version': f'v{__primitive_version__}',
         'name': 'Random Sampling Imputer',
         'source': {
             'name': 'byu-dml',
@@ -35,17 +36,17 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
             {
                 'type': metadata.base.PrimitiveInstallationType.PIP,
                 'package': 'byudml',
-                'version': str(__version__)
+                'version': __package_version__
             }
         ],
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py'
         ],
         'python_path': 'd3m.primitives.byudml.imputer.RandomSamplingImputer',
+        'primitive_family': metadata.base.PrimitiveFamily.DATA_PREPROCESSING,
         'algorithm_types': [
             metadata.base.PrimitiveAlgorithmType.IMPUTATION
         ],
-        'primitive_family': metadata.base.PrimitiveFamily.DATA_PREPROCESSING,
         'effects': [
             # not the case if empty columns are just ignored
             metadata.base.PrimitiveEffects.NO_MISSING_VALUES

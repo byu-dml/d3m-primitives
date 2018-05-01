@@ -3,7 +3,7 @@ import numpy as np
 
 from d3m.container.pandas import DataFrame
 
-from random_sampling_imputer import RandomSamplingImputer
+from imputer import RandomSamplingImputer
 
 def print_missing_vals_info(df, df_name):
     num_empty_cols = 0
@@ -19,7 +19,7 @@ def print_missing_vals_info(df, df_name):
     print('Total missing values (not counting empty columns): ', total_num_nan)
 
 if __name__ == '__main__':
-    infile_path = "~/Documents/data/learningData.csv"
+    infile_path = "data/learningData.csv"
     df = DataFrame(pd.read_csv(infile_path))
     df.drop("d3mIndex", axis=1, inplace=True)
     print_missing_vals_info(df, 'Input Dataset')

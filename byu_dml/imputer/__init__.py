@@ -1,1 +1,1 @@
-from .random_sampling_imputer import RandomSamplingImputer, __version__
+from .random_sampling_imputer import RandomSamplingImputer

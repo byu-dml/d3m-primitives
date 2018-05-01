@@ -1,74 +1,73 @@
 import typing
-import d3m_metadata
-from primitive_interfaces.base import CallResult
-from primitive_interfaces.featurization import FeaturizationTransformerPrimitiveBase
-from metalearn.metafeatures.simple_metafeatures import SimpleMetafeatures
-from metalearn.metafeatures.statistical_metafeatures import StatisticalMetafeatures
-from metalearn.metafeatures.information_theoretic_metafeatures import InformationTheoreticMetafeatures
-from metalearn.metafeatures.landmarking_metafeatures import LandmarkingMetafeatures
+from d3m.primitive_interfaces.base import CallResult, DockerContainer
+from d3m.primitive_interfaces.featurization import FeaturizationTransformerPrimitiveBase
+from d3m.container.pandas import DataFrame
+from d3m import metadata
+
+from metalearn.metafeatures.metafeatures import Metafeatures
 
 import pandas as pd
 
-__version__ = "0.2.0"
+__primitive_version__ = "0.3.0"
+__package_version__ = "0.2.0"
 
-Inputs = d3m_metadata.container.pandas.DataFrame
-Outputs = d3m_metadata.container.pandas.DataFrame
-class Hyperparams(d3m_metadata.hyperparams.Hyperparams):
+Inputs = DataFrame
+Outputs = DataFrame
+class Hyperparams(metadata.hyperparams.Hyperparams):
     # could be used to determine which metafeatures to compute
     pass
 
 class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
+    """
+    A primitive which takes a DataFrame with a single target column named 'target' and computes metafeatures on the data set.
+    Metafeatures are returned as a single-row DataFrame, with a column for each metafeature
+    """
+
     # This should contain only metadata which cannot be automatically determined from the code.
-    metadata = d3m_metadata.metadata.PrimitiveMetadata({
-        "primitive_code": {
-            "interfaces_version": "2018.1.26"
-        },
+    metadata = metadata.base.PrimitiveMetadata({
+        "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
+        "version": f"v{__primitive_version__}",
+        "name": "Dataset Metafeature Extraction",
         "source": {
             "name": "byu-dml",
-            "contact": "https://github.com/byu-dml"
+            "contact": "https://github.com/byu-dml/d3m-primitives"
         },
-        "python_path": "d3m.primitives.d3metafeatureextraction.D3MetafeatureExtraction",
-        "version": "v{}".format(__version__),
         "installation": [
             {
-                "type": "PIP",
-                "package": "d3metafeatureextraction",
-                "version": str(__version__)
+                "type": metadata.base.PrimitiveInstallationType.PIP,
+                "package": "byudml",
+                "version": __package_version__
             }
         ],
-        "primitive_family": "METAFEATURE_EXTRACTION",
-        "algorithm_types": [
-            "DATA_PROFILING",
-            "CANONICAL_CORRELATION_ANALYSIS",
-            "INFORMATION_ENTROPY",
-            "MUTUAL_INFORMATION",
-            "SIGNAL_TO_NOISE_RATIO",
-            "STATISTICAL_MOMENT_ANALYSIS"
+        'location_uris': [
+            'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/metafeature_extraction/metafeature_extraction.py'
         ],
-        "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
-        "name": "Dataset Metafeature Extraction"
+        "python_path": "d3m.primitives.byudml.metafeature_extraction.MetafeatureExtractor",
+        "primitive_family": metadata.base.PrimitiveFamily.METAFEATURE_EXTRACTION,
+        "algorithm_types": [
+            metadata.base.PrimitiveAlgorithmType.DATA_PROFILING,
+            metadata.base.PrimitiveAlgorithmType.CANONICAL_CORRELATION_ANALYSIS,
+            metadata.base.PrimitiveAlgorithmType.INFORMATION_ENTROPY,
+            metadata.base.PrimitiveAlgorithmType.MUTUAL_INFORMATION,
+            metadata.base.PrimitiveAlgorithmType.SIGNAL_TO_NOISE_RATIO,
+            metadata.base.PrimitiveAlgorithmType.STATISTICAL_MOMENT_ANALYSIS
+        ],
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: typing.Dict[str, str] = None) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: typing.Dict[str, DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        if not isinstance(inputs, d3m_metadata.container.pandas.DataFrame):
-            raise ValueError("inputs must be an instance of 'd3m_metadata.container.pandas.DataFrame'")
+        if not isinstance(inputs, DataFrame):
+            raise ValueError("inputs must be an instance of 'd3m.container.pandas.DataFrame'")
         if "target" not in inputs.columns:
             raise ValueError("inputs must contain single-class classification targets in a column labeled 'target'")
 
-        simple_metafeatures = SimpleMetafeatures().compute(inputs)
-        statistical_metafeatures = StatisticalMetafeatures().compute(inputs)
-        information_thoeretic_metafeatures = InformationTheoreticMetafeatures().compute(inputs)
-        landmarking_metafeatures = LandmarkingMetafeatures().compute(inputs)
+        target_series = inputs['target']
+        inputs.drop('target', axis=1, inplace=True)
+        metafeatures = Metafeatures().compute(inputs, target_series, seed=self.random_seed, timeout=timeout)
 
-        metafeatures_df = d3m_metadata.container.pandas.DataFrame(pd.concat([
-            simple_metafeatures,
-            statistical_metafeatures,
-            information_thoeretic_metafeatures,
-            landmarking_metafeatures
-        ], axis=1))
+        metafeatures_df = DataFrame(metafeatures)
 
         return CallResult(metafeatures_df)
