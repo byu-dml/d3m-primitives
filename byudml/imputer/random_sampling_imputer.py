@@ -9,7 +9,7 @@ import pandas
 
 
 __primitive_version__ = '0.1.0'
-__package_version__ = '0.2.0'
+__package_version__ = '0.4.0'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -91,7 +91,7 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
             if len(self._column_vals[i]) > 0:
                 col[feature_series.isnull()] = self._random_state.choice(self._column_vals[i], num_nan)
             else:
-                self.logger.warning('\nWARNING: %s column is completely empty - no values to impute.  This column contains no information and should be dropped by another primitive.', dataframe.columns[i])
+                self.logger.warning('\nWARNING: column labeld \'%s\' is completely empty - no values to impute.  This column contains no information and should be dropped by another primitive.', dataframe.columns[i])
         outputs = dataframe
 
         outputs.metadata = outputs.metadata.update((), {
