@@ -13,9 +13,9 @@ if __name__ == '__main__':
     dataframe = load_dataset()
 
     target_col_metadata = dict(dataframe.metadata.query((metadata_base.ALL_ELEMENTS,30)))
-    target_col_semantic_types = target_col_metadata.get('semantic_types', []) + ('https://metadata.datadrivendiscovery.org/types/Target',)
+    target_col_semantic_types = target_col_metadata.get('semantic_types', []) + ('https://metadata.datadrivendiscovery.org/types/TrueTarget',)
     target_col_metadata['semantic_types'] = target_col_semantic_types
     dataframe.metadata = dataframe.metadata.update((metadata_base.ALL_ELEMENTS,30), target_col_metadata)
 
-    metafeatures = MetafeatureExtractor(hyperparams=None).produce(inputs=dataframe).value
-    print(metafeatures)
+    df_with_metafeatures = MetafeatureExtractor(hyperparams=None).produce(inputs=dataframe).value
+    df_with_metafeatures.metadata.pretty_print(())
