@@ -9,7 +9,7 @@ import pandas
 
 
 __primitive_version__ = '0.1.0'
-__package_version__ = '0.4.0'
+__package_version__ = '0.5.3'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -20,13 +20,13 @@ class Params(Params):
 class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
     """
-    A primitive which takes raw data and imputes missing values for each column by randomly sampling from the existing values of that column.
+    A primitive which takes a DataFrame with "NaN" for all missing values, and imputes them for each column by randomly sampling from the existing values of that column.
     If a column has no existing values (aka a completely empty column), the column is ignored and remains in the dataset unimputed"
     """
 
     metadata = metadata.base.PrimitiveMetadata({
         'id': 'ebfeb6f0-e366-4082-b1a7-602fd50acc96',
-        'version': f'v{__primitive_version__}',
+        'version': __primitive_version__,
         'name': 'Random Sampling Imputer',
         'source': {
             'name': 'byu-dml',
@@ -54,6 +54,8 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int=0) -> None:
+        if random_seed == 0:
+            random_seed = np.random.randint(100000)
         super().__init__(hyperparams=hyperparams, random_seed = random_seed)
         self._column_vals: container.list.List[container.list.List] = None
         self._random_state = np.random.RandomState(self.random_seed)
