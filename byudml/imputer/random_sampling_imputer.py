@@ -8,14 +8,14 @@ import numpy as np
 import pandas
 
 
-__primitive_version__ = '0.1.0'
-__package_version__ = '0.5.3'
+__primitive_version__ = '0.1.1'
+__package_version__ = '0.5.4'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 class Params(Params):
-    column_vals: container.list.List[pandas.core.series.Series]
+    column_vals: container.list.List
 
 class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 

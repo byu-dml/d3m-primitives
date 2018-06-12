@@ -10,8 +10,8 @@ from d3m.container.pandas import DataFrame
 from d3m.metadata import hyperparams, base as metadata_base
 from metalearn.metafeatures.metafeatures import Metafeatures
 
-__primitive_version__ = "0.4.0"
-__package_version__ = "0.5.3"
+__primitive_version__ = "0.4.1"
+__package_version__ = "0.5.4"
 
 Inputs = DataFrame
 Outputs = DataFrame
@@ -48,9 +48,9 @@ class Hyperparams(hyperparams.Hyperparams):
 class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
     """
-    A primitive which takes a DataFrame with one target column, which must be classification targets, and computes metafeatures on the data.  
-    DataFrame metadata object should have 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata for the target column,
-    otherwise the column labeled with 'https://metadata.datadrivendiscovery.org/types/SuggestedTarget' will be assumed to be the target column.
+    A primitive which takes a DataFrame and computes metafeatures on the data.  
+    Target column is identified by being labled with 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata.
+    Otherwise primitive assumes there is no target column and only metafeatures that do not invole targets are returned.
     If Dataframe metadata does not include semantic type labels for each column, columns will be classified as CATEGORICAL or NUMERIC according
     to their dtype: int and float are NUMERIC, all others are CATEGORICAL.
     Metafeatures are stored in the metadata object of the DataFrame, and the DataFrame itself is returned unchanged
@@ -96,15 +96,15 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     def _get_column_metadata(self, metadata, data):
         column_types = {}
         target_col_name = None
-        for col_pos in metadata.get_elements((metadata_base.ALL_ELEMENTS,)):
-            column_metadata = metadata.query((metadata_base.ALL_ELEMENTS, col_pos))
+        redacted_target_col_name = None
+        for col_pos in range(len(data.columns)):
+            column_metadata = metadata.query_column(col_pos)
             semantic_types = column_metadata.get('semantic_types', [])
             column_name = column_metadata.get('name', data.columns[col_pos])
             if 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in semantic_types:
                 target_col_name = column_name
-            elif 'https://metadata.datadrivendiscovery.org/types/SuggestedTarget' in semantic_types:
-                target_col_name = column_name
-                self.logger.warning(f'\nWARNING: Found no column labled with \'https://metadata.datadrivendiscovery.org/types/TrueTarget\' in metadata.  Program will continue with assumption that the column called \'{column_name}\' which is labeld with \'https://metadata.datadrivendiscovery.org/types/SuggestedTarget\' is target column, but this may not be the current problem\'s intended target.\n')
+            elif 'https://metadata.datadrivendiscovery.org/types/RedactedTarget' in semantic_types:
+                redacted_target_col_name = column_name
             if 'http://schema.org/Float' in semantic_types or "http://schema.org/Integer" in semantic_types and 'https://metadata.datadrivendiscovery.org/types/CategoricalData' not in semantic_types:
                 column_types[column_name] = Metafeatures.NUMERIC
                 actual_type = str(data[column_name].dtype)
@@ -112,7 +112,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
                     data[column_name] = pd.to_numeric(data[column_name])
             else:
                 column_types[column_name] = Metafeatures.CATEGORICAL
-        return column_types, target_col_name
+        return column_types, target_col_name, redacted_target_col_name
 
     def _d3m_metafeature_name_to_metalearn_functions(self, d3m_metafeature_name):
         metalearn_functions = []
@@ -182,10 +182,10 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         for column_name in metafeatures.columns:
             if column_name[-4:] != 'Time':
                 data_metafeatures_path = mapping[column_name]['data_metafeatures_path'].split(".")
-                if column_name in self._get_landmarking_metafeatures():
-                    data_metafeatures = self._set_implementation_fields(data_metafeatures, data_metafeatures_path)
                 metafeature_val = metafeatures[column_name][0]
-                if pd.notna(metafeature_val):
+                if pd.notna(metafeature_val) and metafeature_val != Metafeatures.TIMEOUT and metafeature_val != Metafeatures.NO_TARGETS:
+                    if column_name in self._get_landmarking_metafeatures():
+                        data_metafeatures = self._set_implementation_fields(data_metafeatures, data_metafeatures_path)
                     if mapping[column_name]['required_type']=='integer':
                         metafeature_val = int(metafeature_val)
                     data_metafeatures = self._place_value(data_metafeatures, data_metafeatures_path, metafeature_val)
@@ -201,7 +201,6 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         if not isinstance(inputs, DataFrame):
             raise ValueError("inputs must be an instance of 'd3m.container.pandas.DataFrame'")
-
         metadata = self._produce(inputs.metadata, copy.copy(inputs), timeout)
 
         inputs.metadata = metadata.set_for_value(inputs)
@@ -211,20 +210,26 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
 
     def _produce(self, metadata, data, timeout):
         # get semantic types of columns and target column name
-        column_types, target_col_name = self._get_column_metadata(metadata, data)
+        column_types, target_col_name, redacted_target_col_name = self._get_column_metadata(metadata, data)
         if len(column_types) != len(data.columns):
             column_types = None
-        if target_col_name==None:
-            raise ValueError('inputs metadata must contain \'https://metadata.datadrivendiscovery.org/types/TrueTarget\' or \'https://metadata.datadrivendiscovery.org/types/SuggestedTarget\' in \'semantic_types\' of target column.')
-        
+
         # separate features from targets, and drop d3mIndex column if present
-        target_series = data[target_col_name]
+        if target_col_name is not None:
+            target_series = data[target_col_name]
+            data.drop(target_col_name, axis=1, inplace=True)
+        elif redacted_target_col_name is not None:
+            target_series = None
+            data.drop(redacted_target_col_name, axis=1, inplace=True)
+            if column_types is not None:
+                del column_types[redacted_target_col_name]
+        else:
+            target_series = None
+            self.logger.warning(f'\nWARNING: Found no column labled with \'https://metadata.datadrivendiscovery.org/types/TrueTarget\' or \'https://metadata.datadrivendiscovery.org/types/RedactedTarget\'in metadata.  Program will continue with the assumption that there is no target column, and only store requested metafeatures that do not involve targets\n')
         if 'd3mIndex' in data.columns:
-            data.drop(['d3mIndex', target_col_name], axis=1, inplace=True)
+            data.drop('d3mIndex', axis=1, inplace=True)
             if column_types is not None:
                 del column_types['d3mIndex']
-        else:
-            data.drop(target_col_name, axis=1, inplace=True)
 
         # translate d3m metafeature names to metalearn names
         d3m_metafeatures_to_compute = self._get_metafeatures_to_compute()

@@ -1,4 +1,6 @@
 [d3m.primitives]
-byudml.imputer.RandomSamplingImputer = byudml.imputer:RandomSamplingImputer
-byudml.metafeature_extraction.MetafeatureExtractor = byudml.metafeature_extraction:MetafeatureExtractor
+byudml.imputer = workaround_ignore_error
+byudml.imputer.RandomSamplingImputer = byudml.imputer.random_sampling_imputer:RandomSamplingImputer
+byudml.metafeature_extraction = workaround_ignore_error
+byudml.metafeature_extraction.MetafeatureExtractor = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor
 
