@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = '0.5.4'
+__version__ = '0.5.5'
 
 setup(
 	name="byudml",
@@ -18,8 +18,6 @@ setup(
 	],
 	entry_points = {
     	'd3m.primitives': [
-    		'byudml.imputer = workaround_ignore_error',
-    		'byudml.metafeature_extraction = workaround_ignore_error',
         	'byudml.imputer.RandomSamplingImputer = byudml.imputer.random_sampling_imputer:RandomSamplingImputer',
         	'byudml.metafeature_extraction.MetafeatureExtractor = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
     	]
