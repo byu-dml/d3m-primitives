@@ -11,7 +11,7 @@ from d3m.metadata import hyperparams, base as metadata_base
 from metalearn.metafeatures.metafeatures import Metafeatures
 
 __primitive_version__ = "0.4.1"
-__package_version__ = "0.5.5"
+__package_version__ = "0.5.6"
 
 Inputs = DataFrame
 Outputs = DataFrame
@@ -63,7 +63,6 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         "name": "Dataset Metafeature Extraction",
         "source": {
             "name": "byu-dml",
-            "contact": "jaromchristensen5@gmail.com",
             "uris": [
                 "https://github.com/byu-dml/d3m-primitives"
             ]

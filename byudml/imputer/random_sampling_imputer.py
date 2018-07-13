@@ -9,7 +9,7 @@ import pandas
 
 
 __primitive_version__ = '0.1.1'
-__package_version__ = '0.5.5'
+__package_version__ = '0.5.6'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -30,7 +30,6 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         'name': 'Random Sampling Imputer',
         'source': {
             'name': 'byu-dml',
-            "contact": "jaromchristensen5@gmail.com",
             "uris": [
                 "https://github.com/byu-dml/d3m-primitives"
             ]
