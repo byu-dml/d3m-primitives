@@ -18,8 +18,8 @@ setup(
 	],
 	entry_points = {
     	'd3m.primitives': [
-        	'byudml.imputer.RandomSamplingImputer = byudml.imputer.random_sampling_imputer:RandomSamplingImputer',
-        	'byudml.metafeature_extraction.MetafeatureExtractor = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
+          	'data_preprocessing.random_sampling_imputer.BYUDMLRandomSamplingImputer = byudml.imputer.random_sampling_imputer:RandomSamplingImputer',
+            'metafeature_extraction.meta_feature_extractor.BYUDMLMetafeatureExtractor = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
     	]
 	}
 )
