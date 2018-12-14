@@ -7,6 +7,8 @@ from d3m.container.dataset import Dataset
 from load_d3m_dataset import load_dataset
 from imputer import RandomSamplingImputer
 
+import unittest
+
 def print_missing_vals_info(df, df_name):
     num_empty_cols = 0
     total_num_nan = 0
@@ -29,3 +31,7 @@ if __name__ == '__main__':
     imputer.fit()
     new_df = imputer.produce(inputs=df).value
     print_missing_vals_info(new_df, 'Imputed Dataset')
+
+
+# class ImputerTestCase(unittest.TestCase):
+    

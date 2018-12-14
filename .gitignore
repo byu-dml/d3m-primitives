@@ -2,3 +2,7 @@ prim_env/
 test_env/
 __pycache__/
 dist/
+.env
+docker-compose.yml
+dockerfile
+requirements.txt
