@@ -10,8 +10,8 @@ from d3m.container.pandas import DataFrame
 from d3m.metadata import hyperparams, base as metadata_base
 from metalearn.metafeatures.metafeatures import Metafeatures
 
-__primitive_version__ = "0.4.1"
-__package_version__ = "0.5.6"
+__primitive_version__ = "0.4.2"
+__package_version__ = "0.5.7"
 
 Inputs = DataFrame
 Outputs = DataFrame

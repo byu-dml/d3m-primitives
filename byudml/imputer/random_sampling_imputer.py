@@ -8,8 +8,8 @@ import numpy as np
 import pandas
 
 
-__primitive_version__ = '0.1.1'
-__package_version__ = '0.5.6'
+__primitive_version__ = '0.1.2'
+__package_version__ = '0.5.7'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
