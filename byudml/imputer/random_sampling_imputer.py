@@ -51,7 +51,7 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         ],
         'effects': [
             # not the case if empty columns are just ignored
-            metadata.base.PrimitiveEffects.NO_MISSING_VALUES
+            metadata.base.PrimitiveEffect.NO_MISSING_VALUES
         ]
     })
 
@@ -64,7 +64,7 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         self._training_inputs: Inputs = None
         self._fitted: bool = False
 
-    def set_training_data(self, *, inputs: Inputs) -> None:
+    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
         self._training_inputs = inputs
         self._fitted = False
 
