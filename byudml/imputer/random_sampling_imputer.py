@@ -89,7 +89,7 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         dataframe = inputs
         for i in range(len(dataframe.columns)):
             feature_series = dataframe.iloc[:,i]
-            col = feature_series.as_matrix()
+            col = feature_series.values
             num_nan = np.sum(feature_series.isnull())
             # ignores empty columns
             if len(self._column_vals[i]) > 0:
