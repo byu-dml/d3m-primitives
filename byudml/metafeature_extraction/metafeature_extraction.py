@@ -63,7 +63,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         "name": "Dataset Metafeature Extraction",
         "source": {
             "name": "byu-dml",
-            "contact': 'mailto:bjschoenfeld@gmail.com",
+            "contact": "mailto:bjschoenfeld@gmail.com",
             "uris": [
                 "https://github.com/byu-dml/d3m-primitives"
             ]

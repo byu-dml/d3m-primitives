@@ -30,9 +30,9 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         'name': 'Random Sampling Imputer',
         'source': {
             'name': 'byu-dml',
-            "contact': 'mailto:bjschoenfeld@gmail.com",
-            "uris": [
-                "https://github.com/byu-dml/d3m-primitives"
+            'contact': 'mailto:bjschoenfeld@gmail.com',
+            'uris': [
+                'https://github.com/byu-dml/d3m-primitives'
             ]
         },
         'installation': [
