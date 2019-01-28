@@ -1,3 +1,4 @@
 prim_env/
+test_env/
 __pycache__/
 dist/

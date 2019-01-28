@@ -8,29 +8,32 @@ import numpy as np
 import pandas
 
 
-__primitive_version__ = '0.1.0'
-__package_version__ = '0.2.0'
+__primitive_version__ = '0.1.2'
+__package_version__ = '0.5.7'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 class Params(Params):
-    column_vals: container.list.List[pandas.core.series.Series]
+    column_vals: container.list.List
 
 class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
     """
-    A primitive which takes raw data and imputes missing values for each column by randomly sampling from the existing values of that column.
+    A primitive which takes a DataFrame with "NaN" for all missing values, and imputes them for each column by randomly sampling from the existing values of that column.
     If a column has no existing values (aka a completely empty column), the column is ignored and remains in the dataset unimputed"
     """
 
     metadata = metadata.base.PrimitiveMetadata({
         'id': 'ebfeb6f0-e366-4082-b1a7-602fd50acc96',
-        'version': f'v{__primitive_version__}',
+        'version': __primitive_version__,
         'name': 'Random Sampling Imputer',
         'source': {
             'name': 'byu-dml',
-            'contact': 'https://github.com/byu-dml/d3m-primitives'
+            'contact': 'mailto:bjschoenfeld@gmail.com',
+            'uris': [
+                'https://github.com/byu-dml/d3m-primitives'
+            ]
         },
         'installation': [
             {
@@ -42,25 +45,27 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py'
         ],
-        'python_path': 'd3m.primitives.byudml.imputer.RandomSamplingImputer',
+        'python_path': 'd3m.primitives.data_preprocessing.random_sampling_imputer.BYU',
         'primitive_family': metadata.base.PrimitiveFamily.DATA_PREPROCESSING,
         'algorithm_types': [
             metadata.base.PrimitiveAlgorithmType.IMPUTATION
         ],
         'effects': [
             # not the case if empty columns are just ignored
-            metadata.base.PrimitiveEffects.NO_MISSING_VALUES
+            metadata.base.PrimitiveEffect.NO_MISSING_VALUES
         ]
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int=0) -> None:
+        if random_seed == 0:
+            random_seed = np.random.randint(100000)
         super().__init__(hyperparams=hyperparams, random_seed = random_seed)
         self._column_vals: container.list.List[container.list.List] = None
         self._random_state = np.random.RandomState(self.random_seed)
         self._training_inputs: Inputs = None
         self._fitted: bool = False
 
-    def set_training_data(self, *, inputs: Inputs) -> None:
+    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
         self._training_inputs = inputs
         self._fitted = False
 
@@ -85,19 +90,19 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         dataframe = inputs
         for i in range(len(dataframe.columns)):
             feature_series = dataframe.iloc[:,i]
-            col = feature_series.as_matrix()
+            col = feature_series.values
             num_nan = np.sum(feature_series.isnull())
             # ignores empty columns
             if len(self._column_vals[i]) > 0:
                 col[feature_series.isnull()] = self._random_state.choice(self._column_vals[i], num_nan)
             else:
-                self.logger.warning('\nWARNING: %s column is completely empty - no values to impute.  This column contains no information and should be dropped by another primitive.', dataframe.columns[i])
+                self.logger.warning('\nWARNING: column labeld \'%s\' is completely empty - no values to impute.  This column contains no information and should be dropped by another primitive.', dataframe.columns[i])
         outputs = dataframe
 
         outputs.metadata = outputs.metadata.update((), {
             'schema': metadata.base.CONTAINER_SCHEMA_VERSION,
             'structural_type': type(outputs)
-        }, source=self)
+        })
 
         return CallResult(outputs)
 
