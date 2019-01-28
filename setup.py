@@ -13,7 +13,7 @@ setup(
 	keywords = ["metalearning", "metafeature", "machine learning", "metalearn", "d3m_primitive"],
 	install_requires = [
 		"metalearn==0.5.0",
-		"numpy<=1.15.2",
+		"numpy<=1.15.4",
 		"pandas<=0.23.4"
 	],
 	entry_points = {
