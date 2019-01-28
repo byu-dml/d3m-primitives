@@ -246,5 +246,6 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
 
         # compute metafeatures and return in metadata
         metafeatures = Metafeatures().compute(data, target_series, column_types=column_types, metafeature_ids=metalearn_metafeatures_to_compute, seed=self.random_seed, timeout=timeout)
-        metadata = self._populate_metadata(metafeatures, metadata)
+        metafeature_df = pd.DataFrame.from_dict([{mf: metafeatures[mf][Metafeatures.VALUE_KEY] for mf in metafeatures}])
+        metadata = self._populate_metadata(metafeature_df, metadata)
         return metadata
