@@ -5,7 +5,7 @@ import os
 from d3m.container.pandas import DataFrame
 from d3m.container.dataset import Dataset
 from load_d3m_dataset import load_dataset
-from imputer import RandomSamplingImputer
+from d3m.primitives.data_preprocessing.random_sampling_imputer import BYU as RandomSamplingImputer
 
 def print_missing_vals_info(df, df_name):
     num_empty_cols = 0

@@ -9,7 +9,7 @@ from d3m.container.pandas import DataFrame
 from d3m.metadata import base as metadata_base
 from load_d3m_dataset import load_dataset
 
-from metafeature_extraction import MetafeatureExtractor
+from d3m.primitives.metafeature_extraction.metafeature_extractor import BYU as MetafeatureExtractor
 
 if __name__ == '__main__':
     dataframe = load_dataset()
