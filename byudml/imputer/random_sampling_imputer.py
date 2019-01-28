@@ -101,7 +101,7 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         outputs.metadata = outputs.metadata.update((), {
             'schema': metadata.base.CONTAINER_SCHEMA_VERSION,
             'structural_type': type(outputs)
-        }, source=self)
+        })
 
         return CallResult(outputs)
 
