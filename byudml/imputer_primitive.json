@@ -13,7 +13,7 @@
         {
             "type": "PIP",
             "package": "byudml",
-            "version": "0.5.7"
+            "version": "0.5.8"
         }
     ],
     "location_uris": [

@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = '0.5.7'
+__version__ = '0.5.8'
 
 setup(
 	name="byudml",
@@ -12,7 +12,7 @@ setup(
 	include_package_data=True,
 	keywords = ["metalearning", "metafeature", "machine learning", "metalearn", "d3m_primitive"],
 	install_requires = [
-		"metalearn==0.5.1",
+		"metalearn==0.5.2",
 		"numpy<=1.15.4",
 		"pandas<=0.23.4"
 	],

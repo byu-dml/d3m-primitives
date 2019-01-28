@@ -1,4 +1,4 @@
 [d3m.primitives]
-byudml.imputer.RandomSamplingImputer = byudml.imputer.random_sampling_imputer:RandomSamplingImputer
-byudml.metafeature_extraction.MetafeatureExtractor = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor
+data_preprocessing.random_sampling_imputer.BYU = byudml.imputer.random_sampling_imputer:RandomSamplingImputer
+metafeature_extraction.metafeature_extractor.BYU = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor
 
