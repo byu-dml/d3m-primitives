@@ -311,16 +311,6 @@
         "computation_time": "inexpensive",
         "landmarking": true
     },
-    "MeanCanonicalCorrelation": {
-        "data_metafeatures_path": "canonical_correlation.mean",
-        "required_type": "number",
-        "computation_time": "expensive"
-    },
-    "StdevCanonicalCorrelation": {
-        "data_metafeatures_path": "canonical_correlation.std",
-        "required_type": "number",
-        "computation_time": "expensive"
-    },
     "ClassEntropy": {
         "data_metafeatures_path": "class_entropy",
         "required_type": "number",
