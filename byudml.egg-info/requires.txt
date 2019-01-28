@@ -1,3 +1,0 @@
-metalearn==0.5.2
-numpy<=1.15.4
-pandas<=0.23.4
