@@ -12,7 +12,7 @@ setup(
 	include_package_data=True,
 	keywords = ["metalearning", "metafeature", "machine learning", "metalearn", "d3m_primitive"],
 	install_requires = [
-		"metalearn==0.5.0",
+		"metalearn==0.5.1",
 		"numpy<=1.15.4",
 		"pandas<=0.23.4"
 	],
