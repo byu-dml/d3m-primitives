@@ -2,8 +2,8 @@ from d3m.container.dataset import Dataset
 from d3m.container.pandas import DataFrame
 import os
 print('importing common primitives package...')
-from d3m.primitives.datasets import DatasetToDataFrame
-from d3m.primitives.data import ColumnParser
+from d3m.primitives.data_transformation.dataset_to_dataframe import Common as DatasetToDataFrame
+from d3m.primitives.data_transformation.column_parser import DataFrameCommon as ColumnParser
 print('done')
 
 def load_dataset():
