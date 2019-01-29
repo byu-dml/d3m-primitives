@@ -14,6 +14,7 @@ setup(
 	install_requires = [
 		"metalearn==0.5.2",
 		"numpy<=1.15.4",
+        "scipy<1.2,>=0.19.0",
 		"pandas<=0.23.4"
 	],
 	entry_points = {

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     df.replace("", np.nan, inplace=True)
     print_missing_vals_info(df, 'Input Dataset')
     imputer = RandomSamplingImputer(hyperparams=None, random_seed=0)
-    imputer.set_training_data(inputs=df, outputs=None)
+    imputer.set_training_data(inputs=df)
     imputer.fit()
     new_df = imputer.produce(inputs=df).value
     print_missing_vals_info(new_df, 'Imputed Dataset')
