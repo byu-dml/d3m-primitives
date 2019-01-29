@@ -13,7 +13,7 @@
         {
             "type": "PIP",
             "package": "byudml",
-            "version": "0.5.8"
+            "version": "0.5.9"
         }
     ],
     "location_uris": [
@@ -189,5 +189,5 @@
     },
     "structural_type": "byudml.imputer.random_sampling_imputer.RandomSamplingImputer",
     "description": "A primitive which takes a DataFrame with \"NaN\" for all missing values, and imputes them for each column by randomly sampling from the existing values of that column.\nIf a column has no existing values (aka a completely empty column), the column is ignored and remains in the dataset unimputed\"\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.",
-    "digest": "6977012c71f654790bb9087173ad1c13eb0c57584aa4298fadc3b6d6ac8b4a3d"
+    "digest": "2272415509a6224efe74e2e8b97539381febb8be23defb98c7b3201cbaa3f33c"
 }
