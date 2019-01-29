@@ -1,5 +1,5 @@
 from d3m.primitive_interfaces.base import CallResult
-from d3m.primitive_interfaces.featurization import FeaturizationLearnerPrimitiveBase
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import metadata
 from d3m.metadata.hyperparams import Hyperparams
 from d3m.metadata.params import Params
@@ -8,8 +8,8 @@ import numpy as np
 import pandas
 
 
-__primitive_version__ = '0.1.2'
-__package_version__ = '0.5.9'
+__primitive_version__ = '0.1.3'
+__package_version__ = '0.6.0'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -17,7 +17,7 @@ Outputs = container.pandas.DataFrame
 class Params(Params):
     column_vals: container.list.List
 
-class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
+class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
     """
     A primitive which takes a DataFrame with "NaN" for all missing values, and imputes them for each column by randomly sampling from the existing values of that column.
@@ -65,7 +65,7 @@ class RandomSamplingImputer(FeaturizationLearnerPrimitiveBase[Inputs, Outputs, P
         self._training_inputs: Inputs = None
         self._fitted: bool = False
 
-    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
+    def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
         self._fitted = False
 

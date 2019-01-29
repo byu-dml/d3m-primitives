@@ -11,7 +11,7 @@ from d3m.metadata import hyperparams, base as metadata_base
 from metalearn.metafeatures.metafeatures import Metafeatures
 
 __primitive_version__ = "0.4.2"
-__package_version__ = "0.5.9"
+__package_version__ = "0.6.0"
 
 Inputs = DataFrame
 Outputs = DataFrame
