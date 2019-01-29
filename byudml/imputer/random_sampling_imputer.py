@@ -83,6 +83,8 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
             self._column_vals.append(dropped_nan_series)
         self._fitted = True
 
+        return CallResult(None)
+
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         if not self._fitted:
             raise ValueError("Calling produce before fitting.")
