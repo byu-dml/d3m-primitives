@@ -13,7 +13,7 @@
         {
             "type": "PIP",
             "package": "byudml",
-            "version": "0.6.0"
+            "version": "0.6.1"
         }
     ],
     "location_uris": [
@@ -211,5 +211,5 @@
     },
     "structural_type": "byudml.metafeature_extraction.metafeature_extraction.MetafeatureExtractor",
     "description": "A primitive which takes a DataFrame and computes metafeatures on the data.\nTarget column is identified by being labled with 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata.\nOtherwise primitive assumes there is no target column and only metafeatures that do not invole targets are returned.\nIf Dataframe metadata does not include semantic type labels for each column, columns will be classified as CATEGORICAL or NUMERIC according\nto their dtype: int and float are NUMERIC, all others are CATEGORICAL.\nMetafeatures are stored in the metadata object of the DataFrame, and the DataFrame itself is returned unchanged\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.",
-    "digest": "ec48c04ce4b5082312744a34e63a82009a0f4f6d006ab548cf6a536bbb95b0fa"
+    "digest": "5de72579701e88cf81fe7d07877109137cd337ceba1fac6ce97e9da1f3a962e4"
 }
