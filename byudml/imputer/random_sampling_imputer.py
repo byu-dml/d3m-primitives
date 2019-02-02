@@ -9,7 +9,7 @@ import pandas
 
 
 __primitive_version__ = '0.1.3'
-__package_version__ = '0.6.0'
+__package_version__ = '0.6.1'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
