@@ -10,7 +10,7 @@
         "computation_time": "inexpensive"
     },
     "NumberOfClasses": {
-        "data_metafeatures_path": "number_of_classes",
+        "data_metafeatures_path": "number_distinct_values",
         "required_type": "integer",
         "computation_time": "inexpensive"
     },
@@ -60,32 +60,57 @@
         "computation_time": "inexpensive"
     },
     "MeanClassProbability": {
-        "data_metafeatures_path": "class_probabilities.mean",
+        "data_metafeatures_path": "value_probabilities_aggregate.mean",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "StdevClassProbability": {
-        "data_metafeatures_path": "class_probabilities.std",
+        "data_metafeatures_path": "value_probabilities_aggregate.std",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MinClassProbability": {
-        "data_metafeatures_path": "class_probabilities.min",
+        "data_metafeatures_path": "value_probabilities_aggregate.min",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MaxClassProbability": {
-        "data_metafeatures_path": "class_probabilities.max",
+        "data_metafeatures_path": "value_probabilities_aggregate.max",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewClassProbability" : {
+        "data_metafeatures_path": "value_probabilities_aggregate.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisClassProbability" : {
+        "data_metafeatures_path": "value_probabilities_aggregate.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile1ClassProbability" : {
+        "data_metafeatures_path": "value_probabilities_aggregate.quartile_1",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile2ClassProbability" : {
+        "data_metafeatures_path": "value_probabilities_aggregate.median",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile3ClassProbability" : {
+        "data_metafeatures_path": "value_probabilities_aggregate.quartile_3",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MinorityClassSize": {
-        "data_metafeatures_path": "minority_class_size",
+        "data_metafeatures_path": "value_counts_aggregate.min",
         "required_type": "integer",
         "computation_time": "inexpensive"
     },
     "MajorityClassSize": {
-        "data_metafeatures_path": "majority_class_size",
+        "data_metafeatures_path": "value_counts_aggregate.max",
         "required_type": "integer",
         "computation_time": "inexpensive"
     },
@@ -109,6 +134,31 @@
         "required_type": "integer",
         "computation_time": "inexpensive"
     },
+    "SkewCardinalityOfCategoricalFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_categorical_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisCardinalityOfCategoricalFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_categorical_attributes.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile1CardinalityOfCategoricalFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_categorical_attributes.quartile_1",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile2CardinalityOfCategoricalFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_categorical_attributes.median",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile3CardinalityOfCategoricalFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_categorical_attributes.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
     "MeanCardinalityOfNumericFeatures": {
         "data_metafeatures_path": "number_distinct_values_of_numeric_attributes.mean",
         "required_type": "number",
@@ -129,73 +179,118 @@
         "required_type": "integer",
         "computation_time": "inexpensive"
     },
+    "SkewCardinalityOfNumericFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_numeric_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisCardinalityOfNumericFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_numeric_attributes.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile1CardinalityOfNumericFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_numeric_attributes.quartile_1",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile2CardinalityOfNumericFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_numeric_attributes.median",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile3CardinalityOfNumericFeatures" : {
+        "data_metafeatures_path": "number_distinct_values_of_numeric_attributes.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
     "MeanMeansOfNumericFeatures": {
-        "data_metafeatures_path": "means_of_attributes.mean",
+        "data_metafeatures_path": "mean_of_attributes.mean",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "StdevMeansOfNumericFeatures": {
-        "data_metafeatures_path": "means_of_attributes.std",
+        "data_metafeatures_path": "mean_of_attributes.std",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MinMeansOfNumericFeatures": {
-        "data_metafeatures_path": "means_of_attributes.min",
+        "data_metafeatures_path": "mean_of_attributes.min",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MaxMeansOfNumericFeatures": {
-        "data_metafeatures_path": "means_of_attributes.max",
+        "data_metafeatures_path": "mean_of_attributes.max",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile1MeansOfNumericFeatures": {
-        "data_metafeatures_path": "means_of_attributes.quartile_1",
+        "data_metafeatures_path": "mean_of_attributes.quartile_1",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile2MeansOfNumericFeatures": {
-        "data_metafeatures_path": "means_of_attributes.median",
+        "data_metafeatures_path": "mean_of_attributes.median",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile3MeansOfNumericFeatures": {
-        "data_metafeatures_path": "means_of_attributes.quartile_3",
+        "data_metafeatures_path": "mean_of_attributes.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+     "SkewMeansOfNumericFeatures" : {
+        "data_metafeatures_path": "mean_of_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisMeansOfNumericFeatures" : {
+        "data_metafeatures_path": "mean_of_attributes.kurtosis",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MeanStdDevOfNumericFeatures": {
-        "data_metafeatures_path": "standard_deviations_of_attributes.mean",
+        "data_metafeatures_path": "standard_deviation_of_attributes.mean",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "StdevStdDevOfNumericFeatures": {
-        "data_metafeatures_path": "standard_deviations_of_attributes.std",
+        "data_metafeatures_path": "standard_deviation_of_attributes.std",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MinStdDevOfNumericFeatures": {
-        "data_metafeatures_path": "standard_deviations_of_attributes.min",
+        "data_metafeatures_path": "standard_deviation_of_attributes.min",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MaxStdDevOfNumericFeatures": {
-        "data_metafeatures_path": "standard_deviations_of_attributes.max",
+        "data_metafeatures_path": "standard_deviation_of_attributes.max",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile1StdDevOfNumericFeatures": {
-        "data_metafeatures_path": "standard_deviations_of_attributes.quartile_1",
+        "data_metafeatures_path": "standard_deviation_of_attributes.quartile_1",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile2StdDevOfNumericFeatures": {
-        "data_metafeatures_path": "standard_deviations_of_attributes.median",
+        "data_metafeatures_path": "standard_deviation_of_attributes.median",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile3StdDevOfNumericFeatures": {
-        "data_metafeatures_path": "standard_deviations_of_attributes.quartile_3",
+        "data_metafeatures_path": "standard_deviation_of_attributes.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewStdDevOfNumericFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisStdDevOfNumericFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_attributes.kurtosis",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
@@ -234,6 +329,16 @@
         "required_type": "number",
         "computation_time": "inexpensive"
     },
+    "SkewSkewnessOfNumericFeatures" : {
+        "data_metafeatures_path": "skew_of_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisSkewnessOfNumericFeatures" : {
+        "data_metafeatures_path": "skew_of_attributes.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
     "MeanKurtosisOfNumericFeatures": {
         "data_metafeatures_path": "kurtosis_of_attributes.mean",
         "required_type": "number",
@@ -266,6 +371,16 @@
     },
     "Quartile3KurtosisOfNumericFeatures": {
         "data_metafeatures_path": "kurtosis_of_attributes.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewKurtosisOfNumericFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisKurtosisOfNumericFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_attributes.kurtosis",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
@@ -312,7 +427,7 @@
         "landmarking": true
     },
     "ClassEntropy": {
-        "data_metafeatures_path": "class_entropy",
+        "data_metafeatures_path": "entropy_of_values",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
@@ -346,6 +461,21 @@
         "required_type": "number",
         "computation_time": "inexpensive"
     },
+    "StdevCategoricalAttributeEntropy" : {
+        "data_metafeatures_path": "entropy_of_categorical_attributes.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewCategoricalAttributeEntropy" : {
+        "data_metafeatures_path": "entropy_of_categorical_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisCategoricalAttributeEntropy" : {
+        "data_metafeatures_path": "entropy_of_categorical_attributes.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
     "MeanNumericAttributeEntropy": {
         "data_metafeatures_path": "entropy_of_numeric_attributes.mean",
         "required_type": "number",
@@ -376,63 +506,108 @@
         "required_type": "number",
         "computation_time": "inexpensive"
     },
+    "StdevNumericAttributeEntropy" : {
+        "data_metafeatures_path": "entropy_of_numeric_attributes.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewNumericAttributeEntropy" : {
+        "data_metafeatures_path": "entropy_of_numeric_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisNumericAttributeEntropy" : {
+        "data_metafeatures_path": "entropy_of_numeric_attributes.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
     "MeanCategoricalJointEntropy": {
-        "data_metafeatures_path": "categorical_joint_entropy.mean",
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.mean",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MinCategoricalJointEntropy": {
-        "data_metafeatures_path": "categorical_joint_entropy.min",
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.min",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile1CategoricalJointEntropy": {
-        "data_metafeatures_path": "categorical_joint_entropy.quartile_1",
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.quartile_1",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile2CategoricalJointEntropy": {
-        "data_metafeatures_path": "categorical_joint_entropy.median",
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.median",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile3CategoricalJointEntropy": {
-        "data_metafeatures_path": "categorical_joint_entropy.quartile_3",
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.quartile_3",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MaxCategoricalJointEntropy": {
-        "data_metafeatures_path": "categorical_joint_entropy.max",
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.max",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "StdevCategoricalJointEntropy" : {
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewCategoricalJointEntropy" : {
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisCategoricalJointEntropy" : {
+        "data_metafeatures_path": "joint_entropy_of_categorical_attributes.kurtosis",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MeanNumericJointEntropy": {
-        "data_metafeatures_path": "numeric_joint_entropy.mean",
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.mean",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MinNumericJointEntropy": {
-        "data_metafeatures_path": "numeric_joint_entropy.min",
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.min",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile1NumericJointEntropy": {
-        "data_metafeatures_path": "numeric_joint_entropy.quartile_1",
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.quartile_1",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile2NumericJointEntropy": {
-        "data_metafeatures_path": "numeric_joint_entropy.median",
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.median",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "Quartile3NumericJointEntropy": {
-        "data_metafeatures_path": "numeric_joint_entropy.quartile_3",
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.quartile_3",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
     "MaxNumericJointEntropy": {
-        "data_metafeatures_path": "numeric_joint_entropy.max",
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.max",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "StdevNumericJointEntropy" : {
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewNumericJointEntropy" : {
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisNumericJointEntropy" : {
+        "data_metafeatures_path": "joint_entropy_of_numeric_attributes.kurtosis",
         "required_type": "number",
         "computation_time": "inexpensive"
     },
@@ -466,6 +641,21 @@
         "required_type": "number",
         "computation_time": "inexpensive"
     },
+        "StdevCategoricalMutualInformation" : {
+        "data_metafeatures_path": "mutual_information_of_categorical_attributes.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewCategoricalMutualInformation" : {
+        "data_metafeatures_path": "mutual_information_of_categorical_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisCategoricalMutualInformation" : {
+        "data_metafeatures_path": "mutual_information_of_categorical_attributes.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
     "MeanNumericMutualInformation": {
         "data_metafeatures_path": "mutual_information_of_numeric_attributes.mean",
         "required_type": "number",
@@ -495,6 +685,21 @@
         "data_metafeatures_path": "mutual_information_of_numeric_attributes.max",
         "required_type": "number",
         "computation_time": "expensive"
+    },
+    "StdevNumericMutualInformation" : {
+        "data_metafeatures_path": "mutual_information_of_numeric_attributes.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewNumericMutualInformation" : {
+        "data_metafeatures_path": "mutual_information_of_numeric_attributes.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisNumericMutualInformation" : {
+        "data_metafeatures_path": "mutual_information_of_numeric_attributes.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
     },
     "EquivalentNumberOfCategoricalFeatures": {
         "data_metafeatures_path": "equivalent_number_of_categorical_attributes",
@@ -599,5 +804,375 @@
         "required_type": "number",
         "computation_time": "inexpensive",
         "landmarking": true
+    },
+    "NumberOfFeaturesWithMissingValues" : {
+        "data_metafeatures_path": "number_of_features_with_missing_values",
+        "required_type": "integer",
+        "computation_time": "inexpensive"
+    },
+    "RatioOfFeaturesWithMissingValues" : {
+        "data_metafeatures_path": "ratio_of_features_with_missing_values",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MeanMeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.mean",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "StdevMeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewMeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisMeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MinMeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.min",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MaxMeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.max",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile1MeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.quartile_1",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile2MeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.median",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile3MeansOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "mean_of_length_of_string_values.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MeanStdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.mean",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "StdevStdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewStdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisStdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MinStdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.min",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MaxStdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.max",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile1StdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.quartile_1",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile2StdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.median",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile3StdDevOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "standard_deviation_of_length_of_string_values.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MeanSkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.mean",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "StdevSkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewSkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisSkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MinSkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.min",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MaxSkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.max",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile1SkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.quartile_1",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile2SkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.median",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile3SkewnessOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "skew_of_length_of_string_values.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MeanKurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.mean",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "StdevKurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.stdev",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "SkewKurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.skew",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "KurtosisKurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.kurtosis",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MinKurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.min",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MaxKurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.max",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile1KurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.quartile_1",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile2KurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.median",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "Quartile3KurtosisOfStringLengthOfTextFeatures" : {
+        "data_metafeatures_path": "kurtosis_of_length_of_string_values.quartile_3",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "MeanDecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.mean",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "StdevDecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.stdev",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "SkewDecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.skew",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "KurtosisDecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.kurtosis",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "MinDecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.min",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile1DecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.quartile_1",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile2DecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.median",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile3DecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.quartile_3",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "MaxDecisionTreeLevelSize" : {
+        "data_metafeatures_path": "decision_tree_level_size.max",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "MeanDecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.mean",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "StdevDecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.stdev",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "SkewDecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.skew",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "KurtosisDecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.kurtosis",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "MinDecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.min",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile1DecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.quartile_1",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile2DecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.median",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile3DecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.quartile_3",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "MaxDecisionTreeBranchLength" : {
+        "data_metafeatures_path": "decision_tree_branch_length.max",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "DecisionTreeNodeCount" : {
+        "data_metafeatures_path": "decision_tree_node_count",
+        "required_type": "integer",
+        "computation_time": "expensive"
+    },
+    "DecisionTreeLeafCount" : {
+        "data_metafeatures_path": "decision_tree_leaf_count",
+        "required_type": "integer",
+        "computation_time": "expensive"
+    },
+    "DecisionTreeHeight" : {
+        "data_metafeatures_path": "decision_tree_height",
+        "required_type": "integer",
+        "computation_time": "expensive"
+    },
+    "DecisionTreeWidth" : {
+        "data_metafeatures_path": "decision_tree_width",
+        "required_type": "integer",
+        "computation_time": "expensive"
+    },
+    "MeanDecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.mean",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "StdevDecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.stdev",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "SkewDecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.skew",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "KurtosisDecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.kurtosis",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "MinDecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.min",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile1DecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.quartile_1",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile2DecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.median",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "Quartile3DecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.quartile_3",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "MaxDecisionTreeAttribute" : {
+        "data_metafeatures_path": "decision_tree_attribute.max",
+        "required_type": "number",
+        "computation_time": "expensive"
+    },
+    "NumberOfTokens" : {
+        "data_metafeatures_path": "number_of_tokens",
+        "required_type": "integer",
+        "computation_time": "inexpensive"
+    },
+    "NumberOfDistinctTokens" : {
+        "data_metafeatures_path": "number_of_distinct_tokens",
+        "required_type": "integer",
+        "computation_time": "inexpensive"
+    },
+    "NumberOfTokensContainingNumericChar" : {
+        "data_metafeatures_path": "number_of_tokens_containing_numeric_char",
+        "required_type": "integer",
+        "computation_time": "inexpensive"
+    },
+    "RatioOfDistinctTokens" : {
+        "data_metafeatures_path": "ratio_of_distinct_tokens",
+        "required_type": "number",
+        "computation_time": "inexpensive"
+    },
+    "RatioOfTokensContainingNumericChar" : {
+        "data_metafeatures_path": "ratio_of_tokens_containing_numeric_char",
+        "required_type": "number",
+        "computation_time": "inexpensive"
     }
 }
