@@ -95,28 +95,6 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: typing.Dict[str, DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
-    # parse metadata to extract column semantic types and identify the target column
-    def _get_column_metadata(self, metadata, data):
-        column_types = {}
-        target_col_name = None
-        redacted_target_col_name = None
-        for col_pos in range(len(data.columns)):
-            column_metadata = metadata.query_column(col_pos)
-            semantic_types = column_metadata.get('semantic_types', [])
-            column_name = column_metadata.get('name', data.columns[col_pos])
-            if 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in semantic_types:
-                target_col_name = column_name
-            elif 'https://metadata.datadrivendiscovery.org/types/RedactedTarget' in semantic_types:
-                redacted_target_col_name = column_name
-            if 'http://schema.org/Float' in semantic_types or "http://schema.org/Integer" in semantic_types and 'https://metadata.datadrivendiscovery.org/types/CategoricalData' not in semantic_types:
-                column_types[column_name] = Metafeatures.NUMERIC
-                actual_type = str(data[column_name].dtype)
-                if 'int' not in actual_type and 'float' not in actual_type:
-                    data[column_name] = pd.to_numeric(data[column_name])
-            else:
-                column_types[column_name] = Metafeatures.CATEGORICAL
-        return column_types, target_col_name, redacted_target_col_name
-
     def _d3m_metafeature_name_to_metalearn_functions(self, d3m_metafeature_name):
         metalearn_functions = []
         mapping = json.load(open(self._mapping_file_path))
@@ -210,29 +188,51 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
 
         return CallResult(inputs)
 
-
-    def _produce(self, metadata, data, timeout):
-        # get semantic types of columns and target column name
-        column_types, target_col_name, redacted_target_col_name = self._get_column_metadata(metadata, data)
-        if len(column_types) != len(data.columns):
-            column_types = None
-
-        # separate features from targets, and drop d3mIndex column if present
-        if target_col_name is not None:
-            target_series = data[target_col_name]
-            data.drop(target_col_name, axis=1, inplace=True)
-        elif redacted_target_col_name is not None:
-            target_series = None
-            data.drop(redacted_target_col_name, axis=1, inplace=True)
-            if column_types is not None:
-                del column_types[redacted_target_col_name]
+    # add the column types to the column_types dict and convert the column to the appropriate data types if necessary
+    def _update_column_type(self, data, column_name, semantic_types, column_types):
+        if 'http://schema.org/Float' in semantic_types \
+            or "http://schema.org/Integer" in semantic_types and 'https://metadata.datadrivendiscovery.org/types/CategoricalData' not in semantic_types:
+            column_types[column_name] = Metafeatures.NUMERIC
+            actual_type = str(data[column_name].dtype)
+            if 'int' not in actual_type and 'float' not in actual_type:
+                data[column_name] = pd.to_numeric(data[column_name])
         else:
-            target_series = None
-            self.logger.warning(f'\nWARNING: Found no column labled with \'https://metadata.datadrivendiscovery.org/types/TrueTarget\' or \'https://metadata.datadrivendiscovery.org/types/RedactedTarget\'in metadata.  Program will continue with the assumption that there is no target column, and only store requested metafeatures that do not involve targets\n')
+            column_types[column_name] = Metafeatures.CATEGORICAL
+
+    # remove redacted column from data by checking if it has one of the redacted semantic types
+    def _remove_redacted_column(self, data, column_name, semantic_types):
+        if 'https://metadata.datadrivendiscovery.org/types/RedactedPrivilegedData' in semantic_types \
+            or 'https://metadata.datadrivendiscovery.org/types/RedactedTarget' in semantic_types:
+            data.drop(column_name, axis=1, inplace=True)
+
+    # check if a column is a target and if so add it to the target_col_names list
+    def _append_target_column_name(self, column_name, semantic_types, target_col_names):
+        if 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in semantic_types:
+            target_col_names.append(column_name)
+
+    # prepare the data, target_series, and column_types arguments necessary for metafeature computation
+    def _get_data_for_metafeature_computation(self, metadata, data):
+        column_types = {}
+        target_col_names = []
+        target_series = None
         if 'd3mIndex' in data.columns:
             data.drop('d3mIndex', axis=1, inplace=True)
-            if column_types is not None:
-                del column_types['d3mIndex']
+        for col_pos in range(len(data.columns)):
+            column_metadata = metadata.query_column(col_pos)
+            semantic_types = column_metadata.get('semantic_types', [])
+            column_name = column_metadata.get('name', data.columns[col_pos])
+            self._remove_redacted_column(data, column_name, semantic_types)
+            self._update_column_type(data, column_name, semantic_types, column_types)
+            self._append_target_column_name(column_name, semantic_types, target_col_names)
+        if len(target_col_names) == 1:
+            target_series = data[target_col_names[0]]
+        elif len(target_col_names) > 1:
+            self.logger.warning(f'\nWARNING: Target dependent metafeatures are not supported for multi-label datasets and will not be computed\n')
+        return data, target_series, column_types
+
+    def _produce(self, metadata, data, timeout):
+        # get data related inputs for the metafeature computation
+        data, target_series, column_types = self._get_data_for_metafeature_computation(metadata, data)
 
         # translate d3m metafeature names to metalearn names
         d3m_metafeatures_to_compute = self._get_metafeatures_to_compute()
