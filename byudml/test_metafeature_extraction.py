@@ -20,10 +20,6 @@ def mark_targets(dataframe):
             dataframe.metadata = dataframe.metadata.add_semantic_type((metadata_base.ALL_ELEMENTS, col_pos), 'https://metadata.datadrivendiscovery.org/types/TrueTarget')
 
 def test_metafeature_extraction(dataframe):
-    # target_col_metadata = dict(dataframe.metadata.query((metadata_base.ALL_ELEMENTS,30)))
-    # target_col_semantic_types = target_col_metadata.get('semantic_types', tuple()) + ('https://metadata.datadrivendiscovery.org/types/TrueTarget',)
-    # target_col_metadata['semantic_types'] = target_col_semantic_types
-    # dataframe.metadata = dataframe.metadata.update((metadata_base.ALL_ELEMENTS,30), target_col_metadata)
     mark_targets(dataframe)
     hyperparams_class = MetafeatureExtractor.metadata.query()['primitive_code']['class_type_arguments']['Hyperparams']
     hyperparams = hyperparams_class(metafeature_subset='INEXPENSIVE', metafeatures_to_compute=['linear_discriminant_analysis'])
@@ -38,16 +34,3 @@ if __name__ == '__main__':
     for dataset_name in ('38_sick', '196_autoMpg'):
         dataframe = load_dataset(dataset_name)
         test_metafeature_extraction(dataframe)
-
-
-    # FOR TESTING WITH JUST READ_CSV
-    # dataset_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data/38_sick_dataset/tables/learningData.csv')
-    # dataframe = DataFrame(pd.read_csv(dataset_path))
-    # target_col_metadata = dict(dataframe.metadata.query((metadata_base.ALL_ELEMENTS,30)))
-    # target_col_semantic_types = target_col_metadata.get('semantic_types', ()) + ('https://metadata.datadrivendiscovery.org/types/TrueTarget',)
-    # target_col_metadata['semantic_types'] = target_col_semantic_types
-    # dataframe.metadata = dataframe.metadata.update((metadata_base.ALL_ELEMENTS,30), target_col_metadata)
-    # hyperparams_class = MetafeatureExtractor.metadata.query()['primitive_code']['class_type_arguments']['Hyperparams']
-    # df_with_metafeatures = MetafeatureExtractor(hyperparams=hyperparams_class(metafeature_subset='ALL', metafeatures_to_compute=['class_probabilities', 'means_of_attributes'])).produce(inputs=dataframe).value
-    # df_with_metafeatures.metadata.pretty_print(())
-    # print('done testing pandas-loaded dataset')
