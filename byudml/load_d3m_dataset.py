@@ -9,8 +9,8 @@ from d3m.primitives.data_transformation.column_parser import DataFrameCommon as 
 from common_primitives.column_parser import Hyperparams as ColumnParserHyperparams
 print('done')
 
-def load_dataset():
-	dataset_doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', '38_sick_dataset', 'datasetDoc.json'))
+def load_dataset(dataset_name):
+	dataset_doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', '{}_dataset'.format(dataset_name), 'datasetDoc.json'))
 	dataset = Dataset.load(f'file://{dataset_doc_path}')
 	dataframe = DatasetToDataFrame(hyperparams=DatasetToDataFrameHyperparams.defaults()).produce(inputs=dataset).value
 	dataframe = ColumnParser(hyperparams=ColumnParserHyperparams.defaults()).produce(inputs=dataframe).value

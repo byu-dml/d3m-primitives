@@ -102,7 +102,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         redacted_target_col_name = None
         for col_pos in range(len(data.columns)):
             column_metadata = metadata.query_column(col_pos)
-            semantic_types = column_metadata.get('semantic_types', [])
+            semantic_types = column_metadata.get('semantic_types', tuple())
             column_name = column_metadata.get('name', data.columns[col_pos])
             if 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in semantic_types:
                 target_col_name = column_name
@@ -186,7 +186,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
             if column_name[-4:] != 'Time':
                 data_metafeatures_path = mapping[column_name]['data_metafeatures_path'].split(".")
                 metafeature_val = metafeatures[column_name][0]
-                if pd.notna(metafeature_val) and metafeature_val != Metafeatures.TIMEOUT and metafeature_val != Metafeatures.NO_TARGETS:
+                if pd.notna(metafeature_val) and metafeature_val not in (Metafeatures.TIMEOUT, Metafeatures.NO_TARGETS, Metafeatures.NUMERIC_TARGETS):
                     if column_name in self._get_landmarking_metafeatures():
                         data_metafeatures = self._set_implementation_fields(data_metafeatures, data_metafeatures_path)
                     if mapping[column_name]['required_type']=='integer':
@@ -228,7 +228,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
                 del column_types[redacted_target_col_name]
         else:
             target_series = None
-            self.logger.warning(f'\nWARNING: Found no column labled with \'https://metadata.datadrivendiscovery.org/types/TrueTarget\' or \'https://metadata.datadrivendiscovery.org/types/RedactedTarget\'in metadata.  Program will continue with the assumption that there is no target column, and only store requested metafeatures that do not involve targets\n')
+            self.logger.warning(f'\nWARNING: Found no column labeled with \'https://metadata.datadrivendiscovery.org/types/TrueTarget\' or \'https://metadata.datadrivendiscovery.org/types/RedactedTarget\'in metadata.  Program will continue with the assumption that there is no target column, and only store requested metafeatures that do not involve targets\n')
         if 'd3mIndex' in data.columns:
             data.drop('d3mIndex', axis=1, inplace=True)
             if column_types is not None:
