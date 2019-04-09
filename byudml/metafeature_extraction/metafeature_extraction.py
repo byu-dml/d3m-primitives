@@ -186,7 +186,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
             if column_name[-4:] != 'Time':
                 data_metafeatures_path = mapping[column_name]['data_metafeatures_path'].split(".")
                 metafeature_val = metafeatures[column_name][0]
-                if pd.notna(metafeature_val) and metafeature_val != Metafeatures.TIMEOUT and metafeature_val != Metafeatures.NO_TARGETS:
+                if pd.notna(metafeature_val) and metafeature_val not in (Metafeatures.TIMEOUT, Metafeatures.NO_TARGETS, Metafeatures.NUMERIC_TARGETS):
                     if column_name in self._get_landmarking_metafeatures():
                         data_metafeatures = self._set_implementation_fields(data_metafeatures, data_metafeatures_path)
                     if mapping[column_name]['required_type']=='integer':
