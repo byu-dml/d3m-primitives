@@ -102,7 +102,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         redacted_target_col_name = None
         for col_pos in range(len(data.columns)):
             column_metadata = metadata.query_column(col_pos)
-            semantic_types = column_metadata.get('semantic_types', [])
+            semantic_types = column_metadata.get('semantic_types', tuple())
             column_name = column_metadata.get('name', data.columns[col_pos])
             if 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in semantic_types:
                 target_col_name = column_name
