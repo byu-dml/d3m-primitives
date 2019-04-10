@@ -11,8 +11,7 @@ from tests import utils
 
 DATASETS_DIR = '/datasets/seed_datasets_current'
 PIPELINES_DIR = './pipelines'
-PIPELINE_FILENAMES = ['ee7b1517-3547-4689-9e2c-d2f4e3fa5064.json']
-# PIPELINE_FILENAMES = ['ee7b1517-3547-4689-9e2c-d2f4e3fa5064.json', 'multi-metafeatures.json']
+PIPELINE_FILENAMES = ['1bee8eae-b571-4f49-90ef-dc3e20f56537.json']
 DATA_PIPELINE_PATH = os.path.join(PIPELINES_DIR, 'fixed-split-tabular-split.yml')
 SCORING_PIPELINE_PATH = os.path.join(PIPELINES_DIR, 'scoring.yml')
 
@@ -29,7 +28,7 @@ class TestMetafeatureExtractor(unittest.TestCase):
         for filename in PIPELINE_FILENAMES:
             cls.pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))
 
-    def test_metafeature_pipeline(self):
+    def test_evaluate_impute_pipeline(self):
         for pipeline_path in self.pipeline_paths:
             utils.evaluate_pipeline(
                 pipeline_path, DATA_PIPELINE_PATH,
