@@ -1,0 +1,85 @@
+id: 9c18472e-fff7-4129-93f6-1ab996e82adb
+schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
+source:
+  name: Mitar
+created: "2018-10-27T01:30:10.245934Z"
+context: TESTING
+name: Fixed split of tabular datasets
+description: |
+  A pipeline which splits a tabular dataset in a way that uses for the test
+  (score) split a fixed list of primary index values or row indices of the main
+  resource to be used.
+inputs:
+  - name: folds
+  - name: full dataset
+outputs:
+  - name: train datasets
+    data: steps.0.produce
+  - name: test datasets
+    data: steps.2.produce
+  - name: score datasets
+    data: steps.1.produce
+steps:
+  # Step 0.
+  - type: PRIMITIVE
+    primitive:
+      id: 1654f000-2178-4520-be4c-a95bc26b8d3a
+      version: 0.1.0
+      python_path: d3m.primitives.evaluation.fixed_split_dataset_split.Commmon
+      name: Fixed split tabular dataset splits
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: inputs.0
+      dataset:
+        type: CONTAINER
+        data: inputs.1
+    outputs:
+      - id: produce
+      - id: produce_score_data
+  # Step 1. We redact privileged attributes for both score and test splits.
+  - type: PRIMITIVE
+    primitive:
+      id: 744c4090-e2f6-489e-8efc-8b1e051bfad6
+      version: 0.2.0
+      python_path: d3m.primitives.evaluation.redact_columns.Common
+      name: Redact columns for evaluation
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: steps.0.produce_score_data
+    outputs:
+      - id: produce
+    hyperparams:
+      semantic_types:
+        type: VALUE
+        data:
+          - https://metadata.datadrivendiscovery.org/types/PrivilegedData
+      add_semantic_types:
+        type: VALUE
+        data:
+          - https://metadata.datadrivendiscovery.org/types/RedactedPrivilegedData
+          - https://metadata.datadrivendiscovery.org/types/MissingData
+  # Step 2. We further redact targets in test split.
+  - type: PRIMITIVE
+    primitive:
+      id: 744c4090-e2f6-489e-8efc-8b1e051bfad6
+      version: 0.2.0
+      python_path: d3m.primitives.evaluation.redact_columns.Common
+      name: Redact columns for evaluation
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: steps.1.produce
+    outputs:
+      - id: produce
+    hyperparams:
+      semantic_types:
+        type: VALUE
+        data:
+          - https://metadata.datadrivendiscovery.org/types/TrueTarget
+      add_semantic_types:
+        type: VALUE
+        data:
+          - https://metadata.datadrivendiscovery.org/types/RedactedTarget
+          - https://metadata.datadrivendiscovery.org/types/MissingData
