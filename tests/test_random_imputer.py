@@ -4,15 +4,14 @@ import unittest
 from d3m import index, runtime as runtime_module
 
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
-from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
 
 from tests import utils
 
 
 DATASETS_DIR = '/datasets/seed_datasets_current'
 PIPELINES_DIR = './pipelines'
-CLASSIFICATION_PIPELINE_FILENAMES = ['ee7b1517-3547-4689-9e2c-d2f4e3fa5064.json']
-REGRESSION_PIPELINE_FILENAMES = ['63347dd2-0565-4ded-a26d-72b1622ddc4c.json']
+CLASSIFICATION_PIPELINE_FILENAMES = ['1bee8eae-b571-4f49-90ef-dc3e20f56537.json']
+REGRESSION_PIPELINE_FILENAMES = ['44541f7f-27c4-4b4d-ab7e-608b2a2421c6.json']
 DATA_PIPELINE_PATH = os.path.join(PIPELINES_DIR, 'fixed-split-tabular-split.yml')
 SCORING_PIPELINE_PATH = os.path.join(PIPELINES_DIR, 'scoring.yml')
 
@@ -22,7 +21,6 @@ class TestMetafeatureExtractor(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         index.register_primitive(RandomSamplingImputer.metadata.query()['python_path'], RandomSamplingImputer)
-        index.register_primitive(MetafeatureExtractor.metadata.query()['python_path'], MetafeatureExtractor)
 
         cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '185_baseball')
         cls.classification_pipeline_paths = []

@@ -71,7 +71,7 @@ class D3MDatasetUtil:
 
 def evaluate_pipeline(
     pipeline_path, data_pipeline_path, data_splits_path, scoring_pipeline_path,
-    dataset_doc_path, problem_path, out_pipeline_run_path
+    dataset_doc_path, problem_path
 ):
     parser = argparse.ArgumentParser(description="Run D3M pipelines with default hyper-parameters.")
     runtime_module.configure_parser(parser)
@@ -83,7 +83,6 @@ def evaluate_pipeline(
         '-n', scoring_pipeline_path,
         '-r', problem_path,
         '-i', dataset_doc_path,
-        '-O', out_pipeline_run_path
     ]
 
     arguments = parser.parse_args(args=test_args)
