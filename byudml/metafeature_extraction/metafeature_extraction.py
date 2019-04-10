@@ -78,7 +78,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/metafeature_extraction/metafeature_extraction.py'
         ],
-        "python_path": "d3m.primitives.metafeature_extraction.metafeature_extractor.BYU",
+        "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
         "primitive_family": metadata_base.PrimitiveFamily.METAFEATURE_EXTRACTION,
         "algorithm_types": [
             metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,
