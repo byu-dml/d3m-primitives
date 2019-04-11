@@ -15,6 +15,9 @@ __package_version__ = "0.6.1"
 
 Inputs = DataFrame
 Outputs = DataFrame
+
+INDEX_COLUMN_NAME = "d3mIndex"
+
 class Hyperparams(hyperparams.Hyperparams):
 
     # This hyperparam takes precedence for determining which metafeatures to compute.
@@ -78,7 +81,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/metafeature_extraction/metafeature_extraction.py'
         ],
-        "python_path": "d3m.primitives.metafeature_extraction.metafeature_extractor.BYU",
+        "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
         "primitive_family": metadata_base.PrimitiveFamily.METAFEATURE_EXTRACTION,
         "algorithm_types": [
             metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,
@@ -164,7 +167,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
             if column_name[-4:] != 'Time':
                 data_metafeatures_path = mapping[column_name]['data_metafeatures_path'].split(".")
                 metafeature_val = metafeatures[column_name][0]
-                if pd.notna(metafeature_val) and metafeature_val != Metafeatures.TIMEOUT and metafeature_val != Metafeatures.NO_TARGETS:
+                if pd.notna(metafeature_val) and metafeature_val not in (Metafeatures.TIMEOUT, Metafeatures.NO_TARGETS, Metafeatures.NUMERIC_TARGETS):
                     if column_name in self._get_landmarking_metafeatures():
                         data_metafeatures = self._set_implementation_fields(data_metafeatures, data_metafeatures_path)
                     if mapping[column_name]['required_type']=='integer':
@@ -204,6 +207,8 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         if 'https://metadata.datadrivendiscovery.org/types/RedactedPrivilegedData' in semantic_types \
             or 'https://metadata.datadrivendiscovery.org/types/RedactedTarget' in semantic_types:
             data.drop(column_name, axis=1, inplace=True)
+            return True
+        return False
 
     # check if a column is a target and if so add it to the target_col_names list
     def _append_target_column_name(self, column_name, semantic_types, target_col_names):
@@ -215,17 +220,19 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         column_types = {}
         target_col_names = []
         target_series = None
-        if 'd3mIndex' in data.columns:
-            data.drop('d3mIndex', axis=1, inplace=True)
-        for col_pos in range(len(data.columns)):
+        for col_pos, column_name in enumerate(data.columns):
             column_metadata = metadata.query_column(col_pos)
-            semantic_types = column_metadata.get('semantic_types', [])
-            column_name = column_metadata.get('name', data.columns[col_pos])
-            self._remove_redacted_column(data, column_name, semantic_types)
-            self._update_column_type(data, column_name, semantic_types, column_types)
-            self._append_target_column_name(column_name, semantic_types, target_col_names)
+            semantic_types = column_metadata.get('semantic_types', tuple())
+            column_name = column_metadata.get('name', column_name)
+            if not self._remove_redacted_column(data, column_name, semantic_types):
+                self._update_column_type(data, column_name, semantic_types, column_types)
+                self._append_target_column_name(column_name, semantic_types, target_col_names)
+        if INDEX_COLUMN_NAME in data.columns:
+            data.drop(INDEX_COLUMN_NAME, axis=1, inplace=True)
+            del column_types[INDEX_COLUMN_NAME]
         if len(target_col_names) == 1:
             target_series = data[target_col_names[0]]
+            data.drop(target_col_names[0], axis=1, inplace=True)
         elif len(target_col_names) > 1:
             self.logger.warning(f'\nWARNING: Target dependent metafeatures are not supported for multi-label datasets and will not be computed\n')
         return data, target_series, column_types
