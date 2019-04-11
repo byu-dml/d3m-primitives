@@ -7,9 +7,11 @@ from d3m import container
 import numpy as np
 import pandas
 
+from byudml import __version__ as __package_version__
+
 
 __primitive_version__ = '0.1.3'
-__package_version__ = '0.6.1'
+
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
