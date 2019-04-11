@@ -31,7 +31,7 @@ class Hyperparams(hyperparams.Hyperparams):
     #       categorical_noise_to_signal_ratio
     #       numeric_noise_to_signal_ratio
     #       knn_1_neighbor
-    # In reality, a metafeature being expensive/inexpensive depends largley on the nature of the dataset, but these 14 were found to take the longest on a small sample
+    # In reality, a metafeature being expensive/inexpensive depends largely on the nature of the dataset, but these 14 were found to take the longest on a small sample
     metafeature_subset = hyperparams.Enumeration[str](
         values=['INEXPENSIVE', 'CUSTOM', 'ALL'],
         default='INEXPENSIVE',
@@ -52,9 +52,9 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
 
     """
     A primitive which takes a DataFrame and computes metafeatures on the data.  
-    Target column is identified by being labled with 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata.
-    Otherwise primitive assumes there is no target column and only metafeatures that do not invole targets are returned.
-    If Dataframe metadata does not include semantic type labels for each column, columns will be classified as CATEGORICAL or NUMERIC according
+    Target column is identified by being labeled with 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata.
+    Otherwise primitive assumes there is no target column and only metafeatures that do not involve targets are returned.
+    If DataFrame metadata does not include semantic type labels for each column, columns will be classified as CATEGORICAL or NUMERIC according
     to their dtype: int and float are NUMERIC, all others are CATEGORICAL.
     Metafeatures are stored in the metadata object of the DataFrame, and the DataFrame itself is returned unchanged
     """
@@ -97,6 +97,28 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: typing.Dict[str, DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
+
+    # prepare the data, target_series, and column_types arguments necessary for metafeature computation
+    def _get_data_for_metafeature_computation(self, metadata, data):
+        column_types = {}
+        target_col_names = []
+        target_series = None
+        for col_pos, column_name in enumerate(data.columns):
+            column_metadata = metadata.query_column(col_pos)
+            semantic_types = column_metadata.get('semantic_types', tuple())
+            column_name = column_metadata.get('name', column_name)
+            if not self._remove_redacted_column(data, column_name, semantic_types):
+                self._update_column_type(data, column_name, semantic_types, column_types)
+                self._append_target_column_name(column_name, semantic_types, target_col_names)
+        if INDEX_COLUMN_NAME in data.columns:
+            data.drop(INDEX_COLUMN_NAME, axis=1, inplace=True)
+            del column_types[INDEX_COLUMN_NAME]
+        if len(target_col_names) == 1:
+            target_series = data[target_col_names[0]]
+            data.drop(target_col_names[0], axis=1, inplace=True)
+        elif len(target_col_names) > 1:
+            self.logger.warning(f'\nWARNING: Target dependent metafeatures are not supported for multi-label datasets and will not be computed\n')
+        return data, target_series, column_types
 
     def _d3m_metafeature_name_to_metalearn_functions(self, d3m_metafeature_name):
         metalearn_functions = []
@@ -181,7 +203,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         metadata = metadata.update((), dataframe_metadata)
         return metadata
 
-    # given a d3m Dataframe, return it with the computed metafeatures (specified by the hyperparam) added to it's metadata
+    # given a d3m DataFrame, return it with the computed metafeatures (specified by the hyperparam) added to it's metadata
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         if not isinstance(inputs, DataFrame):
             raise ValueError("inputs must be an instance of 'd3m.container.pandas.DataFrame'")
@@ -214,28 +236,6 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     def _append_target_column_name(self, column_name, semantic_types, target_col_names):
         if 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in semantic_types:
             target_col_names.append(column_name)
-
-    # prepare the data, target_series, and column_types arguments necessary for metafeature computation
-    def _get_data_for_metafeature_computation(self, metadata, data):
-        column_types = {}
-        target_col_names = []
-        target_series = None
-        for col_pos, column_name in enumerate(data.columns):
-            column_metadata = metadata.query_column(col_pos)
-            semantic_types = column_metadata.get('semantic_types', tuple())
-            column_name = column_metadata.get('name', column_name)
-            if not self._remove_redacted_column(data, column_name, semantic_types):
-                self._update_column_type(data, column_name, semantic_types, column_types)
-                self._append_target_column_name(column_name, semantic_types, target_col_names)
-        if INDEX_COLUMN_NAME in data.columns:
-            data.drop(INDEX_COLUMN_NAME, axis=1, inplace=True)
-            del column_types[INDEX_COLUMN_NAME]
-        if len(target_col_names) == 1:
-            target_series = data[target_col_names[0]]
-            data.drop(target_col_names[0], axis=1, inplace=True)
-        elif len(target_col_names) > 1:
-            self.logger.warning(f'\nWARNING: Target dependent metafeatures are not supported for multi-label datasets and will not be computed\n')
-        return data, target_series, column_types
 
     def _produce(self, metadata, data, timeout):
         # get data related inputs for the metafeature computation
