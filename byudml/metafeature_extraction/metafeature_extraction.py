@@ -208,7 +208,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         if not isinstance(inputs, DataFrame):
             raise ValueError("inputs must be an instance of 'd3m.container.pandas.DataFrame'")
-        metadata = self._produce(inputs.metadata, copy.copy(inputs), timeout)
+        metadata = self._produce(inputs.metadata, copy.copy(inputs))
 
         inputs.metadata = metadata.set_for_value(inputs)
 
@@ -238,7 +238,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         if 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in semantic_types:
             target_col_names.append(column_name)
 
-    def _produce(self, metadata, data, timeout):
+    def _produce(self, metadata, data):
         # get data related inputs for the metafeature computation
         data, target_series, column_types = self._get_data_for_metafeature_computation(metadata, data)
 
@@ -253,7 +253,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
             metalearn_metafeatures_to_compute = None
 
         # compute metafeatures and return in metadata
-        metafeatures = Metafeatures().compute(data, target_series, column_types=column_types, metafeature_ids=metalearn_metafeatures_to_compute, seed=self.random_seed, timeout=timeout)
+        metafeatures = Metafeatures().compute(data, target_series, column_types=column_types, metafeature_ids=metalearn_metafeatures_to_compute, seed=self.random_seed)
         metafeature_df = pd.DataFrame.from_dict([{mf: metafeatures[mf][Metafeatures.VALUE_KEY] for mf in metafeatures}])
         metadata = self._populate_metadata(metafeature_df, metadata)
         return metadata
