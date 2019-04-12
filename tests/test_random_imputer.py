@@ -9,11 +9,16 @@ from tests import utils
 
 
 DATASETS_DIR = '/datasets/seed_datasets_current'
-PIPELINES_DIR = './pipelines'
-CLASSIFICATION_PIPELINE_FILENAMES = ['1bee8eae-b571-4f49-90ef-dc3e20f56537.json']
-REGRESSION_PIPELINE_FILENAMES = ['44541f7f-27c4-4b4d-ab7e-608b2a2421c6.json']
-DATA_PIPELINE_PATH = os.path.join(PIPELINES_DIR, 'fixed-split-tabular-split.yml')
-SCORING_PIPELINE_PATH = os.path.join(PIPELINES_DIR, 'scoring.yml')
+PIPELINES_BASE_DIR = './pipelines'
+PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'random_sampling_imputer')
+CLASSIFICATION_PIPELINE_FILENAMES = [
+    'f4fe3fcc-45fe-4c85-8845-549e2f466f21.json',
+]
+REGRESSION_PIPELINE_FILENAMES = [
+    '74f5ccb1-053a-46cf-ad7f-005f67a15652.json',
+]
+DATA_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'fixed-split-tabular-split.yml')
+SCORING_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'scoring.yml')
 
 
 class TestMetafeatureExtractor(unittest.TestCase):

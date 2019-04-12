@@ -1,16 +1,16 @@
 {
-    "id": "44541f7f-27c4-4b4d-ab7e-608b2a2421c6",
+    "id": "3013ad40-7c51-4991-b0fb-dbec65607979",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2019-02-02T10:34:33.669921Z",
+    "created": "2019-04-11T23:32:17.019491Z",
     "context": "TESTING",
     "inputs": [
         {
-            "name": "input_0"
+            "name": "inputs"
         }
     ],
     "outputs": [
         {
-            "data": "steps.6.produce",
+            "data": "steps.7.produce",
             "name": "predictions"
         }
     ],
@@ -22,7 +22,7 @@
                 "version": "0.3.0",
                 "python_path": "d3m.primitives.data_transformation.dataset_to_dataframe.Common",
                 "name": "Extract a DataFrame from a Dataset",
-                "digest": "f399b299f15daed778a53bd13b0dbf0841ce53cfbcd71c141947f34d7dc29ac3"
+                "digest": "b1c248751b314d78349de9c5590f3e970e1c5514b78a90707f4dc267c4ca7bf1"
             },
             "arguments": {
                 "inputs": {
@@ -43,7 +43,7 @@
                 "version": "0.5.0",
                 "python_path": "d3m.primitives.data_transformation.column_parser.DataFrameCommon",
                 "name": "Parses strings into their types",
-                "digest": "44390ad614ffd62169cdf7958ddaf291e49c92cc7a967ae965f1c1b628063784"
+                "digest": "fd9ba65a05a5fae4ab1536f385656099dbe3b42670e7353124379157bf14803b"
             },
             "arguments": {
                 "inputs": {
@@ -60,11 +60,11 @@
         {
             "type": "PRIMITIVE",
             "primitive": {
-                "id": "ebfeb6f0-e366-4082-b1a7-602fd50acc96",
-                "version": "0.1.3",
-                "python_path": "d3m.primitives.data_preprocessing.random_sampling_imputer.BYU",
-                "name": "Random Sampling Imputer",
-                "digest": "623590d516b07dac13a2ae0fafcaa3c6206b5286bac574884ea682a5d85e56f4"
+                "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
+                "version": "0.4.2",
+                "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
+                "name": "Dataset Metafeature Extraction",
+                "digest": "5de72579701e88cf81fe7d07877109137cd337ceba1fac6ce97e9da1f3a962e4"
             },
             "arguments": {
                 "inputs": {
@@ -85,33 +85,12 @@
                 "version": "0.2.0",
                 "python_path": "d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon",
                 "name": "Extracts columns by semantic type",
-                "digest": "8ba4e5c0be66d3122b0d9e2f6a3d774aa8cac954eebd5bd52df20bc85f39520b"
+                "digest": "298167ba6e068fe75d94bfa8793827436e735f0d44551d738da045dc904edf0f"
             },
             "arguments": {
                 "inputs": {
                     "type": "CONTAINER",
-                    "data": "steps.2.produce"
-                }
-            },
-            "outputs": [
-                {
-                    "id": "produce"
-                }
-            ]
-        },
-        {
-            "type": "PRIMITIVE",
-            "primitive": {
-                "id": "4503a4c6-42f7-45a1-a1d4-ed69699cf5e1",
-                "version": "0.2.0",
-                "python_path": "d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon",
-                "name": "Extracts columns by semantic type",
-                "digest": "8ba4e5c0be66d3122b0d9e2f6a3d774aa8cac954eebd5bd52df20bc85f39520b"
-            },
-            "arguments": {
-                "inputs": {
-                    "type": "CONTAINER",
-                    "data": "steps.2.produce"
+                    "data": "steps.1.produce"
                 }
             },
             "outputs": [
@@ -123,7 +102,7 @@
                 "semantic_types": {
                     "type": "VALUE",
                     "data": [
-                        "https://metadata.datadrivendiscovery.org/types/Target"
+                        "https://metadata.datadrivendiscovery.org/types/Attribute"
                     ]
                 }
             }
@@ -131,16 +110,72 @@
         {
             "type": "PRIMITIVE",
             "primitive": {
-                "id": "f0fd7a62-09b5-3abc-93bb-f5f999f7cc80",
-                "version": "v2019.2.27",
-                "python_path": "d3m.primitives.regression.random_forest.SKlearn",
-                "name": "sklearn.ensemble.forest.RandomForestRegressor",
-                "digest": "316292bc42c92504976064305c721a47250208f78255817dde8ddbe75484465c"
+                "id": "4503a4c6-42f7-45a1-a1d4-ed69699cf5e1",
+                "version": "0.2.0",
+                "python_path": "d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon",
+                "name": "Extracts columns by semantic type",
+                "digest": "298167ba6e068fe75d94bfa8793827436e735f0d44551d738da045dc904edf0f"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.1.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "hyperparams": {
+                "semantic_types": {
+                    "type": "VALUE",
+                    "data": [
+                        "https://metadata.datadrivendiscovery.org/types/TrueTarget"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "d016df89-de62-3c53-87ed-c06bb6a23cde",
+                "version": "v2019.4.4",
+                "python_path": "d3m.primitives.data_cleaning.imputer.SKlearn",
+                "name": "sklearn.impute.SimpleImputer",
+                "digest": "d7d1c2bd5b669ac4a01334504f92f970fab4bb10e62755a2081f843ae8829796"
             },
             "arguments": {
                 "inputs": {
                     "type": "CONTAINER",
                     "data": "steps.3.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "hyperparams": {
+                "use_semantic_types": {
+                    "type": "VALUE",
+                    "data": true
+                }
+            }
+        },
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "f0fd7a62-09b5-3abc-93bb-f5f999f7cc80",
+                "version": "v2019.4.4",
+                "python_path": "d3m.primitives.regression.random_forest.SKlearn",
+                "name": "sklearn.ensemble.forest.RandomForestRegressor",
+                "digest": "d11179cee4ab21f3e6c0308775c5c5d22fc7a07dbceafeb9f86565c52d105765"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.5.produce"
                 },
                 "outputs": {
                     "type": "CONTAINER",
@@ -166,12 +201,12 @@
                 "version": "0.3.0",
                 "python_path": "d3m.primitives.data_transformation.construct_predictions.DataFrameCommon",
                 "name": "Construct pipeline predictions output",
-                "digest": "6358eb9962708eeb875c044ca115511cff97717d39914c1cdc7cd9d453c118cd"
+                "digest": "a16e280fce14ef80dba3035c1dbf0e2571fe7d02acd95b05f2787fd1886484e4"
             },
             "arguments": {
                 "inputs": {
                     "type": "CONTAINER",
-                    "data": "steps.5.produce"
+                    "data": "steps.6.produce"
                 },
                 "reference": {
                     "type": "CONTAINER",
@@ -185,5 +220,5 @@
             ]
         }
     ],
-    "digest": "c4ca5a4bbbf47670872aeb468db3af5fe1bb4baade48091733d782b2d1f23de5"
+    "digest": "6d169d3d22c24d267fec253ff997bbb0406ba5eaf1bb9c173de265117b3b2bb5"
 }
