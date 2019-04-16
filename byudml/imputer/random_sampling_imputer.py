@@ -59,8 +59,6 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int=0) -> None:
-        if random_seed == 0:
-            random_seed = np.random.randint(100000)
         super().__init__(hyperparams=hyperparams, random_seed = random_seed)
         self._column_vals: container.list.List[container.list.List] = None
         self._random_state = np.random.RandomState(self.random_seed)
