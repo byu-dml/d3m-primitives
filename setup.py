@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 
-__version__ = '0.6.1'
+from byudml import __version__
+
 
 setup(
     name='byudml',
