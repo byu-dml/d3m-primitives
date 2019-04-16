@@ -1,11 +1,10 @@
-from d3m.primitive_interfaces.base import CallResult
-from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
-from d3m import metadata
-from d3m.metadata.hyperparams import Hyperparams
-from d3m.metadata.params import Params
-from d3m import container
 import numpy as np
 import pandas
+
+from d3m import container
+from d3m.metadata import base as metadata_base, hyperparams, params
+from d3m.primitive_interfaces.base import CallResult
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 
 from byudml import __version__ as __package_version__
 
@@ -16,17 +15,21 @@ __primitive_version__ = '0.1.3'
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
-class Params(Params):
-    column_vals: container.list.List
 
-class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
+class Params(params.Params):
+
+    known_values: container.list.List
+
+
+class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, hyperparams.Hyperparams]):
 
     """
-    A primitive which takes a DataFrame with "NaN" for all missing values, and imputes them for each column by randomly sampling from the existing values of that column.
-    If a column has no existing values (aka a completely empty column), the column is ignored and remains in the dataset unimputed"
+    This imputes missing values in a DataFrame by sampling known values from
+    each column independently. If the training data has no known values in a
+    particular column, no values are imputed.
     """
 
-    metadata = metadata.base.PrimitiveMetadata({
+    metadata = metadata_base.PrimitiveMetadata({
         'id': 'ebfeb6f0-e366-4082-b1a7-602fd50acc96',
         'version': __primitive_version__,
         'name': 'Random Sampling Imputer',
@@ -39,7 +42,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
         },
         'installation': [
             {
-                'type': metadata.base.PrimitiveInstallationType.PIP,
+                'type': metadata_base.PrimitiveInstallationType.PIP,
                 'package': 'byudml',
                 'version': __package_version__
             }
@@ -48,17 +51,17 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py'
         ],
         'python_path': 'd3m.primitives.data_preprocessing.random_sampling_imputer.BYU',
-        'primitive_family': metadata.base.PrimitiveFamily.DATA_PREPROCESSING,
+        'primitive_family': metadata_base.PrimitiveFamily.DATA_PREPROCESSING,
         'algorithm_types': [
-            metadata.base.PrimitiveAlgorithmType.IMPUTATION
+            metadata_base.PrimitiveAlgorithmType.IMPUTATION
         ],
         'effects': [
             # not the case if empty columns are just ignored
-            metadata.base.PrimitiveEffect.NO_MISSING_VALUES
+            metadata_base.PrimitiveEffect.NO_MISSING_VALUES
         ]
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int=0) -> None:
+    def __init__(self, *, hyperparams: hyperparams.Hyperparams, random_seed: int=0) -> None:
         super().__init__(hyperparams=hyperparams, random_seed = random_seed)
         self._column_vals: container.list.List[container.list.List] = None
         self._random_state = np.random.RandomState(self.random_seed)
@@ -76,11 +79,11 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
         if self._training_inputs is None:
             raise ValueError('Missing training data.')
 
-        self._column_vals = []
-        dataframe = self._training_inputs
-        for feature in dataframe:
-            dropped_nan_series = dataframe[feature].dropna(axis=0, how='any')
-            self._column_vals.append(dropped_nan_series)
+        # operate on columns by index, not name
+        self._known_values = []
+        for col_name in self._training_inputs.columns:
+            self._known_values.append(self._training_inputs[col_name].dropna(axis=0, how='any'))
+
         self._fitted = True
 
         return CallResult(None)
@@ -89,27 +92,38 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
         if not self._fitted:
             raise ValueError('Calling produce before fitting.')
 
-        dataframe = inputs
-        for i in range(len(dataframe.columns)):
-            feature_series = dataframe.iloc[:,i]
-            col = feature_series.values
-            num_nan = np.sum(feature_series.isnull())
+        if inputs.shape[1] != len(self._known_values):
+            raise ValueError(
+                'The number of input columns does not match the training data: {} != {}'.format(
+                    inputs.shape[1], len(self._known_values)
+                )
+            )
+
+        for i, col_name in enumerate(inputs):
             # ignores empty columns
-            if len(self._column_vals[i]) > 0:
-                col[feature_series.isnull()] = self._random_state.choice(self._column_vals[i], num_nan)
+            if len(self._known_values[i]) > 0:
+                inputs_isnull = inputs[col_name].isnull()
+                n_missing = sum(inputs_isnull)
+                if n_missing > 0:
+                    inputs[col_name][inputs_isnull] = self._random_state.choice(
+                        self._known_values[i], n_missing, replace=True
+                    )
+                    # TODO: update column metadata?
             else:
-                self.logger.warning('\nWARNING: column labeld \'%s\' is completely empty - no values to impute.  This column contains no information and should be dropped by another primitive.', dataframe.columns[i])
-        outputs = dataframe
+                self.logger.warning(
+                    'Cannot sample values to impute from column {} \'{}\', which has no known values'.format(i. col_name)
+                )
 
-        outputs.metadata = outputs.metadata.update((), {
-            'schema': metadata.base.CONTAINER_SCHEMA_VERSION,
-            'structural_type': type(outputs)
-        })
+        # TODO: update global metadata if any values were imputed?
+        # inputs.metadata = inputs.metadata.update((), {
+        #     'schema': metadata_base.CONTAINER_SCHEMA_VERSION,
+        #     'structural_type': type(outputs)
+        # })
 
-        return CallResult(outputs)
+        return CallResult(inputs)
 
     def get_params(self) -> Params:
-        return Params(column_vals=self._column_vals)
+        return Params(known_values=self._known_values)
 
     def set_params(self, *, params: Params) -> None:
-        self._column_vals = params['column_vals']
+        self._known_values = params['known_values']
