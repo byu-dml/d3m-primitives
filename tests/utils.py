@@ -73,7 +73,7 @@ def evaluate_pipeline(
     pipeline_path, data_pipeline_path, data_splits_path, scoring_pipeline_path,
     dataset_doc_path, problem_path
 ):
-    parser = argparse.ArgumentParser(description="Run D3M pipelines with default hyper-parameters.")
+    parser = argparse.ArgumentParser(description='Run D3M pipelines with default hyper-parameters.')
     runtime_module.configure_parser(parser)
     test_args = [
         'evaluate',

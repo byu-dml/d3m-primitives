@@ -26,7 +26,6 @@ class TestMetafeatureExtractor(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        index.register_primitive(RandomSamplingImputer.metadata.query()['python_path'], RandomSamplingImputer)
         index.register_primitive(MetafeatureExtractor.metadata.query()['python_path'], MetafeatureExtractor)
 
         cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '185_baseball')

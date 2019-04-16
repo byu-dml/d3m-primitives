@@ -6,6 +6,9 @@ from d3m.metadata import (
     base as metadata_base, pipeline as pipeline_module
 )
 
+from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
+from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
+
 
 def generate_imputer_pipeline(task_type):
     if task_type == 'classification':
@@ -14,6 +17,11 @@ def generate_imputer_pipeline(task_type):
         pipeline_id = '74f5ccb1-053a-46cf-ad7f-005f67a15652'
     else:
         raise ValueError('Invalid task_type: {}'.format(task_type))
+
+    d3m_index.register_primitive(
+        RandomSamplingImputer.metadata.query()['python_path'],
+        RandomSamplingImputer
+    )
 
     pipeline = pipeline_module.Pipeline(pipeline_id, context=metadata_base.Context.TESTING)
     pipeline.add_input(name='inputs')
@@ -185,6 +193,11 @@ def generate_metafeature_pipeline(task_type):
         pipeline_id = '3013ad40-7c51-4991-b0fb-dbec65607979'
     else:
         raise ValueError('Invalid task_type: {}'.format(task_type))
+
+    d3m_index.register_primitive(
+        MetafeatureExtractor.metadata.query()['python_path'],
+        MetafeatureExtractor
+    )
 
     pipeline = pipeline_module.Pipeline(pipeline_id, context=metadata_base.Context.TESTING)
     pipeline.add_input(name='inputs')

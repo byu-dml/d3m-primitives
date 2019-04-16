@@ -89,8 +89,8 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         if not self._fitted:
-            raise ValueError("Calling produce before fitting.")
-        
+            raise ValueError('Calling produce before fitting.')
+
         dataframe = inputs
         for i in range(len(dataframe.columns)):
             feature_series = dataframe.iloc[:,i]
@@ -115,7 +115,3 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
 
     def set_params(self, *, params: Params) -> None:
         self._column_vals = params['column_vals']
-
-
-
-
