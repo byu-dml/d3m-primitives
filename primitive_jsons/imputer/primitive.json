@@ -2,7 +2,7 @@
     "algorithm_types": [
         "IMPUTATION"
     ],
-    "description": "A primitive which takes a DataFrame with \"NaN\" for all missing values, and imputes them for each column by randomly sampling from the existing values of that column.\nIf a column has no existing values (aka a completely empty column), the column is ignored and remains in the dataset unimputed\"\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "description": "This imputes missing values in a DataFrame by sampling known values from\neach column independently. If the training data has no known values in a\nparticular column, no values are imputed.\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
     "digest": "623590d516b07dac13a2ae0fafcaa3c6206b5286bac574884ea682a5d85e56f4",
     "effects": [
         "NO_MISSING_VALUES"
@@ -170,7 +170,7 @@
         ],
         "interfaces_version": "2019.4.4",
         "params": {
-            "column_vals": "d3m.container.list.List"
+            "known_values": "d3m.container.list.List"
         }
     },
     "primitive_family": "DATA_PREPROCESSING",
