@@ -1,13 +1,15 @@
-import typing
-import json
 import copy
+import json
 import os
+import typing
+
 import pandas as pd
-from typing import List
+
+from d3m.container.pandas import DataFrame
 from d3m.primitive_interfaces.base import CallResult, DockerContainer
 from d3m.primitive_interfaces.featurization import FeaturizationTransformerPrimitiveBase
-from d3m.container.pandas import DataFrame
-from d3m.metadata import hyperparams, base as metadata_base
+from d3m.metadata import base as metadata_base, hyperparams
+
 from metalearn.metafeatures.metafeatures import Metafeatures
 
 from byudml import __version__ as __package_version__
@@ -42,7 +44,7 @@ class Hyperparams(hyperparams.Hyperparams):
 
     # This hyperparam is ignored unless 'metafeature_subset' is set to CUSTOM, in which case only the metafeatures in this list are computed
     # Metafeatures must be listed by name as they appear in the 'data_metafeatures' property of the schema at https://gitlab.com/datadrivendiscovery/d3m/blob/devel/d3m/metadata/schemas/v0/definitions.json
-    metafeatures_to_compute = hyperparams.Hyperparameter[List[str]](
+    metafeatures_to_compute = hyperparams.Hyperparameter[typing.List[str]](
         default=[],
         semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'],
         description='Custom list of specific metafeatures to compute by name.  Only used if \'metafeature_subset\' hyperparam is set to \'CUSTOM\''

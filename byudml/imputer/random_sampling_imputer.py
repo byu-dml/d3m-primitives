@@ -1,5 +1,4 @@
 import numpy as np
-import pandas
 
 from d3m import container
 from d3m.metadata import base as metadata_base, hyperparams, params
