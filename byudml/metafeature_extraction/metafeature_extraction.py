@@ -1,23 +1,25 @@
-import typing
-import json
 import copy
+import json
 import os
+import typing
+
 import pandas as pd
-from typing import List
+
+from d3m.container.pandas import DataFrame
 from d3m.primitive_interfaces.base import CallResult, DockerContainer
 from d3m.primitive_interfaces.featurization import FeaturizationTransformerPrimitiveBase
-from d3m.container.pandas import DataFrame
-from d3m.metadata import hyperparams, base as metadata_base
+from d3m.metadata import base as metadata_base, hyperparams
+
 from metalearn.metafeatures.metafeatures import Metafeatures
 
 from byudml import __version__ as __package_version__
 
-__primitive_version__ = "0.4.2"
+__primitive_version__ = '0.4.2'
 
 Inputs = DataFrame
 Outputs = DataFrame
 
-INDEX_COLUMN_NAME = "d3mIndex"
+INDEX_COLUMN_NAME = 'd3mIndex'
 
 class Hyperparams(hyperparams.Hyperparams):
 
@@ -42,7 +44,7 @@ class Hyperparams(hyperparams.Hyperparams):
 
     # This hyperparam is ignored unless 'metafeature_subset' is set to CUSTOM, in which case only the metafeatures in this list are computed
     # Metafeatures must be listed by name as they appear in the 'data_metafeatures' property of the schema at https://gitlab.com/datadrivendiscovery/d3m/blob/devel/d3m/metadata/schemas/v0/definitions.json
-    metafeatures_to_compute = hyperparams.Hyperparameter[List[str]](
+    metafeatures_to_compute = hyperparams.Hyperparameter[typing.List[str]](
         default=[],
         semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'],
         description='Custom list of specific metafeatures to compute by name.  Only used if \'metafeature_subset\' hyperparam is set to \'CUSTOM\''
@@ -52,7 +54,7 @@ class Hyperparams(hyperparams.Hyperparams):
 class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
     """
-    A primitive which takes a DataFrame and computes metafeatures on the data.  
+    A primitive which takes a DataFrame and computes metafeatures on the data.
     Target column is identified by being labeled with 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata.
     Otherwise primitive assumes there is no target column and only metafeatures that do not involve targets are returned.
     If DataFrame metadata does not include semantic type labels for each column, columns will be classified as CATEGORICAL or NUMERIC according
@@ -62,29 +64,29 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
 
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_base.PrimitiveMetadata({
-        "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
-        "version": __primitive_version__,
-        "name": "Dataset Metafeature Extraction",
-        "source": {
-            "name": "byu-dml",
-            "contact": "mailto:bjschoenfeld@gmail.com",
-            "uris": [
-                "https://github.com/byu-dml/d3m-primitives"
+        'id': '28d12214-8cb0-4ac0-8946-d31fcbcd4142',
+        'version': __primitive_version__,
+        'name': 'Dataset Metafeature Extraction',
+        'source': {
+            'name': 'byu-dml',
+            'contact': 'mailto:bjschoenfeld@gmail.com',
+            'uris': [
+                'https://github.com/byu-dml/d3m-primitives'
             ]
         },
-        "installation": [
+        'installation': [
             {
-                "type": metadata_base.PrimitiveInstallationType.PIP,
-                "package": "byudml",
-                "version": __package_version__
+                'type': metadata_base.PrimitiveInstallationType.PIP,
+                'package': 'byudml',
+                'version': __package_version__
             }
         ],
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/metafeature_extraction/metafeature_extraction.py'
         ],
-        "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
-        "primitive_family": metadata_base.PrimitiveFamily.METAFEATURE_EXTRACTION,
-        "algorithm_types": [
+        'python_path': 'd3m.primitives.metafeature_extraction.meta_feature_extractor.BYU',
+        'primitive_family': metadata_base.PrimitiveFamily.METAFEATURE_EXTRACTION,
+        'algorithm_types': [
             metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,
             metadata_base.PrimitiveAlgorithmType.CANONICAL_CORRELATION_ANALYSIS,
             metadata_base.PrimitiveAlgorithmType.INFORMATION_ENTROPY,
@@ -188,7 +190,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         mapping = json.load(open(self._mapping_file_path))
         for column_name in metafeatures.columns:
             if column_name[-4:] != 'Time':
-                data_metafeatures_path = mapping[column_name]['data_metafeatures_path'].split(".")
+                data_metafeatures_path = mapping[column_name]['data_metafeatures_path'].split('.')
                 metafeature_val = metafeatures[column_name][0]
                 if pd.notna(metafeature_val) and metafeature_val not in (Metafeatures.TIMEOUT, Metafeatures.NO_TARGETS, Metafeatures.NUMERIC_TARGETS):
                     if column_name in self._get_landmarking_metafeatures():
@@ -207,7 +209,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     # given a d3m DataFrame, return it with the computed metafeatures (specified by the hyperparam) added to it's metadata
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         if not isinstance(inputs, DataFrame):
-            raise ValueError("inputs must be an instance of 'd3m.container.pandas.DataFrame'")
+            raise ValueError('inputs must be an instance of \'d3m.container.pandas.DataFrame\'')
         metadata = self._produce(inputs.metadata, copy.copy(inputs))
 
         inputs.metadata = metadata.set_for_value(inputs)
@@ -217,7 +219,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     # add the column types to the column_types dict and convert the column to the appropriate data types if necessary
     def _update_column_type(self, data, column_name, semantic_types, column_types):
         if 'http://schema.org/Float' in semantic_types \
-            or "http://schema.org/Integer" in semantic_types and 'https://metadata.datadrivendiscovery.org/types/CategoricalData' not in semantic_types:
+            or 'http://schema.org/Integer' in semantic_types and 'https://metadata.datadrivendiscovery.org/types/CategoricalData' not in semantic_types:
             column_types[column_name] = Metafeatures.NUMERIC
             actual_type = str(data[column_name].dtype)
             if 'int' not in actual_type and 'float' not in actual_type:

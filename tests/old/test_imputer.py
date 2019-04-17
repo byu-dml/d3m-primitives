@@ -22,7 +22,7 @@ def print_missing_vals_info(df, df_name):
 
 if __name__ == '__main__':
     df = load_dataset()
-    df.replace("", np.nan, inplace=True)
+    df.replace('', np.nan, inplace=True)
     print_missing_vals_info(df, 'Input Dataset')
     imputer = RandomSamplingImputer(hyperparams=None, random_seed=0)
     imputer.set_training_data(inputs=df)

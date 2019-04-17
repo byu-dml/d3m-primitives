@@ -10,18 +10,22 @@ from tests import utils
 
 
 DATASETS_DIR = '/datasets/seed_datasets_current'
-PIPELINES_DIR = './pipelines'
-CLASSIFICATION_PIPELINE_FILENAMES = ['ee7b1517-3547-4689-9e2c-d2f4e3fa5064.json']
-REGRESSION_PIPELINE_FILENAMES = ['63347dd2-0565-4ded-a26d-72b1622ddc4c.json']
-DATA_PIPELINE_PATH = os.path.join(PIPELINES_DIR, 'fixed-split-tabular-split.yml')
-SCORING_PIPELINE_PATH = os.path.join(PIPELINES_DIR, 'scoring.yml')
+PIPELINES_BASE_DIR = './pipelines'
+PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'metafeature_extractor')
+CLASSIFICATION_PIPELINE_FILENAMES = [
+    'b32b9af1-34b4-437b-ad83-650f7df10acb.json'
+]
+REGRESSION_PIPELINE_FILENAMES = [
+    '3013ad40-7c51-4991-b0fb-dbec65607979.json'
+]
+DATA_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'fixed-split-tabular-split.yml')
+SCORING_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'scoring.yml')
 
 
 class TestMetafeatureExtractor(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        index.register_primitive(RandomSamplingImputer.metadata.query()['python_path'], RandomSamplingImputer)
         index.register_primitive(MetafeatureExtractor.metadata.query()['python_path'], MetafeatureExtractor)
 
         cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '185_baseball')

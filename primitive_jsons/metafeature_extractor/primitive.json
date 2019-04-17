@@ -1,0 +1,216 @@
+{
+    "algorithm_types": [
+        "DATA_PROFILING",
+        "CANONICAL_CORRELATION_ANALYSIS",
+        "INFORMATION_ENTROPY",
+        "MUTUAL_INFORMATION",
+        "SIGNAL_TO_NOISE_RATIO",
+        "STATISTICAL_MOMENT_ANALYSIS"
+    ],
+    "description": "A primitive which takes a DataFrame and computes metafeatures on the data.\nTarget column is identified by being labeled with 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata.\nOtherwise primitive assumes there is no target column and only metafeatures that do not involve targets are returned.\nIf DataFrame metadata does not include semantic type labels for each column, columns will be classified as CATEGORICAL or NUMERIC according\nto their dtype: int and float are NUMERIC, all others are CATEGORICAL.\nMetafeatures are stored in the metadata object of the DataFrame, and the DataFrame itself is returned unchanged\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "digest": "5de72579701e88cf81fe7d07877109137cd337ceba1fac6ce97e9da1f3a962e4",
+    "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
+    "installation": [
+        {
+            "package": "byudml",
+            "type": "PIP",
+            "version": "0.6.1"
+        }
+    ],
+    "location_uris": [
+        "https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/metafeature_extraction/metafeature_extraction.py"
+    ],
+    "name": "Dataset Metafeature Extraction",
+    "original_python_path": "byudml.metafeature_extraction.metafeature_extraction.MetafeatureExtractor",
+    "primitive_code": {
+        "arguments": {
+            "docker_containers": {
+                "default": null,
+                "kind": "RUNTIME",
+                "type": "typing.Union[NoneType, typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]]"
+            },
+            "hyperparams": {
+                "kind": "RUNTIME",
+                "type": "byudml.metafeature_extraction.metafeature_extraction.Hyperparams"
+            },
+            "inputs": {
+                "kind": "PIPELINE",
+                "type": "d3m.container.pandas.DataFrame"
+            },
+            "iterations": {
+                "default": null,
+                "kind": "RUNTIME",
+                "type": "typing.Union[NoneType, int]"
+            },
+            "params": {
+                "kind": "RUNTIME",
+                "type": "NoneType"
+            },
+            "produce_methods": {
+                "kind": "RUNTIME",
+                "type": "typing.Sequence[str]"
+            },
+            "random_seed": {
+                "default": 0,
+                "kind": "RUNTIME",
+                "type": "int"
+            },
+            "timeout": {
+                "default": null,
+                "kind": "RUNTIME",
+                "type": "typing.Union[NoneType, float]"
+            }
+        },
+        "class_attributes": {
+            "logger": "logging.Logger",
+            "metadata": "d3m.metadata.base.PrimitiveMetadata"
+        },
+        "class_methods": {
+            "can_accept": {
+                "arguments": {
+                    "arguments": {
+                        "type": "typing.Dict[str, typing.Union[d3m.metadata.base.Metadata, type]]"
+                    },
+                    "hyperparams": {
+                        "type": "byudml.metafeature_extraction.metafeature_extraction.Hyperparams"
+                    },
+                    "method_name": {
+                        "type": "str"
+                    }
+                },
+                "description": "Returns a metadata object describing the output of a call of ``method_name`` method under\n``hyperparams`` with primitive arguments ``arguments``, if such arguments can be accepted by the method.\nOtherwise it returns ``None`` or raises an exception.\n\nDefault implementation checks structural types of ``arguments`` expected arguments' types\nand ignores ``hyperparams``.\n\nBy (re)implementing this method, a primitive can fine-tune which arguments it accepts\nfor its methods which goes beyond just structural type checking. For example, a primitive might\noperate only on images, so it can accept numpy arrays, but only those with semantic type\ncorresponding to an image. Or it might check dimensions of an array to assure it operates\non square matrix.\n\nPrimitive arguments are a superset of method arguments. This method receives primitive arguments and\nnot just method arguments so that it is possible to implement it without a state between calls\nto ``can_accept`` for multiple methods. For example, a call to ``fit`` could during normal execution\ninfluences what a later ``produce`` call outputs. But during ``can_accept`` call we can directly have\naccess to arguments which would have been given to ``fit`` to produce metadata of the ``produce`` call.\n\nNot all primitive arguments have to be provided, only those used by ``fit``, ``set_training_data``,\nand produce methods, and those used by the ``method_name`` method itself.\n\nParameters\n----------\nmethod_name : str\n    Name of the method which would be called.\narguments : Dict[str, Union[Metadata, type]]\n    A mapping between argument names and their metadata objects (for pipeline arguments) or types (for other).\nhyperparams : Hyperparams\n    Hyper-parameters under which the method would be called during regular primitive execution.\n\nReturns\n-------\nDataMetadata\n    Metadata object of the method call result, or ``None`` if arguments are not accepted\n    by the method.",
+                "returns": "typing.Union[NoneType, d3m.metadata.base.DataMetadata]"
+            }
+        },
+        "class_type_arguments": {
+            "Hyperparams": "byudml.metafeature_extraction.metafeature_extraction.Hyperparams",
+            "Inputs": "d3m.container.pandas.DataFrame",
+            "Outputs": "d3m.container.pandas.DataFrame",
+            "Params": "NoneType"
+        },
+        "hyperparams": {
+            "metafeature_subset": {
+                "default": "INEXPENSIVE",
+                "description": "Subset of available metafeatures the user wishes to compute.  If CUSTOM is chosen, specific list of metafeature names must be provided to 'metafeatures_to_compute' hyperparam.",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/MetafeatureParameter"
+                ],
+                "structural_type": "str",
+                "type": "d3m.metadata.hyperparams.Enumeration",
+                "values": [
+                    "INEXPENSIVE",
+                    "CUSTOM",
+                    "ALL"
+                ]
+            },
+            "metafeatures_to_compute": {
+                "default": [],
+                "description": "Custom list of specific metafeatures to compute by name.  Only used if 'metafeature_subset' hyperparam is set to 'CUSTOM'",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/MetafeatureParameter"
+                ],
+                "structural_type": "typing.List[str]",
+                "type": "d3m.metadata.hyperparams.Hyperparameter"
+            }
+        },
+        "instance_attributes": {
+            "docker_containers": "typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]",
+            "hyperparams": "d3m.metadata.hyperparams.Hyperparams",
+            "random_seed": "int",
+            "temporary_directory": "typing.Union[NoneType, str]",
+            "volumes": "typing.Dict[str, str]"
+        },
+        "instance_methods": {
+            "__init__": {
+                "arguments": [
+                    "hyperparams",
+                    "random_seed",
+                    "docker_containers"
+                ],
+                "kind": "OTHER",
+                "returns": "NoneType"
+            },
+            "fit": {
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "description": "A noop.\n\nParameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value.",
+                "kind": "OTHER",
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]"
+            },
+            "fit_multi_produce": {
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "description": "A method calling ``fit`` and after that multiple produce methods at once.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to both fit the primitive and produce outputs\n    for all produce methods listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do for both fitting and producing\n    outputs of all produce methods.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``.",
+                "kind": "OTHER",
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult"
+            },
+            "get_params": {
+                "arguments": [],
+                "description": "A noop.\n\nReturns\n-------\nParams\n    An instance of parameters.",
+                "kind": "OTHER",
+                "returns": "NoneType"
+            },
+            "multi_produce": {
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "description": "A method calling multiple produce methods at once.\n\nWhen a primitive has multiple produce methods it is common that they might compute the\nsame internal results for same inputs but return different representations of those results.\nIf caller is interested in multiple of those representations, calling multiple produce\nmethods might lead to recomputing same internal results multiple times. To address this,\nthis method allows primitive author to implement an optimized version which computes\ninternal results only once for multiple calls of produce methods, but return those different\nrepresentations.\n\nIf any additional method arguments are added to primitive's produce method(s), they have\nto be added to this method as well. This method should accept an union of all arguments\naccepted by primitive's produce method(s) and then use them accordingly when computing\nresults.\n\nThe default implementation of this method just calls all produce methods listed in\n``produce_methods`` in order and is potentially inefficient.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to produce outputs for all produce methods\n    listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``.",
+                "kind": "OTHER",
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult"
+            },
+            "produce": {
+                "arguments": [
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "description": "Produce primitive's best choice of the output for each of the inputs.\n\nThe output value should be wrapped inside ``CallResult`` object before returning.\n\nIn many cases producing an output is a quick operation in comparison with ``fit``, but not\nall cases are like that. For example, a primitive can start a potentially long optimization\nprocess to compute outputs. ``timeout`` and ``iterations`` can serve as a way for a caller\nto guide the length of this process.\n\nIdeally, a primitive should adapt its call to try to produce the best outputs possible\ninside the time allocated. If this is not possible and the primitive reaches the timeout\nbefore producing outputs, it should raise a ``TimeoutError`` exception to signal that the\ncall was unsuccessful in the given time. The state of the primitive after the exception\nshould be as the method call has never happened and primitive should continue to operate\nnormally. The purpose of ``timeout`` is to give opportunity to a primitive to cleanly\nmanage its state instead of interrupting execution from outside. Maintaining stable internal\nstate should have precedence over respecting the ``timeout`` (caller can terminate the\nmisbehaving primitive from outside anyway). If a longer ``timeout`` would produce\ndifferent outputs, then ``CallResult``'s ``has_finished`` should be set to ``False``.\n\nSome primitives have internal iterations (for example, optimization iterations).\nFor those, caller can provide how many of primitive's internal iterations\nshould a primitive do before returning outputs. Primitives should make iterations as\nsmall as reasonable. If ``iterations`` is ``None``, then there is no limit on\nhow many iterations the primitive should do and primitive should choose the best amount\nof iterations on its own (potentially controlled through hyper-parameters).\nIf ``iterations`` is a number, a primitive has to do those number of iterations,\nif possible. ``timeout`` should still be respected and potentially less iterations\ncan be done because of that. Primitives with internal iterations should make\n``CallResult`` contain correct values.\n\nFor primitives which do not have internal iterations, any value of ``iterations``\nmeans that they should run fully, respecting only ``timeout``.\n\nParameters\n----------\ninputs : Inputs\n    The inputs of shape [num_inputs, ...].\ntimeout : float\n    A maximum time this primitive should take to produce outputs during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[Outputs]\n    The outputs of shape [num_inputs, ...] wrapped inside ``CallResult``.",
+                "inputs_across_samples": [],
+                "kind": "PRODUCE",
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.pandas.DataFrame]",
+                "singleton": false
+            },
+            "set_params": {
+                "arguments": [
+                    "params"
+                ],
+                "description": "A noop.\n\nParameters\n----------\nparams : Params\n    An instance of parameters.",
+                "kind": "OTHER",
+                "returns": "NoneType"
+            },
+            "set_training_data": {
+                "arguments": [],
+                "description": "A noop.\n\nParameters\n----------",
+                "kind": "OTHER",
+                "returns": "NoneType"
+            }
+        },
+        "interfaces": [
+            "featurization.FeaturizationTransformerPrimitiveBase",
+            "transformer.TransformerPrimitiveBase",
+            "base.PrimitiveBase"
+        ],
+        "interfaces_version": "2019.4.4"
+    },
+    "primitive_family": "METAFEATURE_EXTRACTION",
+    "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
+    "source": {
+        "contact": "mailto:bjschoenfeld@gmail.com",
+        "name": "byu-dml",
+        "uris": [
+            "https://github.com/byu-dml/d3m-primitives"
+        ]
+    },
+    "structural_type": "byudml.metafeature_extraction.metafeature_extraction.MetafeatureExtractor",
+    "version": "0.4.2"
+}

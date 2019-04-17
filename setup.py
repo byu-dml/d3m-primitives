@@ -16,13 +16,12 @@ setup(
         'd3m',
         'metalearn==0.5.2',
         'numpy<=1.15.4',
-        'scipy<1.2,>=0.19.0',
         'pandas<=0.23.4'
     ],
     entry_points = {
         'd3m.primitives': [
             'data_preprocessing.random_sampling_imputer.BYU = byudml.imputer.random_sampling_imputer:RandomSamplingImputer',
-            'metafeature_extraction.metafeature_extractor.BYU = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
+            'metafeature_extraction.meta_feature_extractor.BYU = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
         ]
     }
 )
