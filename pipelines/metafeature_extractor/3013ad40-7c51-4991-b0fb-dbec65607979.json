@@ -1,7 +1,7 @@
 {
     "id": "3013ad40-7c51-4991-b0fb-dbec65607979",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2019-04-11T23:32:17.019491Z",
+    "created": "2019-04-19T22:18:52.253052Z",
     "context": "TESTING",
     "inputs": [
         {
@@ -61,10 +61,10 @@
             "type": "PRIMITIVE",
             "primitive": {
                 "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
-                "version": "0.4.2",
+                "version": "0.4.3",
                 "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
                 "name": "Dataset Metafeature Extraction",
-                "digest": "5de72579701e88cf81fe7d07877109137cd337ceba1fac6ce97e9da1f3a962e4"
+                "digest": "aa5e61cbb77cdf73eb24ceeb0dce0892a8580bc8513c0f33dc1a6b230abd427d"
             },
             "arguments": {
                 "inputs": {
@@ -220,5 +220,5 @@
             ]
         }
     ],
-    "digest": "6d169d3d22c24d267fec253ff997bbb0406ba5eaf1bb9c173de265117b3b2bb5"
+    "digest": "1e2fea53947227561cf4c8c519ec4288801d63d9eb822df5d8b87b37c5cd8ec9"
 }

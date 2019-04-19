@@ -8,7 +8,7 @@ from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPr
 from byudml import __version__ as __package_version__
 
 
-__primitive_version__ = '0.1.3'
+__primitive_version__ = '0.1.4'
 
 
 Inputs = container.pandas.DataFrame
