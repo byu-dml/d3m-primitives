@@ -380,9 +380,32 @@ def generate_metafeature_pipeline(task_type):
 
     return pipeline
 
+def remove_primitive_digests(
+    pipeline_json_structure, *, exclude_primitives: set = set()
+):
+    """
+    Parameters
+    ----------
+    exclude_primitives: set
+        removes digest from all primitive steps except for those whose id is in
+        exclude_primitives
+    """
+
+    for step in pipeline_json_structure['steps']:
+        if step['primitive']['id'] not in exclude_primitives:
+            del step['primitive']['digest']
+
+    return pipeline_json_structure
+
+
 for task_type in ['classification', 'regression']:
     pipeline = generate_imputer_pipeline(task_type)
     pipeline_json_structure = pipeline.to_json_structure()
+    remove_primitive_digests(
+        pipeline_json_structure, exclude_primitives={
+            RandomSamplingImputer.metadata.query()['id']
+        }
+    )
     pipeline_path = './pipelines/random_sampling_imputer/{}.json'.format(
         pipeline_json_structure['id']
     )
@@ -391,6 +414,11 @@ for task_type in ['classification', 'regression']:
 
     pipeline = generate_metafeature_pipeline(task_type)
     pipeline_json_structure = pipeline.to_json_structure()
+    remove_primitive_digests(
+        pipeline_json_structure, exclude_primitives={
+            MetafeatureExtractor.metadata.query()['id']
+        }
+    )
     pipeline_path = './pipelines/metafeature_extractor/{}.json'.format(
         pipeline_json_structure['id']
     )
