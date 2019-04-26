@@ -8,13 +8,13 @@
         "STATISTICAL_MOMENT_ANALYSIS"
     ],
     "description": "A primitive which takes a DataFrame and computes metafeatures on the data.\nTarget column is identified by being labeled with 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata.\nOtherwise primitive assumes there is no target column and only metafeatures that do not involve targets are returned.\nIf DataFrame metadata does not include semantic type labels for each column, columns will be classified as CATEGORICAL or NUMERIC according\nto their dtype: int and float are NUMERIC, all others are CATEGORICAL.\nMetafeatures are stored in the metadata object of the DataFrame, and the DataFrame itself is returned unchanged\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
-    "digest": "aa5e61cbb77cdf73eb24ceeb0dce0892a8580bc8513c0f33dc1a6b230abd427d",
+    "digest": "c3ada53d06a883fcbb24098f2c37b1be9ac1ad2aa92a2f968eb7222b61669f2e",
     "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
     "installation": [
         {
             "package": "byudml",
             "type": "PIP",
-            "version": "0.6.2"
+            "version": "0.6.3"
         }
     ],
     "location_uris": [

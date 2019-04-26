@@ -1,7 +1,7 @@
 {
     "id": "3013ad40-7c51-4991-b0fb-dbec65607979",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2019-04-22T19:36:17.043392Z",
+    "created": "2019-04-26T16:54:17.507488Z",
     "context": "TESTING",
     "inputs": [
         {
@@ -62,7 +62,7 @@
                 "version": "0.4.3",
                 "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
                 "name": "Dataset Metafeature Extraction",
-                "digest": "aa5e61cbb77cdf73eb24ceeb0dce0892a8580bc8513c0f33dc1a6b230abd427d"
+                "digest": "c3ada53d06a883fcbb24098f2c37b1be9ac1ad2aa92a2f968eb7222b61669f2e"
             },
             "arguments": {
                 "inputs": {
@@ -212,6 +212,5 @@
                 }
             ]
         }
-    ],
-    "digest": "61b3304e1b614e66dc6a10389852bf1e0f3348c3992fa1f57425b60c2edfe5e5"
+    ]
 }
