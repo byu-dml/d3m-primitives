@@ -60,7 +60,7 @@
             "primitive": {
                 "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
                 "version": "0.4.3",
-                "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
+                "python_path": "d3m.primitives.metalearning.metafeature_extractor.BYU",
                 "name": "Dataset Metafeature Extraction",
                 "digest": "c3ada53d06a883fcbb24098f2c37b1be9ac1ad2aa92a2f968eb7222b61669f2e"
             },
