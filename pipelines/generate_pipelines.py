@@ -237,7 +237,7 @@ def generate_metafeature_pipeline(task_type):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.metafeature_extraction.meta_feature_extractor.BYU'
+            'd3m.primitives.metalearning.metafeature_extractor.BYU'
         )
     )
     step.add_argument(

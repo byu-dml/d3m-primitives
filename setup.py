@@ -5,7 +5,7 @@ from byudml import __version__
 
 setup(
     name='byudml',
-    packages = find_packages(),
+    packages = find_packages(include=['byudml', 'byudml.*']),
     version = __version__,
     description = 'A collection of DARPA D3M primitives developed by BYU',
     author = 'Roland Laboulaye, Brandom Schoenfeld, Jarom Christensen',
@@ -21,7 +21,7 @@ setup(
     entry_points = {
         'd3m.primitives': [
             'data_preprocessing.random_sampling_imputer.BYU = byudml.imputer.random_sampling_imputer:RandomSamplingImputer',
-            'metafeature_extraction.meta_feature_extractor.BYU = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
+            'metalearning.metafeature_extractor.BYU = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
         ]
     }
 )

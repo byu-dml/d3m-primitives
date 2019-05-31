@@ -202,7 +202,7 @@
         "interfaces_version": "2019.4.4"
     },
     "primitive_family": "METAFEATURE_EXTRACTION",
-    "python_path": "d3m.primitives.metafeature_extraction.meta_feature_extractor.BYU",
+    "python_path": "d3m.primitives.metalearning.metafeature_extractor.BYU",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
     "source": {
         "contact": "mailto:bjschoenfeld@gmail.com",
