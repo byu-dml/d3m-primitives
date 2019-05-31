@@ -84,15 +84,15 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/metafeature_extraction/metafeature_extraction.py'
         ],
-        'python_path': 'd3m.primitives.metafeature_extraction.meta_feature_extractor.BYU',
-        'primitive_family': metadata_base.PrimitiveFamily.METAFEATURE_EXTRACTION,
+        'python_path': 'd3m.primitives.metalearning.metafeature_extractor.BYU',
+        'primitive_family': metadata_base.PrimitiveFamily.METALEARNING,
         'algorithm_types': [
             metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,
-            metadata_base.PrimitiveAlgorithmType.CANONICAL_CORRELATION_ANALYSIS,
-            metadata_base.PrimitiveAlgorithmType.INFORMATION_ENTROPY,
-            metadata_base.PrimitiveAlgorithmType.MUTUAL_INFORMATION,
-            metadata_base.PrimitiveAlgorithmType.SIGNAL_TO_NOISE_RATIO,
-            metadata_base.PrimitiveAlgorithmType.STATISTICAL_MOMENT_ANALYSIS
+            metadata_base.PrimitiveAlgorithmType.STATISTICAL_MOMENT_ANALYSIS,
+            metadata_base.PrimitiveAlgorithmType.INFORMATION_THEORETIC_METAFEATURE_EXTRACTION,
+            # metadata_base.PrimitiveAlgorithmType.LANDMARKING_METAFEATURE_EXTRACTION, # TODO
+            # metadata_base.PrimitiveAlgorithmType.MODEL_BASED_METAFEATURE_EXTRACTION, # TODO
+            metadata_base.PrimitiveAlgorithmType.STATISTICAL_METAFEATURE_EXTRACTION,
         ],
     })
 
@@ -212,7 +212,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
             raise ValueError('inputs must be an instance of \'d3m.container.pandas.DataFrame\'')
         metadata = self._produce(inputs.metadata, copy.copy(inputs))
 
-        inputs.metadata = metadata.set_for_value(inputs)
+        inputs.metadata = metadata.generate(inputs)
 
         return CallResult(inputs)
 

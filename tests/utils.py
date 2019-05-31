@@ -3,7 +3,7 @@ import inspect
 import json
 import os
 
-from d3m import runtime as runtime_module
+from d3m import cli
 from d3m.metadata import problem as problem_module
 
 DEFAULT_DATASET_DIR = '/datasets/training_datasets/LL0'
@@ -74,7 +74,7 @@ def evaluate_pipeline(
     dataset_doc_path, problem_path
 ):
     parser = argparse.ArgumentParser(description='Run D3M pipelines with default hyper-parameters.')
-    runtime_module.configure_parser(parser)
+    cli.runtime_configure_parser(parser)
     test_args = [
         'evaluate',
         '-p', pipeline_path,
@@ -87,4 +87,4 @@ def evaluate_pipeline(
 
     arguments = parser.parse_args(args=test_args)
 
-    runtime_module.handler(arguments, parser)
+    cli.runtime_handler(arguments, parser)
