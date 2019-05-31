@@ -23,7 +23,7 @@ def generate_imputer_pipeline(task_type):
         RandomSamplingImputer
     )
 
-    pipeline = pipeline_module.Pipeline(pipeline_id, context=metadata_base.Context.TESTING)
+    pipeline = pipeline_module.Pipeline(pipeline_id)
     pipeline.add_input(name='inputs')
     step_counter = 0
 
@@ -199,7 +199,7 @@ def generate_metafeature_pipeline(task_type):
         MetafeatureExtractor
     )
 
-    pipeline = pipeline_module.Pipeline(pipeline_id, context=metadata_base.Context.TESTING)
+    pipeline = pipeline_module.Pipeline(pipeline_id)
     pipeline.add_input(name='inputs')
     step_counter = 0
 

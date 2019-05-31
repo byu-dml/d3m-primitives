@@ -1,8 +1,7 @@
 {
     "id": "b32b9af1-34b4-437b-ad83-650f7df10acb",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2019-04-26T16:54:17.281854Z",
-    "context": "TESTING",
+    "created": "2019-05-31T21:52:31.112646Z",
     "inputs": [
         {
             "name": "inputs"
