@@ -3,7 +3,7 @@
         "IMPUTATION"
     ],
     "description": "This imputes missing values in a DataFrame by sampling known values from\neach column independently. If the training data has no known values in a\nparticular column, no values are imputed.\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
-    "digest": "231d95afe182c5fea17fcbd446eaa88c2725a0f5cdbcf8a7cd9519600087d5bd",
+    "digest": "5588dc61d64ae0442b07f51dbe6504bb340aeabe1e8d06b0e85bb95eaf71c041",
     "effects": [
         "NO_MISSING_VALUES"
     ],
@@ -12,7 +12,7 @@
         {
             "package": "byudml",
             "type": "PIP",
-            "version": "0.6.5"
+            "version": "0.6.6"
         }
     ],
     "location_uris": [

@@ -6,13 +6,13 @@
         "STATISTICAL_METAFEATURE_EXTRACTION"
     ],
     "description": "A primitive which takes a DataFrame and computes metafeatures on the data.\nTarget column is identified by being labeled with 'https://metadata.datadrivendiscovery.org/types/TrueTarget' in 'semantic_types' metadata.\nOtherwise primitive assumes there is no target column and only metafeatures that do not involve targets are returned.\nIf DataFrame metadata does not include semantic type labels for each column, columns will be classified as CATEGORICAL or NUMERIC according\nto their dtype: int and float are NUMERIC, all others are CATEGORICAL.\nMetafeatures are stored in the metadata object of the DataFrame, and the DataFrame itself is returned unchanged\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
-    "digest": "b6de54719221d73a68324d88556ed60db38743071b6ea2f5185ce4419c3d512a",
+    "digest": "0c36cd6f0ac9413969535bb0347487df6634e2e954f58cdb24f62785da9fc091",
     "id": "28d12214-8cb0-4ac0-8946-d31fcbcd4142",
     "installation": [
         {
             "package": "byudml",
             "type": "PIP",
-            "version": "0.6.5"
+            "version": "0.6.6"
         }
     ],
     "location_uris": [
@@ -210,5 +210,5 @@
         ]
     },
     "structural_type": "byudml.metafeature_extraction.metafeature_extraction.MetafeatureExtractor",
-    "version": "0.4.3"
+    "version": "0.4.4"
 }

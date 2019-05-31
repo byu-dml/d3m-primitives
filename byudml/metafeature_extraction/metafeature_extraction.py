@@ -14,7 +14,7 @@ from metalearn.metafeatures.metafeatures import Metafeatures
 
 from byudml import __version__ as __package_version__
 
-__primitive_version__ = '0.4.3'
+__primitive_version__ = '0.4.4'
 
 Inputs = DataFrame
 Outputs = DataFrame
