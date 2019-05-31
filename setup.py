@@ -5,7 +5,7 @@ from byudml import __version__
 
 setup(
     name='byudml',
-    packages = find_packages(),
+    packages = find_packages(include=['byudml', 'byudml.*']),
     version = __version__,
     description = 'A collection of DARPA D3M primitives developed by BYU',
     author = 'Roland Laboulaye, Brandom Schoenfeld, Jarom Christensen',
