@@ -1,7 +1,7 @@
 {
     "id": "f4fe3fcc-45fe-4c85-8845-549e2f466f21",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2019-05-31T21:52:30.640395Z",
+    "created": "2019-05-31T22:03:54.979333Z",
     "inputs": [
         {
             "name": "inputs"
@@ -117,7 +117,7 @@
                 "version": "0.1.4",
                 "python_path": "d3m.primitives.data_preprocessing.random_sampling_imputer.BYU",
                 "name": "Random Sampling Imputer",
-                "digest": "cbee04602076d4bf58866d67e60822644981f27141194378137b4f365a40001d"
+                "digest": "231d95afe182c5fea17fcbd446eaa88c2725a0f5cdbcf8a7cd9519600087d5bd"
             },
             "arguments": {
                 "inputs": {
