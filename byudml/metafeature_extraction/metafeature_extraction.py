@@ -158,7 +158,9 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         elif self.hyperparams['metafeature_subset']=='INEXPENSIVE':
             return self._get_inexpensive_subset()
         elif self.hyperparams['metafeature_subset']=='ALL':
-            return None
+            # Just get every metafeature name in the mapping
+            mapping = json.load(open(self._mapping_file_path))
+            return [mf_obj['data_metafeatures_path'].split('.')[0] for mf_obj in mapping.values()]
 
     def _get_landmarking_metafeatures(self):
         landmarking_mfs = []
