@@ -439,6 +439,29 @@ def update_digest(
 
     return pipeline_to_run
 
+def create_meta_script_seed(problem):
+    """
+    Update this as time goes on.  This is only for SEED datasets
+    :param problem: the name of the problem for the dataset
+    :return: the meta file
+    """
+    return \
+        {
+        "problem": "{0}_problem".format(problem),
+        "full_inputs": [
+            "{0}_dataset".format(problem)
+        ],
+        "train_inputs": [
+            "{0}_dataset_TRAIN".format(problem)
+        ],
+        "test_inputs": [
+            "{0}_dataset_TEST".format(problem)
+        ],
+        "score_inputs": [
+            "{0}_dataset_SCORE".format(problem)
+        ]
+    }
+
 
 def extract_byu_info(pipeline_json):
     """
@@ -464,23 +487,36 @@ def clear_directory(dir_path):
         shutil.rmtree(f)
 
 
-def create_and_add_to_directory(primitive_dir, new_version_num, pipeline_json):
+def create_and_add_to_directory(primitive_dir, new_version_num, pipeline_json, problem_name='185_baseball_problem'):
     """
     Adds pipelines to the submodule directory and creates directories if it needs it
     :param primitive_dir: the python path of the primitive
     :param new_version_num: the latest version number of the primitive
     :param pipeline_json: the pipeline to be written to file
+    :param problem_name: the name of the problem
     """
     # make folders if they don't exist already
     if not os.path.exists(primitive_dir):
         os.makedirs(primitive_dir)
+
     version_dir = os.path.join(primitive_dir, new_version_num)
     if not os.path.exists(version_dir):
         os.makedirs(version_dir)
+
+    pipeline_dir = os.path.join(version_dir, "pipelines")
+    if not os.path.exists(pipeline_dir):
+        os.makedirs(pipeline_dir)
+
     # write json pipeline out
-    pipeline_name = os.path.join(primitive_dir, new_version_num, pipeline_json["id"]+ ".json")
+    pipeline_name = os.path.join(pipeline_dir, pipeline_json["id"]+ ".json")
+    meta_name = os.path.join(pipeline_dir, pipeline_json["id"]+ ".meta")
+
     with open(pipeline_name, "w") as f:
         f.write(json.dumps(pipeline_json, indent=4))
+        os.chmod(pipeline_name, 0o777)
+
+    with open(meta_name, "w") as f:
+        f.write(json.dumps(create_meta_script_seed(problem_name), indent=4))
         os.chmod(pipeline_name, 0o777)
 
 
