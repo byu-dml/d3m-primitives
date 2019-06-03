@@ -3,6 +3,14 @@
 BYU-DML machine learning algorithms or primitives created for DARPA's D3M project.
 These primitives are wrapped to fit within the D3M ecosystem.
 
+## How to update
+1. Update the primitive packages: metalearn and the Dockerfile with the latest tag from d3m.
+2. From the home directory, run this command: `bash run_tests.sh`.  This command will verify that nothing is broken, generate new pipeline and primitive jsons with updated digests and versions, and place them in the correct folder in the submodule of the `primitive` repo.
+3. Go into the submodule directory `cd primitives/` and commit the updated json files `git commit -m "your custom message"`.
+4. Push the changes to the forked gitlab repo (https://gitlab.com/byu-dml/primitives)
+5. Update this repo by committing the changes to the submodule `git add primitives/` and `git commit` and `git push`.
+6. Use the forked repo to update the main d3m `primitive` repo so that it is available for d3m.
+
 ## metafeature_extraction
 
 Extracts metafeatures from tabular data.

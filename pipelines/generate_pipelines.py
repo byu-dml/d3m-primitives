@@ -1,6 +1,7 @@
 import json
 import os
-from bson import json_util
+import glob
+import shutil
 
 from d3m import index as d3m_index
 from d3m.metadata import (
@@ -433,35 +434,82 @@ def update_digest(
         )
         check_step = primitive.to_json_structure()
         # lets verify that both are updated
-        assert(check_step["primitive"]["version"] == step["primitive"]["version"], "Updating version failed")
-        assert(check_step["primitive"]["digest"] == step["primitive"]["digest"], "Updating digest failed")
+        assert check_step["primitive"]["version"] == step["primitive"]["version"], "Updating version failed"
+        assert check_step["primitive"]["digest"] == step["primitive"]["digest"], "Updating digest failed"
 
     return pipeline_to_run
 
 
+def extract_byu_info(pipeline_json):
+    """
+
+    :param pipeline_json: the pipeline in json form
+    :returns the python path of the BYU primitive, and the version number of the primitive
+    """
+    for primitive_step in pipeline_json["steps"]:
+        if "BYU" in primitive_step["primitive"]["python_path"]:
+            return primitive_step["primitive"]["python_path"], primitive_step["primitive"]["version"]
+
+
+def clear_directory(dir_path):
+    """
+    CAREFUL: this will DELETE ALL FILES in dirs_path
+
+    This function clears the submodule directory so that we can add the new information
+    :param dir_path: the directory where all files will be deleted
+    """
+    files = glob.glob(dir_path + '/*')
+    for f in files:
+        print("Deleting all files in", f)
+        shutil.rmtree(f)
+
+
+def create_and_add_to_directory(primitive_dir, new_version_num, pipeline_json):
+    """
+    Adds pipelines to the submodule directory and creates directories if it needs it
+    :param primitive_dir: the python path of the primitive
+    :param new_version_num: the latest version number of the primitive
+    :param pipeline_json: the pipeline to be written to file
+    """
+    # make folders if they don't exist already
+    if not os.path.exists(primitive_dir):
+        os.makedirs(primitive_dir)
+    version_dir = os.path.join(primitive_dir, new_version_num)
+    if not os.path.exists(version_dir):
+        os.makedirs(version_dir)
+    # write json pipeline out
+    pipeline_name = os.path.join(primitive_dir, new_version_num, pipeline_json["id"]+ ".json")
+    with open(pipeline_name, "w") as f:
+        f.write(json.dumps(pipeline_json, indent=4))
+        os.chmod(pipeline_name, 0o777)
+
+
+# find and clear our directory in the submodules
+new_directory = max(glob.glob('primitives/v????.?.?'))
+byu_path = "byu-dml"
+byu_dir = os.path.join(new_directory, byu_path)
+clear_directory(byu_dir)
+
 for task_type in ['classification', 'regression']:
+    # generate and update imputer
     pipeline = generate_imputer_pipeline(task_type)
     pipeline_json_structure = pipeline.to_json_structure()
     pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
                                              RandomSamplingImputer.metadata.query()['id']})
     pipeline_json_structure = update_digest(pipeline_json_structure)
-    pipeline_path = './pipelines/random_sampling_imputer/{}.json'.format(
-        pipeline_json_structure['id']
-    )
-    json.dump(pipeline_json_structure, open(pipeline_path, 'w'), indent=4)
-    os.chmod(pipeline_path, 0o777)
+    # place in submodule
+    imputer_path, imputer_version = extract_byu_info(pipeline_json_structure)
+    create_and_add_to_directory(os.path.join(byu_dir, imputer_path), str(imputer_version), pipeline_json_structure)
 
+    # generate and update metafeatures
     pipeline = generate_metafeature_pipeline(task_type)
     pipeline_json_structure = pipeline.to_json_structure()
     pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
                                              MetafeatureExtractor.metadata.query()['id']})
     pipeline_json_structure = update_digest(pipeline_json_structure)
-    pipeline_path = './pipelines/metafeature_extractor/{}.json'.format(
-        pipeline_json_structure['id']
-    )
-    json.dump(pipeline_json_structure, open(pipeline_path, 'w'), indent=4)
-    os.chmod(pipeline_path, 0o777)
-
+    # place in submodule
+    metafeature_path, metafeatures_version = extract_byu_info(pipeline_json_structure)
+    create_and_add_to_directory(os.path.join(byu_dir, metafeature_path), str(metafeatures_version), pipeline_json_structure)
 
 
 

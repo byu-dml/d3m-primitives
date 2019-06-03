@@ -1,0 +1,4 @@
+[submodule "primitives"]
+	path = primitives
+	url = https://gitlab.com/byu-dml/primitives.git
+	branch = byu-dml
