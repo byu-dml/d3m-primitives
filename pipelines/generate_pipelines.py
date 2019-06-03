@@ -200,7 +200,7 @@ def generate_metafeature_pipeline(task_type):
         MetafeatureExtractor
     )
 
-    pipeline = pipeline_module.Pipeline(pipeline_id, context=metadata_base.Context.TESTING)
+    pipeline = pipeline_module.Pipeline(pipeline_id)
     pipeline.add_input(name='inputs')
     step_counter = 0
 
@@ -402,27 +402,27 @@ def remove_digests(
 
 
 def update_digest(
-    output_filepath, pipeline_json_structure=None, filename=None
+    pipeline_json_structure, filename=None
 ):
     """
     This function updates the pipeline's digests and version numbers
 
     Parameters
     ----------
-    output_filepath: the filepath of where to write the new, updated pipeline
-    pipeline_json_structure: the pipeline in JSON form.  This or the `filename` parameter is mandatory
+    pipeline_json_structure: the pipeline in JSON form (WITHOUT) digests.  This or the `filename` parameter is mandatory
     filename: the filename of the pipeline json, so we can read it in
+
+    :return a pipeline with updated digests
     """
     if pipeline_json_structure is None and filename is None:
         raise Exception
     elif pipeline_json_structure is None:
         with open(filename, "r") as file:
-            # reading this in should update it, but we'll check just in cases
             # NOTE: must be a pipeline with no digests, or recent digests
             # NOTE: reading this in as straight JSON doesn't work so we have to use the pipeline_module
             pipeline_to_run = pipeline_module.Pipeline.from_json(string_or_file=file).to_json_structure()
     else:
-        pipeline_to_run = pipeline_json_structure
+        pipeline_to_run = pipeline_module.Pipeline.from_json(json.dumps(pipeline_json_structure)).to_json_structure()
 
     for step in pipeline_to_run['steps']:
         # if not updated, check and update
@@ -433,21 +433,18 @@ def update_digest(
         )
         check_step = primitive.to_json_structure()
         # lets verify that both are updated
-        assert(check_step["primitive"]["version"] == step["primitive"]["version"])
-        assert(check_step["primitive"]["digest"] == step["primitive"]["digest"])
+        assert(check_step["primitive"]["version"] == step["primitive"]["version"], "Updating version failed")
+        assert(check_step["primitive"]["digest"] == step["primitive"]["digest"], "Updating digest failed")
 
-    with open(output_filepath, "w") as f:
-        f.write(json.dumps(pipeline_to_run, indent=2, default=json_util.default))
+    return pipeline_to_run
 
 
 for task_type in ['classification', 'regression']:
     pipeline = generate_imputer_pipeline(task_type)
     pipeline_json_structure = pipeline.to_json_structure()
-    remove_digests(
-        pipeline_json_structure, exclude_primitives={
-            RandomSamplingImputer.metadata.query()['id']
-        }
-    )
+    pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
+                                             RandomSamplingImputer.metadata.query()['id']})
+    pipeline_json_structure = update_digest(pipeline_json_structure)
     pipeline_path = './pipelines/random_sampling_imputer/{}.json'.format(
         pipeline_json_structure['id']
     )
@@ -456,11 +453,9 @@ for task_type in ['classification', 'regression']:
 
     pipeline = generate_metafeature_pipeline(task_type)
     pipeline_json_structure = pipeline.to_json_structure()
-    remove_digests(
-        pipeline_json_structure, exclude_primitives={
-            MetafeatureExtractor.metadata.query()['id']
-        }
-    )
+    pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
+                                             MetafeatureExtractor.metadata.query()['id']})
+    pipeline_json_structure = update_digest(pipeline_json_structure)
     pipeline_path = './pipelines/metafeature_extractor/{}.json'.format(
         pipeline_json_structure['id']
     )
