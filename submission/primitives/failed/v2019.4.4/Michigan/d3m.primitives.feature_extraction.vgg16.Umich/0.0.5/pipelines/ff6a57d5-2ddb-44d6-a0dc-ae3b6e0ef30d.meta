@@ -1,9 +1,0 @@
-{
-    "problem": "22_handgeometry_problem",
-    "train_inputs": [
-        "22_hy_dataset_TRAIN"
-    ],
-    "test_inputs": [
-        "22_handgeometry_problem"
-    ]
-}

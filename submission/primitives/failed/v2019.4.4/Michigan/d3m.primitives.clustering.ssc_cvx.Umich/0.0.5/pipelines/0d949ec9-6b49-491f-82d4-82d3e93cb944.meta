@@ -1,9 +1,0 @@
-{
-    "problem": "1491_one_hundred_plants_margin_clust_problem",
-    "train_inputs": [
-        "1491_one_hundred_plants_margin_dataset_TRAIN"
-    ],
-    "test_inputs": [
-        "1491_one_hundred_plants_margin_clust_problem"
-    ]
-}

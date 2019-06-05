@@ -1,9 +1,0 @@
-{
-    "problem": "LL0_207_autoPrice_problem",
-    "train_inputs": [
-        "LL0_207_dataset_TRAIN"
-    ],
-    "test_inputs": [
-        "LL0_207_autoPrice_problem"
-    ]
-}

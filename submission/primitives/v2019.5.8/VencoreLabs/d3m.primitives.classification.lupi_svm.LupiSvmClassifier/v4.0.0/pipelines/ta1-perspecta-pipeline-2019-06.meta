@@ -1,7 +1,0 @@
-{
-   "problem": "uu6_hepatitis_problem",
-   "full_inputs": ["uu6_hepatitis_dataset"],
-   "train_inputs": ["uu6_hepatitis_dataset_TRAIN"],
-   "test_inputs": ["uu6_hepatitis_dataset_TEST"],
-   "score_inputs": ["uu6_hepatitis_dataset_SCORE"] 
-}
