@@ -1,0 +1,74 @@
+validate:
+  stage: build
+
+  tags:
+    - docker
+
+  image: registry.gitlab.com/datadrivendiscovery/images/testing:ubuntu-bionic-python36
+
+  services:
+    - docker:dind
+
+  before_script:
+    - docker info
+
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2375
+    GIT_STRATEGY: clone
+
+  script:
+    - python3 ./run_validation.py --clean
+
+validate_devel:
+  stage: build
+
+  tags:
+    - docker
+
+  image: registry.gitlab.com/datadrivendiscovery/images/testing:ubuntu-bionic-python36
+
+  services:
+    - docker:dind
+
+  before_script:
+    - docker info
+
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2375
+    GIT_STRATEGY: clone
+
+  script:
+    - python3 ./run_validation.py --devel --clean
+
+  allow_failure: true
+
+trigger_images_rebuild:
+  stage: deploy
+
+  tags:
+    - docker
+
+  image: registry.gitlab.com/datadrivendiscovery/images/testing:ubuntu-bionic-python36
+
+  script:
+    # This triggers a pipeline in https://gitlab.com/datadrivendiscovery/images
+    - if [ -n "$TRIGGER_TOKEN" ]; then curl --fail -X POST -F token=$TRIGGER_TOKEN -F ref=master https://gitlab.com/api/v4/projects/5024100/trigger/pipeline; fi
+
+  only:
+    - master
+
+trigger_index_rebuild:
+  stage: deploy
+
+  tags:
+    - docker
+
+  image: registry.gitlab.com/datadrivendiscovery/images/testing:ubuntu-bionic-python36
+
+  script:
+    - if [ -n "$INDEX_PRIMITIVES_TOKEN" ]; then curl --fail -X POST -F token=$INDEX_PRIMITIVES_TOKEN -F ref=primitives https://gitlab.datadrivendiscovery.org/api/v4/projects/528/trigger/pipeline; fi
+
+  only:
+    - master

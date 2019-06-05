@@ -1,0 +1,9 @@
+{
+    "problem": "LL1_3476_HMDB_actio_recognition_problem",
+    "train_inputs": [
+        "LL1_3476_HMDB_actio_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "LL1_3476_HMDB_actio_recognition_problem"
+    ]
+}

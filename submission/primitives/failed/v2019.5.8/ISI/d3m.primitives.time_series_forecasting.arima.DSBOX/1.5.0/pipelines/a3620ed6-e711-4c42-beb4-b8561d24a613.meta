@@ -1,0 +1,15 @@
+{
+    "problem":"56_sunspots_problem",
+    "full_inputs":[
+        "56_sunspots_dataset"
+    ],
+    "train_inputs":[
+        "56_sunspots_dataset_TRAIN"
+    ],
+    "test_inputs":[
+        "56_sunspots_dataset_TEST"
+    ],
+    "score_inputs":[
+        "56_sunspots_dataset_SCORE"
+    ]
+}

@@ -1,0 +1,273 @@
+{
+    "id": "6c5dcfa3-1f87-4066-b16a-88c9c971f6e3",
+    "version": "0.4.0",
+    "name": "Single Table Deep Feature Synthesis",
+    "python_path": "d3m.primitives.feature_construction.deep_feature_synthesis.SingleTableFeaturization",
+    "source": {
+        "name": "MIT_FeatureLabs",
+        "contact": "mailto:max.kanter@featurelabs.com",
+        "uris": [
+            "https://docs.featuretools.com"
+        ],
+        "license": "BSD-3-Clause"
+    },
+    "installation": [
+        {
+            "type": "PIP",
+            "package_uri": "git+https://github.com/Featuretools/ta1-primitives.git@e0170fb51c0238cf1edc76f1d88e86818254b1d3#egg=featuretools_ta1"
+        }
+    ],
+    "algorithm_types": [
+        "DEEP_FEATURE_SYNTHESIS"
+    ],
+    "primitive_family": "FEATURE_CONSTRUCTION",
+    "keywords": [
+        "featurization",
+        "feature engineering",
+        "feature extraction",
+        "feature construction"
+    ],
+    "hyperparameters_to_tune": [
+        "max_percent_null",
+        "max_correlation"
+    ],
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
+    "original_python_path": "featuretools_ta1.single_table.SingleTableFeaturization",
+    "primitive_code": {
+        "class_type_arguments": {
+            "Inputs": "d3m.container.pandas.DataFrame",
+            "Outputs": "d3m.container.pandas.DataFrame",
+            "Params": "featuretools_ta1.single_table.Params",
+            "Hyperparams": "featuretools_ta1.single_table.Hyperparams"
+        },
+        "interfaces_version": "2019.5.8",
+        "interfaces": [
+            "unsupervised_learning.UnsupervisedLearnerPrimitiveBase",
+            "base.PrimitiveBase"
+        ],
+        "hyperparams": {
+            "max_percent_null": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 0.5,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The maximum percentage of null values allowed in returned features. A lower value means features may have more null nulls.",
+                "lower": 0,
+                "upper": 1,
+                "lower_inclusive": true,
+                "upper_inclusive": true
+            },
+            "max_correlation": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 0.9,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The maximum allowed correlation between any two features returned. A lower value means features will be more uncorrelated",
+                "lower": 0,
+                "upper": 1,
+                "lower_inclusive": true,
+                "upper_inclusive": true
+            },
+            "use_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of column indices to force primitive to operate on. If any specified column cannot be parsed, it is skipped.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "exclude_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of column indices to not operate on. Applicable only if \"use_columns\" is not provided.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "return_result": {
+                "type": "d3m.metadata.hyperparams.Enumeration",
+                "default": "new",
+                "structural_type": "str",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Should parsed columns be appended, should they replace original columns, or should only parsed columns be returned? This hyperparam is ignored if use_semantic_types is set to false.",
+                "values": [
+                    "append",
+                    "replace",
+                    "new"
+                ]
+            }
+        },
+        "arguments": {
+            "hyperparams": {
+                "type": "featuretools_ta1.single_table.Hyperparams",
+                "kind": "RUNTIME"
+            },
+            "random_seed": {
+                "type": "int",
+                "kind": "RUNTIME",
+                "default": 0
+            },
+            "docker_containers": {
+                "type": "typing.Union[NoneType, typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "timeout": {
+                "type": "typing.Union[NoneType, float]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "iterations": {
+                "type": "typing.Union[NoneType, int]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "produce_methods": {
+                "type": "typing.Sequence[str]",
+                "kind": "RUNTIME"
+            },
+            "inputs": {
+                "type": "d3m.container.pandas.DataFrame",
+                "kind": "PIPELINE"
+            },
+            "params": {
+                "type": "featuretools_ta1.single_table.Params",
+                "kind": "RUNTIME"
+            }
+        },
+        "class_methods": {
+            "can_accept": {
+                "arguments": {
+                    "method_name": {
+                        "type": "str"
+                    },
+                    "arguments": {
+                        "type": "typing.Dict[str, typing.Union[d3m.metadata.base.Metadata, type]]"
+                    },
+                    "hyperparams": {
+                        "type": "featuretools_ta1.single_table.Hyperparams"
+                    }
+                },
+                "returns": "typing.Union[NoneType, d3m.metadata.base.DataMetadata]",
+                "description": "Returns a metadata object describing the output of a call of ``method_name`` method under\n``hyperparams`` with primitive arguments ``arguments``, if such arguments can be accepted by the method.\nOtherwise it returns ``None`` or raises an exception.\n\nDefault implementation checks structural types of ``arguments`` expected arguments' types\nand ignores ``hyperparams``.\n\nBy (re)implementing this method, a primitive can fine-tune which arguments it accepts\nfor its methods which goes beyond just structural type checking. For example, a primitive might\noperate only on images, so it can accept numpy arrays, but only those with semantic type\ncorresponding to an image. Or it might check dimensions of an array to assure it operates\non square matrix.\n\nPrimitive arguments are a superset of method arguments. This method receives primitive arguments and\nnot just method arguments so that it is possible to implement it without a state between calls\nto ``can_accept`` for multiple methods. For example, a call to ``fit`` could during normal execution\ninfluences what a later ``produce`` call outputs. But during ``can_accept`` call we can directly have\naccess to arguments which would have been given to ``fit`` to produce metadata of the ``produce`` call.\n\nNot all primitive arguments have to be provided, only those used by ``fit``, ``set_training_data``,\nand produce methods, and those used by the ``method_name`` method itself.\n\nParameters\n----------\nmethod_name : str\n    Name of the method which would be called.\narguments : Dict[str, Union[Metadata, type]]\n    A mapping between argument names and their metadata objects (for pipeline arguments) or types (for other).\nhyperparams : Hyperparams\n    Hyper-parameters under which the method would be called during regular primitive execution.\n\nReturns\n-------\nDataMetadata\n    Metadata object of the method call result, or ``None`` if arguments are not accepted\n    by the method."
+            }
+        },
+        "instance_methods": {
+            "__init__": {
+                "kind": "OTHER",
+                "arguments": [
+                    "hyperparams",
+                    "random_seed",
+                    "docker_containers"
+                ],
+                "returns": "NoneType"
+            },
+            "fit": {
+                "kind": "OTHER",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]",
+                "description": "Fits primitive using inputs and outputs (if any) using currently set training data.\n\nThe returned value should be a ``CallResult`` object with ``value`` set to ``None``.\n\nIf ``fit`` has already been called in the past on different training data,\nthis method fits it **again from scratch** using currently set training data.\n\nOn the other hand, caller can call ``fit`` multiple times on the same training data\nto continue fitting.\n\nIf ``fit`` fully fits using provided training data, there is no point in making further\ncalls to this method with same training data, and in fact further calls can be noops,\nor a primitive can decide to refit from scratch.\n\nIn the case fitting can continue with same training data (even if it is maybe not reasonable,\nbecause the internal metric primitive is using looks like fitting will be degrading), if ``fit``\nis called again (without setting training data), the primitive has to continue fitting.\n\nCaller can provide ``timeout`` information to guide the length of the fitting process.\nIdeally, a primitive should adapt its fitting process to try to do the best fitting possible\ninside the time allocated. If this is not possible and the primitive reaches the timeout\nbefore fitting, it should raise a ``TimeoutError`` exception to signal that fitting was\nunsuccessful in the given time. The state of the primitive after the exception should be\nas the method call has never happened and primitive should continue to operate normally.\nThe purpose of ``timeout`` is to give opportunity to a primitive to cleanly manage\nits state instead of interrupting execution from outside. Maintaining stable internal state\nshould have precedence over respecting the ``timeout`` (caller can terminate the misbehaving\nprimitive from outside anyway). If a longer ``timeout`` would produce different fitting,\nthen ``CallResult``'s ``has_finished`` should be set to ``False``.\n\nSome primitives have internal fitting iterations (for example, epochs). For those, caller\ncan provide how many of primitive's internal iterations should a primitive do before returning.\nPrimitives should make iterations as small as reasonable. If ``iterations`` is ``None``,\nthen there is no limit on how many iterations the primitive should do and primitive should\nchoose the best amount of iterations on its own (potentially controlled through\nhyper-parameters). If ``iterations`` is a number, a primitive has to do those number of\niterations (even if not reasonable), if possible. ``timeout`` should still be respected\nand potentially less iterations can be done because of that. Primitives with internal\niterations should make ``CallResult`` contain correct values.\n\nFor primitives which do not have internal iterations, any value of ``iterations``\nmeans that they should fit fully, respecting only ``timeout``.\n\nParameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value."
+            },
+            "fit_multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling ``fit`` and after that multiple produce methods at once.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to ``set_training_data`` and all produce methods.\ntimeout : float\n    A maximum time this primitive should take to both fit the primitive and produce outputs\n    for all produce methods listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do for both fitting and producing\n    outputs of all produce methods.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "get_params": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "featuretools_ta1.single_table.Params",
+                "description": "Returns parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nParameters should include all data which is necessary to create a new instance of this primitive\nbehaving exactly the same as this instance, when the new instance is created by passing the same\nparameters to the class constructor and calling ``set_params``.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nReturns\n-------\nParams\n    An instance of parameters."
+            },
+            "multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling multiple produce methods at once.\n\nWhen a primitive has multiple produce methods it is common that they might compute the\nsame internal results for same inputs but return different representations of those results.\nIf caller is interested in multiple of those representations, calling multiple produce\nmethods might lead to recomputing same internal results multiple times. To address this,\nthis method allows primitive author to implement an optimized version which computes\ninternal results only once for multiple calls of produce methods, but return those different\nrepresentations.\n\nIf any additional method arguments are added to primitive's produce method(s), they have\nto be added to this method as well. This method should accept an union of all arguments\naccepted by primitive's produce method(s) and then use them accordingly when computing\nresults.\n\nThe default implementation of this method just calls all produce methods listed in\n``produce_methods`` in order and is potentially inefficient.\n\nIf primitive should have been fitted before calling this method, but it has not been,\nprimitive should raise a ``PrimitiveNotFittedError`` exception.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to produce outputs for all produce methods\n    listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "produce": {
+                "kind": "PRODUCE",
+                "arguments": [
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.pandas.DataFrame]",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": "Produce primitive's best choice of the output for each of the inputs.\n\nThe output value should be wrapped inside ``CallResult`` object before returning.\n\nIn many cases producing an output is a quick operation in comparison with ``fit``, but not\nall cases are like that. For example, a primitive can start a potentially long optimization\nprocess to compute outputs. ``timeout`` and ``iterations`` can serve as a way for a caller\nto guide the length of this process.\n\nIdeally, a primitive should adapt its call to try to produce the best outputs possible\ninside the time allocated. If this is not possible and the primitive reaches the timeout\nbefore producing outputs, it should raise a ``TimeoutError`` exception to signal that the\ncall was unsuccessful in the given time. The state of the primitive after the exception\nshould be as the method call has never happened and primitive should continue to operate\nnormally. The purpose of ``timeout`` is to give opportunity to a primitive to cleanly\nmanage its state instead of interrupting execution from outside. Maintaining stable internal\nstate should have precedence over respecting the ``timeout`` (caller can terminate the\nmisbehaving primitive from outside anyway). If a longer ``timeout`` would produce\ndifferent outputs, then ``CallResult``'s ``has_finished`` should be set to ``False``.\n\nSome primitives have internal iterations (for example, optimization iterations).\nFor those, caller can provide how many of primitive's internal iterations\nshould a primitive do before returning outputs. Primitives should make iterations as\nsmall as reasonable. If ``iterations`` is ``None``, then there is no limit on\nhow many iterations the primitive should do and primitive should choose the best amount\nof iterations on its own (potentially controlled through hyper-parameters).\nIf ``iterations`` is a number, a primitive has to do those number of iterations,\nif possible. ``timeout`` should still be respected and potentially less iterations\ncan be done because of that. Primitives with internal iterations should make\n``CallResult`` contain correct values.\n\nFor primitives which do not have internal iterations, any value of ``iterations``\nmeans that they should run fully, respecting only ``timeout``.\n\nIf primitive should have been fitted before calling this method, but it has not been,\nprimitive should raise a ``PrimitiveNotFittedError`` exception.\n\nParameters\n----------\ninputs : Inputs\n    The inputs of shape [num_inputs, ...].\ntimeout : float\n    A maximum time this primitive should take to produce outputs during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[Outputs]\n    The outputs of shape [num_inputs, ...] wrapped inside ``CallResult``."
+            },
+            "set_params": {
+                "kind": "OTHER",
+                "arguments": [
+                    "params"
+                ],
+                "returns": "NoneType",
+                "description": "Sets parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nParameters\n----------\nparams : Params\n    An instance of parameters."
+            },
+            "set_training_data": {
+                "kind": "OTHER",
+                "arguments": [
+                    "inputs"
+                ],
+                "returns": "NoneType",
+                "description": "Sets training data of this primitive.\n\nParameters\n----------\ninputs : Inputs\n    The inputs."
+            }
+        },
+        "class_attributes": {
+            "logger": "logging.Logger",
+            "metadata": "d3m.metadata.base.PrimitiveMetadata"
+        },
+        "instance_attributes": {
+            "hyperparams": "d3m.metadata.hyperparams.Hyperparams",
+            "random_seed": "int",
+            "docker_containers": "typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]",
+            "volumes": "typing.Dict[str, str]",
+            "temporary_directory": "typing.Union[NoneType, str]"
+        },
+        "params": {
+            "features": "typing.Union[NoneType, bytes]"
+        }
+    },
+    "structural_type": "featuretools_ta1.single_table.SingleTableFeaturization",
+    "description": "This primitive creates new interaction features for an input dataframe.\n\nAfter creating features it reduces the set of possible features using an unsupervised approach\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "digest": "1d545bbb0400a8efc13f72b8b4afc8cd649d424e4b39de6eb81aa68658c11c61"
+}

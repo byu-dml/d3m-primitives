@@ -1,0 +1,15 @@
+{
+    "problem": "185_baseball_problem",
+    "full_inputs": [
+        "185_baseball_dataset"
+    ],
+    "train_inputs": [
+        "185_baseball_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "185_baseball_dataset_TEST"
+    ],
+    "score_inputs": [
+        "185_baseball_dataset_SCORE"
+    ]
+}

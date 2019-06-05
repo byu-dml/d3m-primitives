@@ -1,0 +1,59 @@
+{
+    "id": "760685de-9e81-42d2-bc63-76f38e6fe27a",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2019-05-06T20:07:38.422847Z",
+    "context": "TESTING",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.1.produce",
+            "name": "Results"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "e149ba15-4004-4642-a00f-e7c833653a54",
+                "version": "1.3.9",
+                "python_path": "d3m.primitives.community_detection.community_detection_parser.CommunityDetectionParser",
+                "name": "Community Detection Parser"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        },
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "5b08a46a-28f6-4987-a8c6-840edd5877b0",
+                "version": "1.3.9",
+                "python_path": "d3m.primitives.classification.community_detection.CommunityDetection",
+                "name": "Community Detection"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.0.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        }
+    ]
+}

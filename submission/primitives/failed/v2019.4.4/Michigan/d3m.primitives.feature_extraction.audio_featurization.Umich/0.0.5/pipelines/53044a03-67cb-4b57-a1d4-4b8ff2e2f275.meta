@@ -1,0 +1,9 @@
+{
+    "problem": "31_urbansound_problem",
+    "train_inputs": [
+        "31_ud_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "31_urbansound_problem"
+    ]
+}

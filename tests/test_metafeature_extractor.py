@@ -10,7 +10,7 @@ from tests import utils
 
 
 DATASETS_DIR = '/datasets/seed_datasets_current'
-PIPELINES_BASE_DIR = './pipelines'
+PIPELINES_BASE_DIR = 'submission/pipelines'
 PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'metafeature_extractor')
 CLASSIFICATION_PIPELINE_FILENAMES = [
     'b32b9af1-34b4-437b-ad83-650f7df10acb.json'

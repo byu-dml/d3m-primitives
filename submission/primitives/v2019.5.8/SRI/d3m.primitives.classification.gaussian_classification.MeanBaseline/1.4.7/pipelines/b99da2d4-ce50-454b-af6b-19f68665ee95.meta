@@ -1,0 +1,15 @@
+{
+    "problem": "LL1_726_TIDY_GPS_carpool_bus_service_rating_prediction_problem",
+    "full_inputs": [
+        "LL1_726_TIDY_GPS_carpool_bus_service_rating_prediction_dataset"
+    ],
+    "train_inputs": [
+        "LL1_726_TIDY_GPS_carpool_bus_service_rating_prediction_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "LL1_726_TIDY_GPS_carpool_bus_service_rating_prediction_dataset_TEST"
+    ],
+    "score_inputs": [
+        "LL1_726_TIDY_GPS_carpool_bus_service_rating_prediction_dataset_SCORE"
+    ]
+}

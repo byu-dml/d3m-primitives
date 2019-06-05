@@ -1,0 +1,750 @@
+{
+    "id": "f8b81d1a-3e22-4edf-aa99-15bcbe827954",
+    "version": "0.1.0",
+    "name": "model",
+    "keywords": [
+        "neural network",
+        "deep learning"
+    ],
+    "source": {
+        "name": "JPL-manual",
+        "contact": "mailto:mark.k.hoffmann@jpl.nasa.gov",
+        "uris": [
+            "https://gitlab.com/datadrivendiscovery/jpl-primitives/blob/master/jpl_primitives/model.py",
+            "https://gitlab.com/datadrivendiscovery/jpl-primitives.git"
+        ]
+    },
+    "installation": [
+        {
+            "type": "PIP",
+            "package_uri": "git+https://gitlab.com/datadrivendiscovery/jpl-primitives.git@16e40a6f49ed816f6cc520380ab2912f0d900486#egg=jpl_primitives"
+        }
+    ],
+    "python_path": "d3m.primitives.learner.model.KerasWrap",
+    "algorithm_types": [
+        "NEURAL_NETWORK_BACKPROPAGATION"
+    ],
+    "primitive_family": "LEARNER",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
+    "original_python_path": "jpl_primitives.keras_wrap.model.Model",
+    "primitive_code": {
+        "class_type_arguments": {
+            "Inputs": "d3m.container.pandas.DataFrame",
+            "Outputs": "d3m.container.pandas.DataFrame",
+            "Params": "jpl_primitives.keras_wrap.model.Params",
+            "Hyperparams": "jpl_primitives.keras_wrap.model.Hyperparams"
+        },
+        "interfaces_version": "2019.5.8",
+        "interfaces": [
+            "supervised_learning.SupervisedLearnerPrimitiveBase",
+            "base.PrimitiveBase",
+            "base.ContinueFitMixin"
+        ],
+        "hyperparams": {
+            "input_width": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": 224,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Input width image is"
+            },
+            "input_height": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": 224,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Input height image is"
+            },
+            "input_channels": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": 3,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "number of input channels"
+            },
+            "previous_layer": {
+                "type": "d3m.metadata.hyperparams.Union",
+                "default": null,
+                "structural_type": "typing.Union[NoneType, d3m.primitive_interfaces.base.NeuralNetworkModuleMixin]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "next layer in the neural network",
+                "configuration": {
+                    "previous_layer": {
+                        "type": "d3m.metadata.hyperparams.Primitive",
+                        "default": "jpl_primitives.keras_wrap.layers.null.Null",
+                        "structural_type": "d3m.primitive_interfaces.base.NeuralNetworkModuleMixin",
+                        "semantic_types": [
+                            "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                        ],
+                        "description": "Composition of the neural network. Need to all implement NNLayerMixin",
+                        "primitive_families": [],
+                        "algorithm_types": [],
+                        "produce_methods": []
+                    },
+                    "none": {
+                        "type": "d3m.metadata.hyperparams.Hyperparameter",
+                        "default": null,
+                        "structural_type": "NoneType",
+                        "semantic_types": []
+                    }
+                }
+            },
+            "loss": {
+                "type": "d3m.metadata.hyperparams.Primitive",
+                "default": "d3m.primitives.loss_function.mean_squared_error.KerasWrap(hyperparams=Hyperparams({}), random_seed=0)",
+                "structural_type": "d3m.primitive_interfaces.base.NeuralNetworkObjectMixin",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Loss we want to apply to this network",
+                "primitive_families": [],
+                "algorithm_types": [],
+                "produce_methods": []
+            },
+            "optimizer": {
+                "type": "d3m.metadata.hyperparams.Choice",
+                "default": {
+                    "lr": 0.01,
+                    "momentum": 0.0,
+                    "decay": 0.0,
+                    "nesterov": false,
+                    "choice": "SGD"
+                },
+                "structural_type": "typing.Dict",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Optimizer for neural network",
+                "choices": {
+                    "SGD": {
+                        "lr": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.01,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "momentum": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "decay": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "nesterov": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": false,
+                            "structural_type": "bool",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "choice": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": "SGD",
+                            "structural_type": "str",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/ChoiceParameter"
+                            ]
+                        }
+                    },
+                    "RMSprop": {
+                        "lr": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.001,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "rho": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.9,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "epsilon": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "decay": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "choice": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": "RMSprop",
+                            "structural_type": "str",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/ChoiceParameter"
+                            ]
+                        }
+                    },
+                    "Adagrad": {
+                        "lr": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.01,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "epsilon": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "decay": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "choice": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": "Adagrad",
+                            "structural_type": "str",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/ChoiceParameter"
+                            ]
+                        }
+                    },
+                    "Adadelta": {
+                        "lr": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 1.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "rho": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.95,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "epsilon": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "decay": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "choice": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": "Adadelta",
+                            "structural_type": "str",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/ChoiceParameter"
+                            ]
+                        }
+                    },
+                    "Adam": {
+                        "lr": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.001,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "beta_1": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.9,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "beta_2": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.999,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "epsilon": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "decay": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "amsgrad": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": false,
+                            "structural_type": "bool",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "choice": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": "Adam",
+                            "structural_type": "str",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/ChoiceParameter"
+                            ]
+                        }
+                    },
+                    "Adamax": {
+                        "lr": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.002,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "beta_1": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.9,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "beta_2": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.999,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "epsilon": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "decay": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "choice": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": "Adamax",
+                            "structural_type": "str",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/ChoiceParameter"
+                            ]
+                        }
+                    },
+                    "Nadam": {
+                        "lr": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.002,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "beta_1": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.9,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "beta_2": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.999,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "epsilon": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.0,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "schedule_decay": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": 0.004,
+                            "structural_type": "float",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                            ]
+                        },
+                        "choice": {
+                            "type": "d3m.metadata.hyperparams.Hyperparameter",
+                            "default": "Nadam",
+                            "structural_type": "str",
+                            "semantic_types": [
+                                "https://metadata.datadrivendiscovery.org/types/ChoiceParameter"
+                            ]
+                        }
+                    }
+                }
+            },
+            "batch_size": {
+                "type": "d3m.metadata.hyperparams.UniformInt",
+                "default": 20,
+                "structural_type": "int",
+                "semantic_types": [
+                    "http://schema.org/Integer",
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Batch size.",
+                "lower": 1,
+                "upper": 99,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "model_type": {
+                "type": "d3m.metadata.hyperparams.Enumeration",
+                "default": "regression",
+                "structural_type": "str",
+                "semantic_types": [
+                    "http://schema.org/String",
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Controls whether or not to adjust the outputs into a one hot encoding matrix or keep as original input values",
+                "values": [
+                    "regression",
+                    "classification"
+                ]
+            },
+            "metric": {
+                "type": "d3m.metadata.hyperparams.Primitive",
+                "default": "d3m.primitives.loss_function.mean_squared_error.KerasWrap(hyperparams=Hyperparams({}), random_seed=0)",
+                "structural_type": "d3m.primitive_interfaces.base.NeuralNetworkObjectMixin",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Loss we want to apply to this network",
+                "primitive_families": [],
+                "algorithm_types": [],
+                "produce_methods": []
+            },
+            "use_gpu": {
+                "type": "d3m.metadata.hyperparams.UniformBool",
+                "default": true,
+                "structural_type": "bool",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Whether or not to use the gpu for computation"
+            },
+            "use_inputs_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of inputs column indices to force primitive to operate on. If any specified column cannot be used, it is skipped.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "exclude_inputs_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of inputs column indices to not operate on. Applicable only if \"use_columns\" is not provided.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "use_outputs_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of outputs column indices to force primitive to operate on. If any specified column cannot be used, it is skipped.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "exclude_outputs_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of outputs column indices to not operate on. Applicable only if \"use_columns\" is not provided.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "return_result": {
+                "type": "d3m.metadata.hyperparams.Enumeration",
+                "default": "append",
+                "structural_type": "str",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Should resulting columns be appended, should they replace original columns, or should only resulting columns be returned?",
+                "values": [
+                    "append",
+                    "replace",
+                    "new"
+                ]
+            },
+            "add_index_columns": {
+                "type": "d3m.metadata.hyperparams.UniformBool",
+                "default": true,
+                "structural_type": "bool",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Also include primary index columns if input data has them. Applicable only if \"return_result\" is set to \"new\"."
+            }
+        },
+        "arguments": {
+            "hyperparams": {
+                "type": "jpl_primitives.keras_wrap.model.Hyperparams",
+                "kind": "RUNTIME"
+            },
+            "random_seed": {
+                "type": "int",
+                "kind": "RUNTIME",
+                "default": 0
+            },
+            "docker_containers": {
+                "type": "typing.Union[NoneType, typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "timeout": {
+                "type": "typing.Union[NoneType, float]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "iterations": {
+                "type": "typing.Union[NoneType, int]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "produce_methods": {
+                "type": "typing.Sequence[str]",
+                "kind": "RUNTIME"
+            },
+            "inputs": {
+                "type": "d3m.container.pandas.DataFrame",
+                "kind": "PIPELINE"
+            },
+            "outputs": {
+                "type": "d3m.container.pandas.DataFrame",
+                "kind": "PIPELINE"
+            },
+            "params": {
+                "type": "jpl_primitives.keras_wrap.model.Params",
+                "kind": "RUNTIME"
+            }
+        },
+        "class_methods": {
+            "can_accept": {
+                "arguments": {
+                    "method_name": {
+                        "type": "str"
+                    },
+                    "arguments": {
+                        "type": "typing.Dict[str, typing.Union[d3m.metadata.base.Metadata, type]]"
+                    },
+                    "hyperparams": {
+                        "type": "jpl_primitives.keras_wrap.model.Hyperparams"
+                    }
+                },
+                "returns": "typing.Union[NoneType, d3m.metadata.base.DataMetadata]",
+                "description": "Returns a metadata object describing the output of a call of ``method_name`` method under\n``hyperparams`` with primitive arguments ``arguments``, if such arguments can be accepted by the method.\nOtherwise it returns ``None`` or raises an exception.\n\nDefault implementation checks structural types of ``arguments`` expected arguments' types\nand ignores ``hyperparams``.\n\nBy (re)implementing this method, a primitive can fine-tune which arguments it accepts\nfor its methods which goes beyond just structural type checking. For example, a primitive might\noperate only on images, so it can accept numpy arrays, but only those with semantic type\ncorresponding to an image. Or it might check dimensions of an array to assure it operates\non square matrix.\n\nPrimitive arguments are a superset of method arguments. This method receives primitive arguments and\nnot just method arguments so that it is possible to implement it without a state between calls\nto ``can_accept`` for multiple methods. For example, a call to ``fit`` could during normal execution\ninfluences what a later ``produce`` call outputs. But during ``can_accept`` call we can directly have\naccess to arguments which would have been given to ``fit`` to produce metadata of the ``produce`` call.\n\nNot all primitive arguments have to be provided, only those used by ``fit``, ``set_training_data``,\nand produce methods, and those used by the ``method_name`` method itself.\n\nParameters\n----------\nmethod_name : str\n    Name of the method which would be called.\narguments : Dict[str, Union[Metadata, type]]\n    A mapping between argument names and their metadata objects (for pipeline arguments) or types (for other).\nhyperparams : Hyperparams\n    Hyper-parameters under which the method would be called during regular primitive execution.\n\nReturns\n-------\nDataMetadata\n    Metadata object of the method call result, or ``None`` if arguments are not accepted\n    by the method."
+            }
+        },
+        "instance_methods": {
+            "__init__": {
+                "kind": "OTHER",
+                "arguments": [
+                    "hyperparams",
+                    "random_seed",
+                    "docker_containers"
+                ],
+                "returns": "NoneType"
+            },
+            "continue_fit": {
+                "kind": "OTHER",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]",
+                "description": "Similar to base ``fit``, this method fits the primitive using inputs and outputs (if any)\nusing currently set training data.\n\nThe difference is what happens when currently set training data is different from\nwhat the primitive might have already been fitted on. ``fit`` fits the primitive from\nscratch, while ``continue_fit`` fits it further and does **not** start from scratch.\n\nCaller can still call ``continue_fit`` multiple times on the same training data as well,\nin which case primitive should try to improve the fit in the same way as with ``fit``.\n\nFrom the perspective of a caller of all other methods, the training data in effect\nis still just currently set training data. If a caller wants to call ``gradient_output``\non all data on which the primitive has been fitted through multiple calls of ``continue_fit``\non different training data, the caller should pass all this data themselves through\nanother call to ``set_training_data``, do not call ``fit`` or ``continue_fit`` again,\nand use ``gradient_output`` method. In this way primitives which truly support\ncontinuation of fitting and need only the latest data to do another fitting, do not\nhave to keep all past training data around themselves.\n\nIf a primitive supports this mixin, then both ``fit`` and ``continue_fit`` can be\ncalled. ``continue_fit`` always continues fitting, if it was started through ``fit``\nor ``continue_fit``. And ``fit`` always restarts fitting, even if previously\n``continue_fit`` was used.\n\nParameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value."
+            },
+            "fit": {
+                "kind": "OTHER",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]",
+                "description": "Parameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value."
+            },
+            "fit_multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "outputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling ``fit`` and after that multiple produce methods at once.\n\nThis method allows primitive author to implement an optimized version of both fitting\nand producing a primitive on same data.\n\nIf any additional method arguments are added to primitive's ``set_training_data`` method\nor produce method(s), or removed from them, they have to be added to or removed from this\nmethod as well. This method should accept an union of all arguments accepted by primitive's\n``set_training_data`` method and produce method(s) and then use them accordingly when\ncomputing results.\n\nThe default implementation of this method just calls first ``set_training_data`` method,\n``fit`` method, and all produce methods listed in ``produce_methods`` in order and is\npotentially inefficient.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to ``set_training_data`` and all produce methods.\noutputs : Outputs\n    The outputs given to ``set_training_data``.\ntimeout : float\n    A maximum time this primitive should take to both fit the primitive and produce outputs\n    for all produce methods listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do for both fitting and producing\n    outputs of all produce methods.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "get_params": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "jpl_primitives.keras_wrap.model.Params",
+                "description": "Returns parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nParameters should include all data which is necessary to create a new instance of this primitive\nbehaving exactly the same as this instance, when the new instance is created by passing the same\nparameters to the class constructor and calling ``set_params``.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nReturns\n-------\nParams\n    An instance of parameters."
+            },
+            "multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling multiple produce methods at once.\n\nWhen a primitive has multiple produce methods it is common that they might compute the\nsame internal results for same inputs but return different representations of those results.\nIf caller is interested in multiple of those representations, calling multiple produce\nmethods might lead to recomputing same internal results multiple times. To address this,\nthis method allows primitive author to implement an optimized version which computes\ninternal results only once for multiple calls of produce methods, but return those different\nrepresentations.\n\nIf any additional method arguments are added to primitive's produce method(s), they have\nto be added to this method as well. This method should accept an union of all arguments\naccepted by primitive's produce method(s) and then use them accordingly when computing\nresults.\n\nThe default implementation of this method just calls all produce methods listed in\n``produce_methods`` in order and is potentially inefficient.\n\nIf primitive should have been fitted before calling this method, but it has not been,\nprimitive should raise a ``PrimitiveNotFittedError`` exception.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to produce outputs for all produce methods\n    listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "produce": {
+                "kind": "PRODUCE",
+                "arguments": [
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.pandas.DataFrame]",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": "Produce primitive's best choice of the output for each of the inputs.\n\nThe output value should be wrapped inside ``CallResult`` object before returning.\n\nIn many cases producing an output is a quick operation in comparison with ``fit``, but not\nall cases are like that. For example, a primitive can start a potentially long optimization\nprocess to compute outputs. ``timeout`` and ``iterations`` can serve as a way for a caller\nto guide the length of this process.\n\nIdeally, a primitive should adapt its call to try to produce the best outputs possible\ninside the time allocated. If this is not possible and the primitive reaches the timeout\nbefore producing outputs, it should raise a ``TimeoutError`` exception to signal that the\ncall was unsuccessful in the given time. The state of the primitive after the exception\nshould be as the method call has never happened and primitive should continue to operate\nnormally. The purpose of ``timeout`` is to give opportunity to a primitive to cleanly\nmanage its state instead of interrupting execution from outside. Maintaining stable internal\nstate should have precedence over respecting the ``timeout`` (caller can terminate the\nmisbehaving primitive from outside anyway). If a longer ``timeout`` would produce\ndifferent outputs, then ``CallResult``'s ``has_finished`` should be set to ``False``.\n\nSome primitives have internal iterations (for example, optimization iterations).\nFor those, caller can provide how many of primitive's internal iterations\nshould a primitive do before returning outputs. Primitives should make iterations as\nsmall as reasonable. If ``iterations`` is ``None``, then there is no limit on\nhow many iterations the primitive should do and primitive should choose the best amount\nof iterations on its own (potentially controlled through hyper-parameters).\nIf ``iterations`` is a number, a primitive has to do those number of iterations,\nif possible. ``timeout`` should still be respected and potentially less iterations\ncan be done because of that. Primitives with internal iterations should make\n``CallResult`` contain correct values.\n\nFor primitives which do not have internal iterations, any value of ``iterations``\nmeans that they should run fully, respecting only ``timeout``.\n\nIf primitive should have been fitted before calling this method, but it has not been,\nprimitive should raise a ``PrimitiveNotFittedError`` exception.\n\nParameters\n----------\ninputs : Inputs\n    The inputs of shape [num_inputs, ...].\ntimeout : float\n    A maximum time this primitive should take to produce outputs during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[Outputs]\n    The outputs of shape [num_inputs, ...] wrapped inside ``CallResult``."
+            },
+            "set_params": {
+                "kind": "OTHER",
+                "arguments": [
+                    "params"
+                ],
+                "returns": "NoneType",
+                "description": "Sets parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nParameters\n----------\nparams : Params\n    An instance of parameters."
+            },
+            "set_training_data": {
+                "kind": "OTHER",
+                "arguments": [
+                    "inputs",
+                    "outputs"
+                ],
+                "returns": "NoneType",
+                "description": "Parameters\n----------\ninputs : Inputs\n    The inputs.\noutputs : Outputs\n    The outputs."
+            }
+        },
+        "class_attributes": {
+            "logger": "logging.Logger",
+            "metadata": "d3m.metadata.base.PrimitiveMetadata"
+        },
+        "instance_attributes": {
+            "hyperparams": "d3m.metadata.hyperparams.Hyperparams",
+            "random_seed": "int",
+            "docker_containers": "typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]",
+            "volumes": "typing.Dict[str, str]",
+            "temporary_directory": "typing.Union[NoneType, str]"
+        },
+        "params": {}
+    },
+    "structural_type": "jpl_primitives.keras_wrap.model.Model",
+    "description": "The main learner primitive that is responsible for assembling the custom built neural network as part of Keras Wrap.\nIn order to use this primitive, you should assemble your architecture via your pipeline and pass the primitive reference\nto the last layer as your 'previous_layer'. All Keras Wrap layers inherit from NeuralNetworkModuleMixin and follow the\nnaming convention 'd3m.primitives.layer.<layer_name>.KerasWrap'. You should also specify the proper loss function and any\naccompanying metrics that should be tracked during the training process as well. These primtives that are support as port of\nKeras wrap inherit from NeuralNetworkObjectMixin and follow the form 'd3m.primitives.loss_function.<loss_name>.KerasWrap'.\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "digest": "53c66125857354b08eae150613a12525ccb139839b02b9c1455e0094ef666f30"
+}

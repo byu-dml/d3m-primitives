@@ -1,0 +1,15 @@
+{
+    "problem": "49_facebook_problem",
+    "full_inputs": [
+        "49_facebook_dataset"
+    ],
+    "train_inputs": [
+        "49_facebook_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "49_facebook_dataset_TEST"
+    ],
+    "score_inputs": [
+        "49_facebook_dataset_SCORE"
+    ]
+}

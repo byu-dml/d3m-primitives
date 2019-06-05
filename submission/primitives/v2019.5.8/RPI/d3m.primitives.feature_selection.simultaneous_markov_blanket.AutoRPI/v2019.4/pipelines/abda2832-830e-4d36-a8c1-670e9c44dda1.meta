@@ -1,0 +1,15 @@
+{
+  "problem": "313_spectrometer_problem",
+  "full_inputs": [
+    "313_spectrometer_dataset"
+  ],
+  "train_inputs": [
+    "313_spectrometer_dataset_TRAIN"
+  ],
+  "test_inputs": [
+    "313_spectrometer_dataset_TEST"
+  ],
+  "score_inputs": [
+    "313_spectrometer_dataset_SCORE"
+  ]
+}

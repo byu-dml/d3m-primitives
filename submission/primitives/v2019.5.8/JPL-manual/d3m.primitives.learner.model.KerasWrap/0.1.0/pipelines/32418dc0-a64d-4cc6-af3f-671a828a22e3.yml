@@ -1,0 +1,231 @@
+context: TESTING
+created: '2019-04-26T01:09:44.343543Z'
+id: 32418dc0-a64d-4cc6-af3f-671a828a22e3
+inputs:
+  -
+    name: inputs
+outputs:
+  -
+    data: steps.10.produce
+    name: 'output predictions'
+schema: 'https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json'
+steps:
+  -
+    arguments:
+      inputs:
+        data: inputs.0
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+    primitive:
+      id: f31f8c1f-d1c5-43e5-a4b2-2ae4a761ef2e
+      name: 'Denormalize datasets'
+      python_path: d3m.primitives.data_transformation.denormalize.Common
+      version: 0.2.0
+    type: PRIMITIVE
+  -
+    arguments:
+      inputs:
+        data: steps.0.produce
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+    primitive:
+      id: 4b42ce1e-9b98-4a25-b68e-fad13311eb65
+      name: 'Extract a DataFrame from a Dataset'
+      python_path: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+      version: 0.3.0
+    type: PRIMITIVE
+  -
+    arguments:
+      inputs:
+        data: steps.1.produce
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+    primitive:
+      id: 8f2e51e8-da59-456d-ae29-53912b2b9f3d
+      name: 'Columns image reader'
+      python_path: d3m.primitives.data_preprocessing.image_reader.DataFrameCommon
+      version: 0.2.0
+    type: PRIMITIVE
+  -
+    type: PRIMITIVE
+    primitive:
+      id: e8acc97a-7868-427e-b022-e2aa51116d19
+      version: 0.1.0
+      python_path: d3m.primitives.layer.flatten.KerasWrap
+      name: flatten
+    arguments:
+      inputs:
+        data: steps.1.produce
+        type: CONTAINER
+      outputs:
+        data: steps.1.produce
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+  -
+    type: PRIMITIVE
+    primitive:
+      id: 393ac0d9-8d4d-4b2a-85dc-35815e8a6695
+      version: 0.1.0
+      python_path: d3m.primitives.loss_function.categorical_accuracy.KerasWrap
+      name: categorical_accuracy
+    arguments:
+      inputs:
+        data: steps.1.produce
+        type: CONTAINER
+      outputs:
+        data: steps.1.produce
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+  -
+    type: PRIMITIVE
+    primitive:
+      id: 01cee53a-88e3-4bf3-993a-fd64805e9b8e
+      version: 0.1.0
+      python_path: d3m.primitives.loss_function.categorical_crossentropy.KerasWrap
+      name: categorical_crossentropy
+    arguments:
+      inputs:
+        data: steps.1.produce
+        type: CONTAINER
+      outputs:
+        data: steps.1.produce
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+  -
+    type: PRIMITIVE
+    hyperparams:
+      units:
+        data: 100
+        type: VALUE
+      previous_layer:
+        data: 3
+        type: PRIMITIVE
+    primitive:
+      id: eb6a13fd-c3e6-4407-a15f-280905e6243e
+      version: 0.1.0
+      python_path: d3m.primitives.layer.dense.KerasWrap
+      name: dense
+    arguments:
+      inputs:
+        data: steps.1.produce
+        type: CONTAINER
+      outputs:
+        data: steps.1.produce
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+  -
+    type: PRIMITIVE
+    hyperparams:
+      units:
+        data: 10
+        type: VALUE
+      previous_layer:
+        data: 6
+        type: PRIMITIVE
+    primitive:
+      id: eb6a13fd-c3e6-4407-a15f-280905e6243e
+      version: 0.1.0
+      python_path: d3m.primitives.layer.dense.KerasWrap
+      name: dense
+    arguments:
+      inputs:
+        data: steps.1.produce
+        type: CONTAINER
+      outputs:
+        data: steps.1.produce
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+  -
+    arguments:
+      inputs:
+        data: steps.1.produce
+        type: CONTAINER
+    hyperparams:
+      semantic_types:
+        data:
+          - 'https://metadata.datadrivendiscovery.org/types/TrueTarget'
+        type: VALUE
+    outputs:
+      -
+        id: produce
+    primitive:
+      id: 4503a4c6-42f7-45a1-a1d4-ed69699cf5e1
+      name: 'Extracts columns by semantic type'
+      python_path: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+      version: 0.2.0
+    type: PRIMITIVE
+  -
+    arguments:
+      inputs:
+        data: steps.2.produce
+        type: CONTAINER
+      outputs:
+        data: steps.8.produce
+        type: CONTAINER
+    hyperparams:
+      return_result:
+        data: replace
+        type: VALUE
+      loss:
+        data: 5
+        type: PRIMITIVE
+      metric:
+        data: 4
+        type: PRIMITIVE
+      model_type:
+        data: classification
+        type: VALUE
+      previous_layer:
+        data: 7
+        type: PRIMITIVE
+      input_width:
+        data: 28
+        type: VALUE
+      input_height:
+        data: 28
+        type: VALUE
+      input_channels:
+        data: 1
+        type: VALUE
+    outputs:
+      -
+        id: produce
+    primitive:
+      id: f8b81d1a-3e22-4edf-aa99-15bcbe827954
+      name: model
+      python_path: d3m.primitives.learner.model.KerasWrap
+      version: 0.1.0
+    type: PRIMITIVE
+  -
+    arguments:
+      inputs:
+        data: steps.9.produce
+        type: CONTAINER
+      reference:
+        data: steps.1.produce
+        type: CONTAINER
+    outputs:
+      -
+        id: produce
+    primitive:
+      id: 8d38b340-f83f-4877-baaa-162f8e551736
+      name: 'Construct pipeline predictions output'
+      python_path: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+      version: 0.3.0
+    type: PRIMITIVE

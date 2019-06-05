@@ -1,0 +1,15 @@
+{
+    "problem":"38_sick_problem",
+    "full_inputs":[
+        "38_sick_dataset"
+    ],
+    "train_inputs":[
+        "38_sick_dataset_TRAIN"
+    ],
+    "test_inputs":[
+        "38_sick_dataset_TEST"
+    ],
+    "score_inputs":[
+        "38_sick_dataset_SCORE"
+    ]
+}

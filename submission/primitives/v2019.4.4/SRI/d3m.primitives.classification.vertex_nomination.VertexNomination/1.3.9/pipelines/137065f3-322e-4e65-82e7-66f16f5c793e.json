@@ -1,0 +1,59 @@
+{
+    "id": "137065f3-322e-4e65-82e7-66f16f5c793e",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2019-05-06T20:08:02.763373Z",
+    "context": "TESTING",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.1.produce",
+            "name": "Results"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "a22f9bd3-818e-44e9-84a3-9592c5a85408",
+                "version": "1.3.9",
+                "python_path": "d3m.primitives.data_transformation.vertex_nomination_parser.VertexNominationParser",
+                "name": "Vertex Nomination Parser"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        },
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "dca25a46-7a5f-48d9-ac9b-d14d4d671b0b",
+                "version": "1.3.9",
+                "python_path": "d3m.primitives.classification.vertex_nomination.VertexNomination",
+                "name": "Vertex Nomination"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.0.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "problem": "LL1_3476_HMDB_actio_recognition_problem",
+    "full_inputs": [
+        "LL1_3476_HMDB_actio_recognition_dataset"
+    ],
+    "train_inputs": [
+        "LL1_3476_HMDB_actio_recognition_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "LL1_3476_HMDB_actio_recognition_dataset_TEST"
+    ],
+    "score_inputs": [
+        "LL1_3476_HMDB_actio_recognition_dataset_SCORE"
+    ]
+}

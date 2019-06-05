@@ -1,0 +1,39 @@
+{
+    "id": "1c8f54a3-5294-45f9-ba9d-942d66b22b81",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2019-05-06T20:07:33.627255Z",
+    "context": "TESTING",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.0.produce",
+            "name": "Predictions"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "f9440843-5791-4d58-b0a8-617b5cb2371d",
+                "version": "1.3.9",
+                "python_path": "d3m.primitives.link_prediction.collaborative_filtering_link_prediction.CollaborativeFilteringLinkPrediction",
+                "name": "Collaborative Filtering Link Prediction"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        }
+    ]
+}

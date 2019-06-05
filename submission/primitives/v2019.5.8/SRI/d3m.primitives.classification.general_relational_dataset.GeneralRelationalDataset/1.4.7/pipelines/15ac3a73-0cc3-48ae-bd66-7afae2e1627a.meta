@@ -1,0 +1,15 @@
+{
+    "problem": "22_handgeometry_problem",
+    "full_inputs": [
+        "22_handgeometry_dataset"
+    ],
+    "train_inputs": [
+        "22_handgeometry_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "22_handgeometry_dataset_TEST"
+    ],
+    "score_inputs": [
+        "22_handgeometry_dataset_SCORE"
+    ]
+}

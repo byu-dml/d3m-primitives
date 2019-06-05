@@ -1,0 +1,7 @@
+{
+    "problem": "124_120_mnist_problem",
+    "full_inputs": ["124_120_mnist_dataset"],
+    "train_inputs": ["124_120_mnist_dataset"],
+    "test_inputs": ["124_120_mnist_dataset"],
+    "score_inputs": ["124_120_mnist_dataset"]
+}

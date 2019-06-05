@@ -1,0 +1,7 @@
+{
+   "problem": "uu7_pima_diabetes_problem",
+   "full_inputs": ["uu7_pima_diabetes_dataset"],
+   "train_inputs": ["uu7_pima_diabetes_dataset_TRAIN"],
+   "test_inputs": ["uu7_pima_diabetes_dataset_TEST"],
+   "score_inputs": ["uu7_pima_diabetes_dataset_SCORE"] 
+}

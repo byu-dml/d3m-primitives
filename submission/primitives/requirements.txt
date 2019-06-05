@@ -1,0 +1,6 @@
+deep_dircmp==0.1.0
+deepdiff==3.3.0
+docker[tls]==2.7
+frozendict==1.2
+pycurl==7.43.0.1
+PyYAML==5.1

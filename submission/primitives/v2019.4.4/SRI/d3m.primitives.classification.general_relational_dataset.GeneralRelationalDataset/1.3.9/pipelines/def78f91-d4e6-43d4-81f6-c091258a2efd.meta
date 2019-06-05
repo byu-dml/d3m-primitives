@@ -1,0 +1,15 @@
+{
+    "problem": "59_umls_problem",
+    "full_inputs": [
+        "59_umls_dataset"
+    ],
+    "train_inputs": [
+        "59_umls_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "59_umls_dataset_TEST"
+    ],
+    "score_inputs": [
+        "59_umls_dataset_SCORE"
+    ]
+}

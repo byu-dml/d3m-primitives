@@ -1,0 +1,114 @@
+---
+context: TESTING
+created: '2019-04-26T01:09:44.343543Z'
+id: 2aa021cf-4dfc-4d46-82bc-738017555bd2
+inputs:
+- name: inputs
+outputs:
+- data: steps.4.produce
+  name: output predictions
+schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
+steps:
+# STEP 0
+- arguments:
+    inputs:
+      data: inputs.0
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    id: f31f8c1f-d1c5-43e5-a4b2-2ae4a761ef2e
+    name: Denormalize datasets
+    python_path: d3m.primitives.data_transformation.denormalize.Common
+    version: 0.2.0
+  type: PRIMITIVE
+# STEP 1
+- arguments:
+    inputs:
+      data: steps.0.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    id: 4b42ce1e-9b98-4a25-b68e-fad13311eb65
+    name: Extract a DataFrame from a Dataset
+    python_path: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+    version: 0.3.0
+  type: PRIMITIVE
+# STEP 2
+- arguments:
+    inputs: {data: steps.1.produce, type: CONTAINER}
+  hyperparams:
+    parse_semantic_types: {data: ["http://schema.org/Boolean",
+                                  "http://schema.org/Integer",
+                                  "http://schema.org/Float",
+                                  "https://metadata.datadrivendiscovery.org/types/FloatVector",
+                                  "http://schema.org/DateTime"
+    ], type: VALUE}
+  outputs:
+    - {id: produce}
+  primitive:
+    id: d510cb7a-1782-4f51-b44c-58f0236e47c7
+    name: 'Parses strings into their types'
+    python_path: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+    version: 0.5.0
+  type: PRIMITIVE
+# STEP 3
+- arguments:
+    inputs:
+      data: steps.2.produce
+      type: CONTAINER
+  hyperparams:
+    semantic_types:
+      data:
+        - 'https://metadata.datadrivendiscovery.org/types/TrueTarget'
+      type: VALUE
+  outputs:
+    -
+      id: produce
+  primitive:
+    id: 4503a4c6-42f7-45a1-a1d4-ed69699cf5e1
+    name: 'Extracts columns by semantic type'
+    python_path: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+    version: 0.2.0
+  type: PRIMITIVE
+# STEP 4
+- arguments:
+    inputs:
+      data: steps.1.produce
+      type: CONTAINER
+    outputs:
+      data: steps.2.produce
+      type: CONTAINER
+  hyperparams:
+    use_gpu:
+      data: false
+      type: VALUE
+    batch_size:
+      data: 3
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    id: 176e7277-fe37-402b-86e6-bdb7f7a9cf89
+    name: retina_net
+    python_path: d3m.primitives.object_detection.retina_net.JPLPrimitives
+    version: 0.2.0
+  type: PRIMITIVE
+# STEP 5
+#- arguments:
+#    inputs:
+#      data: steps.2.produce
+#      type: CONTAINER
+#    reference:
+#      data: steps.2.produce
+#      type: CONTAINER
+#  outputs:
+#    -
+#      id: produce
+#  primitive:
+#    id: 8d38b340-f83f-4877-baaa-162f8e551736
+#    name: 'Construct pipeline predictions output'
+#    python_path: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+#    version: 0.3.0
+#  type: PRIMITIVE

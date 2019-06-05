@@ -15,6 +15,7 @@ from metalearn.metafeatures.metafeatures import Metafeatures
 from byudml import __version__ as __package_version__
 
 __primitive_version__ = '0.4.4'
+__python_path__ = 'd3m.primitives.metalearning.metafeature_extractor.BYU'
 
 Inputs = DataFrame
 Outputs = DataFrame
@@ -84,7 +85,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/metafeature_extraction/metafeature_extraction.py'
         ],
-        'python_path': 'd3m.primitives.metalearning.metafeature_extractor.BYU',
+        'python_path': __python_path__,
         'primitive_family': metadata_base.PrimitiveFamily.METALEARNING,
         'algorithm_types': [
             metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,

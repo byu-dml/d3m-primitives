@@ -1,0 +1,68 @@
+{
+	"id": "685e2945-6b46-4c7b-af5c-5c82f040b175",
+	"schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+	"source": {
+		"name": "Uchicago"
+	},
+	"created": "2018-02-28T09:42:27.443844Z",
+	"context": "TESTING",
+	"name": "CGSmashClassification pipeline",
+	"description": "CGSmashClassification pipeline\n",
+	"inputs": [
+		{
+			"name": "input dataset"
+		}
+	],
+	"outputs": [
+		{
+			"name": "predictions",
+			"data": "steps.1.produce"
+		}
+	],
+	"steps": [
+		{
+			"type": "PRIMITIVE",
+			"primitive": {
+				"id": "4b42ce1e-9b98-4a25-b68e-fad13311eb65",
+				"version": "0.3.0",
+				"python_path": "d3m.primitives.data_transformation.dataset_to_dataframe.Common",
+				"name": "Extract a DataFrame from a Dataset"
+			},
+			"arguments": {
+				"inputs": {
+					"type": "CONTAINER",
+					"data": "inputs.0"
+				}
+			},
+			"outputs": [
+				{
+					"id": "produce"
+				}
+			]
+		},
+		{
+			"type": "PRIMITIVE",
+			"primitive": {
+				"id": "c052a14f-194a-4dca-ace5-a12ec1e89197",
+				"version": "0.4.10",
+				"python_path": "d3m.primitives.datasmash.d3m_CGSmashClassification",
+				"name": "datasmash.d3m_CGSmashClassification"
+			},
+			"arguments": {
+				"inputs": {
+					"type": "CONTAINER",
+					"data": "inputs.0"
+				},
+				"outputs": {
+					"type": "CONTAINER",
+					"data": "steps.0.produce"
+				}
+			},
+			"outputs": [
+				{
+					"id": "produce"
+				}
+			]
+		}
+	]
+}

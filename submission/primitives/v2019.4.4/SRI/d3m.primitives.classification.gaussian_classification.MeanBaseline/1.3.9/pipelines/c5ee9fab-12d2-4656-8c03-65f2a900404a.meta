@@ -1,0 +1,15 @@
+{
+    "problem": "196_autoMpg_problem",
+    "full_inputs": [
+        "196_autoMpg_dataset"
+    ],
+    "train_inputs": [
+        "196_autoMpg_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "196_autoMpg_dataset_TEST"
+    ],
+    "score_inputs": [
+        "196_autoMpg_dataset_SCORE"
+    ]
+}

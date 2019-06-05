@@ -1,0 +1,39 @@
+{
+    "id": "5c40492a-23fa-4730-96be-497728604d49",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2019-05-06T20:07:04.050175Z",
+    "context": "TESTING",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.0.produce",
+            "name": "results"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "36d5472c-e0a4-4ed6-a1d0-2665feacff39",
+                "version": "1.3.9",
+                "python_path": "d3m.primitives.classification.gaussian_classification.MeanBaseline",
+                "name": "Mean Baseline"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,279 @@
+{
+    "id": "e582e738-2f7d-4b5d-964f-022d15f19018",
+    "version": "3.0.0",
+    "name": "Hierarchical Dirichlet Process Topic Modelling",
+    "description": "This class provides functionality for Hierarchical Dirichlet Process, which is a nonparametric Bayesian model for\ntopic modelling on corpora of documents which seeks to represent the underlying thematic structure of the\ndocument collection. They have emerged as a powerful new technique of finding useful structure in an unstructured\ncollection as it learns distributions over words. The high probability words in each distribution gives us a way\nof understanding the contents of the corpus at a very high level. In HDP, each document of the corpus is assumed\nto have a distribution over K topics, where the discrete topic distributions are drawn from a symmetric dirichlet\ndistribution. As it is a nonparametric model, the number of topics K is inferred automatically. The API is\nsimilar to its parametric equivalent sklearn.decomposition.LatentDirichletAllocation. The class is pickle-able.\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "python_path": "d3m.primitives.natural_language_processing.hdp.Fastlvm",
+    "primitive_family": "NATURAL_LANGUAGE_PROCESSING",
+    "algorithm_types": [
+        "LATENT_DIRICHLET_ALLOCATION"
+    ],
+    "keywords": [
+        "large scale HDP",
+        "Bayesian Nonparametrics",
+        "topic modeling",
+        "clustering"
+    ],
+    "source": {
+        "name": "CMU",
+        "contact": "mailto:donghanw@cs.cmu.edu",
+        "uris": [
+            "https://gitlab.datadrivendiscovery.org/cmu/fastlvm",
+            "https://github.com/autonlab/fastlvm"
+        ]
+    },
+    "installation": [
+        {
+            "type": "PIP",
+            "package_uri": "git+https://github.com/autonlab/fastlvm.git@c77b1413155f4db3b4dea2f99870d155e58322a0#egg=fastlvm"
+        }
+    ],
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
+    "original_python_path": "fastlvm.hdp.HDP",
+    "primitive_code": {
+        "class_type_arguments": {
+            "Inputs": "d3m.container.pandas.DataFrame",
+            "Outputs": "d3m.container.pandas.DataFrame",
+            "Params": "fastlvm.hdp.Params",
+            "Hyperparams": "fastlvm.hdp.HyperParams"
+        },
+        "interfaces_version": "2019.4.4",
+        "interfaces": [
+            "unsupervised_learning.UnsupervisedLearnerPrimitiveBase",
+            "base.PrimitiveBase"
+        ],
+        "hyperparams": {
+            "k": {
+                "type": "d3m.metadata.hyperparams.UniformInt",
+                "default": 10,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The number of clusters to form as well as the number of centroids to generate.",
+                "lower": 1,
+                "upper": 10000,
+                "upper_inclusive": false
+            },
+            "iters": {
+                "type": "d3m.metadata.hyperparams.UniformInt",
+                "default": 100,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The number of iterations of inference.",
+                "lower": 1,
+                "upper": 10000,
+                "upper_inclusive": false
+            },
+            "num_top": {
+                "type": "d3m.metadata.hyperparams.UniformInt",
+                "default": 1,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The number of top words requested",
+                "lower": 1,
+                "upper": 10000,
+                "upper_inclusive": false
+            },
+            "frac": {
+                "type": "d3m.metadata.hyperparams.Uniform",
+                "default": 0.01,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The fraction of training data set aside as the validation. 0 = use all training as validation",
+                "lower": 0,
+                "upper": 1,
+                "upper_inclusive": false
+            },
+            "seed": {
+                "type": "d3m.metadata.hyperparams.UniformInt",
+                "default": 1,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "A random seed to use",
+                "lower": -1000000,
+                "upper": 1000000,
+                "upper_inclusive": false
+            }
+        },
+        "arguments": {
+            "hyperparams": {
+                "type": "fastlvm.hdp.HyperParams",
+                "kind": "RUNTIME"
+            },
+            "inputs": {
+                "type": "d3m.container.pandas.DataFrame",
+                "kind": "PIPELINE"
+            },
+            "timeout": {
+                "type": "typing.Union[NoneType, float]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "iterations": {
+                "type": "typing.Union[NoneType, int]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "produce_methods": {
+                "type": "typing.Sequence[str]",
+                "kind": "RUNTIME"
+            },
+            "params": {
+                "type": "fastlvm.hdp.Params",
+                "kind": "RUNTIME"
+            }
+        },
+        "class_methods": {
+            "can_accept": {
+                "arguments": {
+                    "method_name": {
+                        "type": "str"
+                    },
+                    "arguments": {
+                        "type": "typing.Dict[str, typing.Union[d3m.metadata.base.Metadata, type]]"
+                    },
+                    "hyperparams": {
+                        "type": "fastlvm.hdp.HyperParams"
+                    }
+                },
+                "returns": "typing.Union[NoneType, d3m.metadata.base.DataMetadata]",
+                "description": "Returns a metadata object describing the output of a call of ``method_name`` method under\n``hyperparams`` with primitive arguments ``arguments``, if such arguments can be accepted by the method.\nOtherwise it returns ``None`` or raises an exception.\n\nDefault implementation checks structural types of ``arguments`` expected arguments' types\nand ignores ``hyperparams``.\n\nBy (re)implementing this method, a primitive can fine-tune which arguments it accepts\nfor its methods which goes beyond just structural type checking. For example, a primitive might\noperate only on images, so it can accept numpy arrays, but only those with semantic type\ncorresponding to an image. Or it might check dimensions of an array to assure it operates\non square matrix.\n\nPrimitive arguments are a superset of method arguments. This method receives primitive arguments and\nnot just method arguments so that it is possible to implement it without a state between calls\nto ``can_accept`` for multiple methods. For example, a call to ``fit`` could during normal execution\ninfluences what a later ``produce`` call outputs. But during ``can_accept`` call we can directly have\naccess to arguments which would have been given to ``fit`` to produce metadata of the ``produce`` call.\n\nNot all primitive arguments have to be provided, only those used by ``fit``, ``set_training_data``,\nand produce methods, and those used by the ``method_name`` method itself.\n\nParameters\n----------\nmethod_name : str\n    Name of the method which would be called.\narguments : Dict[str, Union[Metadata, type]]\n    A mapping between argument names and their metadata objects (for pipeline arguments) or types (for other).\nhyperparams : Hyperparams\n    Hyper-parameters under which the method would be called during regular primitive execution.\n\nReturns\n-------\nDataMetadata\n    Metadata object of the method call result, or ``None`` if arguments are not accepted\n    by the method."
+            }
+        },
+        "instance_methods": {
+            "__init__": {
+                "kind": "OTHER",
+                "arguments": [
+                    "hyperparams"
+                ],
+                "returns": "NoneType"
+            },
+            "evaluate": {
+                "kind": "OTHER",
+                "arguments": [
+                    "inputs"
+                ],
+                "returns": "float",
+                "description": "Finds the per-token log likelihood (-ve log perplexity) of learned model on a set of test docs.\n\nParameters\n----------\ninputs : Inputs\n    A list of 1d numpy array of dtype uint32. Each numpy array contains a document with each token mapped to its word id. This represents test docs to test the learned model.\n\nReturns\n-------\nscore : float\n    Final per-token log likelihood (-ve log perplexity)."
+            },
+            "fit": {
+                "kind": "OTHER",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]",
+                "description": "Inference on the hierarchical Dirichlet process model\n\nParameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value."
+            },
+            "fit_multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling ``fit`` and after that multiple produce methods at once.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to ``set_training_data`` and all produce methods.\ntimeout : float\n    A maximum time this primitive should take to both fit the primitive and produce outputs\n    for all produce methods listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do for both fitting and producing\n    outputs of all produce methods.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "get_call_metadata": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "bool",
+                "description": "Returns metadata about the last ``fit`` call if it succeeded\n\nReturns\n-------\nStatus : bool\n    True/false status of fitting."
+            },
+            "get_params": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "fastlvm.hdp.Params",
+                "description": "Get parameters of HDP.\n\nParameters are basically the topic matrix in byte stream.\n\nReturns\n-------\nparams : Params\n    A named tuple of parameters."
+            },
+            "multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling multiple produce methods at once.\n\nWhen a primitive has multiple produce methods it is common that they might compute the\nsame internal results for same inputs but return different representations of those results.\nIf caller is interested in multiple of those representations, calling multiple produce\nmethods might lead to recomputing same internal results multiple times. To address this,\nthis method allows primitive author to implement an optimized version which computes\ninternal results only once for multiple calls of produce methods, but return those different\nrepresentations.\n\nIf any additional method arguments are added to primitive's produce method(s), they have\nto be added to this method as well. This method should accept an union of all arguments\naccepted by primitive's produce method(s) and then use them accordingly when computing\nresults.\n\nThe default implementation of this method just calls all produce methods listed in\n``produce_methods`` in order and is potentially inefficient.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to produce outputs for all produce methods\n    listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "produce": {
+                "kind": "PRODUCE",
+                "arguments": [
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.pandas.DataFrame]",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": "Finds the token topic assignment (and consequently topic-per-document distribution) for the given set of docs using the learned model.\n\nParameters\n----------\ninputs : Inputs\n    A list of 1d numpy array of dtype uint32. Each numpy array contains a document with each token mapped to its word id.\n\nReturns\n-------\nOutputs\n    A list of 1d numpy array which represents index of the topic each token belongs to."
+            },
+            "produce_top_words": {
+                "kind": "PRODUCE",
+                "arguments": [],
+                "returns": "d3m.container.pandas.DataFrame",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": "Get the top words of each topic for this model.\n\nReturns\n----------\ntopic_matrix : list\n    A list of size k containing list of size num_top words."
+            },
+            "produce_topic_matrix": {
+                "kind": "PRODUCE",
+                "arguments": [],
+                "returns": "numpy.ndarray",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": "Get current word|topic distribution matrix for this model.\n\nReturns\n----------\ntopic_matrix : numpy.ndarray\n    A numpy array of shape (vocab_size,k) with each column containing the word|topic distribution."
+            },
+            "set_params": {
+                "kind": "OTHER",
+                "arguments": [
+                    "params"
+                ],
+                "returns": "NoneType",
+                "description": "Set parameters of HDP.\n\nParameters are basically the topic matrix in byte stream.\n\nParameters\n----------\nparams : Params\n    A named tuple of parameters."
+            },
+            "set_random_seed": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "NoneType",
+                "description": "NOT SUPPORTED YET\nSets a random seed for all operations from now on inside the primitive.\n\nBy default it sets numpy's and Python's random seed.\n\nParameters\n----------\nseed : int\n    A random seed to use."
+            },
+            "set_training_data": {
+                "kind": "OTHER",
+                "arguments": [
+                    "inputs"
+                ],
+                "returns": "NoneType",
+                "description": "Sets training data for HDP.\n\nParameters\n----------\ninputs : Inputs\n    A list of 1d numpy array of dtype uint32. Each numpy array contains a document with each token mapped to its word id."
+            }
+        },
+        "class_attributes": {
+            "logger": "logging.Logger",
+            "metadata": "d3m.metadata.base.PrimitiveMetadata"
+        },
+        "instance_attributes": {
+            "hyperparams": "d3m.metadata.hyperparams.Hyperparams",
+            "random_seed": "int",
+            "docker_containers": "typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]",
+            "volumes": "typing.Dict[str, str]",
+            "temporary_directory": "typing.Union[NoneType, str]"
+        },
+        "params": {
+            "topic_matrix": "bytes"
+        }
+    },
+    "structural_type": "fastlvm.hdp.HDP",
+    "digest": "38adf4ed4bbfe1b92b96cd36af5908692459239209d00b530bf184caa7d65d7f"
+}

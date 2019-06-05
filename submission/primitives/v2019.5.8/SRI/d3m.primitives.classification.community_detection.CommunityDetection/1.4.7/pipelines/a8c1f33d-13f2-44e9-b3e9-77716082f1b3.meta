@@ -1,0 +1,15 @@
+{
+    "problem": "6_70_com_amazon_problem",
+    "full_inputs": [
+        "6_70_com_amazon_dataset"
+    ],
+    "train_inputs": [
+        "6_70_com_amazon_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "6_70_com_amazon_dataset_TEST"
+    ],
+    "score_inputs": [
+        "6_70_com_amazon_dataset_SCORE"
+    ]
+}

@@ -1,0 +1,251 @@
+{
+    "id": "0a934c8d-610f-44ab-9c44-6ced17194d4c",
+    "version": "1.4.7",
+    "name": "Graph Node Splitter",
+    "description": "Take in a graph-based dataset and produce multiple train/test splits over the graph.\nThis is achieved by sampling nodes in the graph.\nThe output will be a DataFrame with two columns: \"train\" and \"test\", each containing a full container.Dataset.\nEach row will be one of these train/test splits.,\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "python_path": "d3m.primitives.data_transformation.graph_node_splitter.GraphNodeSplitter",
+    "primitive_family": "DATA_TRANSFORMATION",
+    "algorithm_types": [
+        "DATA_CONVERSION"
+    ],
+    "source": {
+        "name": "SRI",
+        "uris": [
+            "https://gitlab.com/daraghhartnett/sri_d3m",
+            "https://gitlab.com/daraghhartnett/sri_d3m/issues"
+        ],
+        "contact": "mailto:eaugusti@ucsc.edu"
+    },
+    "keywords": [
+        "dataset",
+        "graph",
+        "sampling",
+        "evaluation",
+        "splits"
+    ],
+    "installation": [
+        {
+            "type": "PIP",
+            "package": "sri-d3m",
+            "version": "1.4.7"
+        }
+    ],
+    "location_uris": [],
+    "hyperparms_to_tune": [],
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
+    "original_python_path": "sri.graph.node_splitter.GraphNodeSplitter",
+    "primitive_code": {
+        "class_type_arguments": {
+            "Params": "sri.graph.node_splitter.GraphNodeSplitterParams",
+            "Hyperparams": "sri.graph.node_splitter.GraphNodeSplitterHyperparams",
+            "Outputs": "d3m.container.list.List",
+            "Inputs": "d3m.container.list.List"
+        },
+        "interfaces_version": "2019.5.8",
+        "interfaces": [
+            "generator.GeneratorPrimitiveBase",
+            "base.PrimitiveBase"
+        ],
+        "hyperparams": {
+            "number_of_folds": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 5,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "The number of folds in k-fold cross-validation.",
+                "lower": 2,
+                "upper": null,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "delete_recursive": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": true,
+                "structural_type": "bool",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Ignored for graph sampling."
+            },
+            "stratified": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": false,
+                "structural_type": "bool",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Ignored for graph sampling."
+            },
+            "shuffle": {
+                "type": "d3m.metadata.hyperparams.UniformBool",
+                "default": false,
+                "structural_type": "bool",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Whether to shuffle the data before splitting into batches."
+            }
+        },
+        "arguments": {
+            "hyperparams": {
+                "type": "sri.graph.node_splitter.GraphNodeSplitterHyperparams",
+                "kind": "RUNTIME"
+            },
+            "random_seed": {
+                "type": "int",
+                "kind": "RUNTIME",
+                "default": 0
+            },
+            "timeout": {
+                "type": "typing.Union[NoneType, float]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "iterations": {
+                "type": "typing.Union[NoneType, int]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "produce_methods": {
+                "type": "typing.Sequence[str]",
+                "kind": "RUNTIME"
+            },
+            "dataset": {
+                "type": "d3m.container.dataset.Dataset",
+                "kind": "PIPELINE"
+            },
+            "inputs": {
+                "type": "d3m.container.list.List",
+                "kind": "PIPELINE"
+            },
+            "params": {
+                "type": "sri.graph.node_splitter.GraphNodeSplitterParams",
+                "kind": "RUNTIME"
+            }
+        },
+        "class_methods": {
+            "can_accept": {
+                "arguments": {
+                    "method_name": {
+                        "type": "str"
+                    },
+                    "arguments": {
+                        "type": "typing.Dict[str, typing.Union[d3m.metadata.base.Metadata, type]]"
+                    },
+                    "hyperparams": {
+                        "type": "sri.graph.node_splitter.GraphNodeSplitterHyperparams"
+                    }
+                },
+                "returns": "typing.Union[NoneType, d3m.metadata.base.DataMetadata]",
+                "description": "Returns a metadata object describing the output of a call of ``method_name`` method under\n``hyperparams`` with primitive arguments ``arguments``, if such arguments can be accepted by the method.\nOtherwise it returns ``None`` or raises an exception.\n\nDefault implementation checks structural types of ``arguments`` expected arguments' types\nand ignores ``hyperparams``.\n\nBy (re)implementing this method, a primitive can fine-tune which arguments it accepts\nfor its methods which goes beyond just structural type checking. For example, a primitive might\noperate only on images, so it can accept numpy arrays, but only those with semantic type\ncorresponding to an image. Or it might check dimensions of an array to assure it operates\non square matrix.\n\nPrimitive arguments are a superset of method arguments. This method receives primitive arguments and\nnot just method arguments so that it is possible to implement it without a state between calls\nto ``can_accept`` for multiple methods. For example, a call to ``fit`` could during normal execution\ninfluences what a later ``produce`` call outputs. But during ``can_accept`` call we can directly have\naccess to arguments which would have been given to ``fit`` to produce metadata of the ``produce`` call.\n\nNot all primitive arguments have to be provided, only those used by ``fit``, ``set_training_data``,\nand produce methods, and those used by the ``method_name`` method itself.\n\nParameters\n----------\nmethod_name : str\n    Name of the method which would be called.\narguments : Dict[str, Union[Metadata, type]]\n    A mapping between argument names and their metadata objects (for pipeline arguments) or types (for other).\nhyperparams : Hyperparams\n    Hyper-parameters under which the method would be called during regular primitive execution.\n\nReturns\n-------\nDataMetadata\n    Metadata object of the method call result, or ``None`` if arguments are not accepted\n    by the method."
+            }
+        },
+        "instance_methods": {
+            "__init__": {
+                "kind": "OTHER",
+                "arguments": [
+                    "hyperparams",
+                    "random_seed"
+                ],
+                "returns": "NoneType"
+            },
+            "fit": {
+                "kind": "OTHER",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]",
+                "description": "Compute the folds.\n\nParameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value."
+            },
+            "fit_multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "dataset",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling ``fit`` and after that multiple produce methods at once.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : List\n    The inputs given to all produce methods.\noutputs : Outputs\n    The outputs given to ``set_training_data``.\ntimeout : float\n    A maximum time this primitive should take to both fit the primitive and produce outputs\n    for all produce methods listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do for both fitting and producing\n    outputs of all produce methods.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "get_params": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "sri.graph.node_splitter.GraphNodeSplitterParams",
+                "description": "Returns parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nParameters should include all data which is necessary to create a new instance of this primitive\nbehaving exactly the same as this instance, when the new instance is created by passing the same\nparameters to the class constructor and calling ``set_params``.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nReturns\n-------\nParams\n    An instance of parameters."
+            },
+            "multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling multiple produce methods at once.\n\nWhen a primitive has multiple produce methods it is common that they might compute the\nsame internal results for same inputs but return different representations of those results.\nIf caller is interested in multiple of those representations, calling multiple produce\nmethods might lead to recomputing same internal results multiple times. To address this,\nthis method allows primitive author to implement an optimized version which computes\ninternal results only once for multiple calls of produce methods, but return those different\nrepresentations.\n\nIf any additional method arguments are added to primitive's produce method(s), they have\nto be added to this method as well. This method should accept an union of all arguments\naccepted by primitive's produce method(s) and then use them accordingly when computing\nresults.\n\nThe default implementation of this method just calls all produce methods listed in\n``produce_methods`` in order and is potentially inefficient.\n\nIf primitive should have been fitted before calling this method, but it has not been,\nprimitive should raise a ``PrimitiveNotFittedError`` exception.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to produce outputs for all produce methods\n    listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "produce": {
+                "kind": "PRODUCE",
+                "arguments": [
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.list.List]",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": "Produce the training splits from the provided test fold specifications.\n\nParameters\n----------\ninputs : Inputs\n    The inputs of shape [num_inputs, ...].\ntimeout : float\n    A maximum time this primitive should take to produce outputs during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nList[Dataset]\n    A list of dataset where each dataset is a train dataset obtained from all the folds minus the given test fold.\n    For example, if we have number_of_folds = 5 and [1, 3] is specified, then [Dataset(2, 3, 4, 5) and Dataset(1, 2, 4, 5)]\n    will be produced."
+            },
+            "produce_score_data": {
+                "kind": "PRODUCE",
+                "arguments": [
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.list.List]",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": "Produce the test splits from the provided test fold specifications.\n\nReturns\n-------\nList[Dataset]\n    A list of dataset where each dataset is a test dataset obtained from the given test fold.\n    For example, if we have number_of_folds = 5 and [1, 3] is specified, then [Dataset(1) and Dataset(3)]\n    will be produced."
+            },
+            "set_params": {
+                "kind": "OTHER",
+                "arguments": [
+                    "params"
+                ],
+                "returns": "NoneType",
+                "description": "Sets parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nParameters\n----------\nparams : Params\n    An instance of parameters."
+            },
+            "set_training_data": {
+                "kind": "OTHER",
+                "arguments": [
+                    "dataset"
+                ],
+                "returns": "NoneType",
+                "description": "Sets training data of this primitive, the ``Dataset`` to split.\n\nParameters\n----------\ndataset : Dataset\n    The dataset to split."
+            }
+        },
+        "class_attributes": {
+            "logger": "logging.Logger",
+            "metadata": "d3m.metadata.base.PrimitiveMetadata"
+        },
+        "instance_attributes": {
+            "hyperparams": "d3m.metadata.hyperparams.Hyperparams",
+            "random_seed": "int",
+            "docker_containers": "typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]",
+            "volumes": "typing.Dict[str, str]",
+            "temporary_directory": "typing.Union[NoneType, str]"
+        },
+        "params": {
+            "base_dataset": "d3m.container.dataset.Dataset",
+            "folds": "typing.Dict"
+        }
+    },
+    "structural_type": "sri.graph.node_splitter.GraphNodeSplitter",
+    "digest": "c92fc90315980c4f3fa951fca52ad59c19f856fdd3d036ccd084b68fe8020d71"
+}

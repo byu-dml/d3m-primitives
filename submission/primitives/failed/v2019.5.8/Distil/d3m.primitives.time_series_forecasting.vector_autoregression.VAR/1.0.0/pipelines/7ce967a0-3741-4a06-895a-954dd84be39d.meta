@@ -1,0 +1,16 @@
+{
+  "problem": "LL1_736_stock_market_problem",
+  "full_inputs": [
+    "LL1_736_stock_market_dataset"
+  ],
+  "train_inputs": [
+    "LL1_736_stock_market_dataset_TRAIN"
+  ],
+  "test_inputs": [
+    "LL1_736_stock_market_dataset_TEST"
+  ],
+  "score_inputs": [
+    "LL1_736_stock_market_dataset_SCORE"
+  ]
+}
+

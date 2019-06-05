@@ -1,0 +1,114 @@
+created: '2019-06-01T03:32:11.598100Z'
+digest: 1f74f876a9f1eafa0bd1475414674d779860f87c2841b44966984526d05358dd
+id: 7765e91d-61aa-4d38-8c73-05dcbbbcc369
+inputs:
+- name: inputs
+outputs:
+- data: steps.6.produce
+  name: output predictions
+schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
+steps:
+- arguments:
+    inputs:
+      data: inputs.0
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: b8251591d8f5f03e1c4d3ec740016c386ad6c20216cfd7d7dd9b8b2e3ab0595f
+    id: 4b42ce1e-9b98-4a25-b68e-fad13311eb65
+    name: Extract a DataFrame from a Dataset
+    python_path: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+    version: 0.3.0
+  type: PRIMITIVE
+- arguments:
+    inputs:
+      data: steps.0.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: d268f582f5bf30206f1e43ef46f435576a30413132bc73279f3fca36937184eb
+    id: d510cb7a-1782-4f51-b44c-58f0236e47c7
+    name: Parses strings into their types
+    python_path: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+    version: 0.5.0
+  type: PRIMITIVE
+- arguments:
+    inputs:
+      data: steps.1.produce
+      type: CONTAINER
+  hyperparams:
+    semantic_types:
+      data:
+      - https://metadata.datadrivendiscovery.org/types/Attribute
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    digest: a0d61e03605d9e487c29de5d88a1c7f32d9aef8e23a413b794dad2f4da8ee836
+    id: 4503a4c6-42f7-45a1-a1d4-ed69699cf5e1
+    name: Extracts columns by semantic type
+    python_path: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+    version: 0.2.0
+  type: PRIMITIVE
+- arguments:
+    inputs:
+      data: steps.0.produce
+      type: CONTAINER
+  hyperparams:
+    semantic_types:
+      data:
+      - https://metadata.datadrivendiscovery.org/types/TrueTarget
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    digest: a0d61e03605d9e487c29de5d88a1c7f32d9aef8e23a413b794dad2f4da8ee836
+    id: 4503a4c6-42f7-45a1-a1d4-ed69699cf5e1
+    name: Extracts columns by semantic type
+    python_path: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+    version: 0.2.0
+  type: PRIMITIVE
+- arguments:
+    inputs:
+      data: steps.2.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: 1d545bbb0400a8efc13f72b8b4afc8cd649d424e4b39de6eb81aa68658c11c61
+    id: 6c5dcfa3-1f87-4066-b16a-88c9c971f6e3
+    name: Single Table Deep Feature Synthesis
+    python_path: d3m.primitives.feature_construction.deep_feature_synthesis.SingleTableFeaturization
+    version: 0.4.0
+  type: PRIMITIVE
+- arguments:
+    inputs:
+      data: steps.4.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: 8c36c71cc0018d0566008dd256748672a4d686bf00174f2c17ae063238be7b29
+    id: d016df89-de62-3c53-87ed-c06bb6a23cde
+    name: sklearn.impute.SimpleImputer
+    python_path: d3m.primitives.data_cleaning.imputer.SKlearn
+    version: 2019.4.4
+  type: PRIMITIVE
+- arguments:
+    inputs:
+      data: steps.5.produce
+      type: CONTAINER
+    outputs:
+      data: steps.3.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: 8e21fe6143ccc4e9276ba6b7dea7104ff79a73955aed04f44dc79b21d6be39ae
+    id: f0fd7a62-09b5-3abc-93bb-f5f999f7cc80
+    name: sklearn.ensemble.forest.RandomForestRegressor
+    python_path: d3m.primitives.regression.random_forest.SKlearn
+    version: 2019.4.4
+  type: PRIMITIVE

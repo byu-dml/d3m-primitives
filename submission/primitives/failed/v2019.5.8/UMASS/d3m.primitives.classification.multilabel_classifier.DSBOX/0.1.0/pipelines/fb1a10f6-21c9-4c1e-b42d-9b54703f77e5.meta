@@ -1,0 +1,15 @@
+{
+    "problem":"LL0_acled_reduced_problem",
+    "full_inputs":[
+        "LL0_acled_reduced_dataset"
+    ],
+    "train_inputs":[
+        "LL0_acled_reduced_dataset_TRAIN"
+    ],
+    "test_inputs":[
+        "LL0_acled_reduced_dataset_TEST"
+    ],
+    "score_inputs":[
+        "LL0_acled_reduced_dataset_SCORE"
+    ]
+}

@@ -1,0 +1,5 @@
+{
+   "problem": "66_chlorineConcentration_problem",
+   "train_inputs": ["66_chlorineConcentration_dataset_TRAIN"],
+   "test_inputs": ["66_chlorineConcentration_dataset_TEST"]
+}

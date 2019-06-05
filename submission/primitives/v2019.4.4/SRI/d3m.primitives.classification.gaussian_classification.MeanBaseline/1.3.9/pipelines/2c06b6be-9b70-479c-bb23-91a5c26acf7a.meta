@@ -1,0 +1,15 @@
+{
+    "problem": "534_cps_85_wages_problem",
+    "full_inputs": [
+        "534_cps_85_wages_dataset"
+    ],
+    "train_inputs": [
+        "534_cps_85_wages_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "534_cps_85_wages_dataset_TEST"
+    ],
+    "score_inputs": [
+        "534_cps_85_wages_dataset_SCORE"
+    ]
+}

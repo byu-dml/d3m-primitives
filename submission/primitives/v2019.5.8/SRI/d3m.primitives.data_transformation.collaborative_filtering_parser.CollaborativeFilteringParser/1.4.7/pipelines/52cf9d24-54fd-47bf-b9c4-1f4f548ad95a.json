@@ -1,0 +1,84 @@
+{
+    "id": "52cf9d24-54fd-47bf-b9c4-1f4f548ad95a",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2019-05-31T20:43:46.435711Z",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.2.produce",
+            "name": "Links"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "fdc99781-08d0-4cc0-b41a-2d17adcfaa1e",
+                "version": "1.4.7",
+                "python_path": "d3m.primitives.data_transformation.collaborative_filtering_parser.CollaborativeFilteringParser",
+                "name": "Collaborative Filtering Parser"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        },
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "da0405b0-2d6f-4107-94f6-658913c7cc70",
+                "version": "1.4.7",
+                "python_path": "d3m.primitives.data_transformation.graph_transformer.GraphTransformer",
+                "name": "Graph Transformer"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.0.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        },
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "d83aa8fe-0433-4462-be54-b4074959b6fc",
+                "version": "1.4.7",
+                "python_path": "d3m.primitives.link_prediction.link_prediction.LinkPrediction",
+                "name": "Link Prediction"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.1.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "hyperparams": {
+                "prediction_column": {
+                    "type": "VALUE",
+                    "data": "rating"
+                }
+            }
+        }
+    ]
+}

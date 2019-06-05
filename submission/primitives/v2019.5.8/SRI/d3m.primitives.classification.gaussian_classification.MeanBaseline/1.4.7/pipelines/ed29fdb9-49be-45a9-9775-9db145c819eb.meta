@@ -1,0 +1,15 @@
+{
+    "problem": "299_libras_move_problem",
+    "full_inputs": [
+        "299_libras_move_dataset"
+    ],
+    "train_inputs": [
+        "299_libras_move_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "299_libras_move_dataset_TEST"
+    ],
+    "score_inputs": [
+        "299_libras_move_dataset_SCORE"
+    ]
+}

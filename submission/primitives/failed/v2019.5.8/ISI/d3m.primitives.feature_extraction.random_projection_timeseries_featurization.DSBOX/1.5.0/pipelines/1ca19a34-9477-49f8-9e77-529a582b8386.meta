@@ -1,0 +1,15 @@
+{
+    "problem":"uu1_datasmash_problem",
+    "full_inputs":[
+        "uu1_datasmash_dataset"
+    ],
+    "train_inputs":[
+        "uu1_datasmash_dataset_TRAIN"
+    ],
+    "test_inputs":[
+        "uu1_datasmash_dataset_TEST"
+    ],
+    "score_inputs":[
+        "uu1_datasmash_dataset_SCORE"
+    ]
+}

@@ -1,0 +1,7 @@
+{
+   "problem": "uu4_SPECT_problem",
+   "full_inputs": ["uu4_SPECT_dataset"],
+   "train_inputs": ["uu4_SPECT_dataset_TRAIN"],
+   "test_inputs": ["uu4_SPECT_dataset_TEST"],
+   "score_inputs": ["uu4_SPECT_dataset_SCORE"] 
+}

@@ -1,0 +1,38 @@
+{
+    "id": "0215104d-fe3e-4ee2-a2e6-883ca57c4fff",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2019-05-31T20:44:42.103178Z",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.0.produce",
+            "name": "results"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "4d989759-affd-4a51-a4e6-1a05a5c1d1c8",
+                "version": "1.4.7",
+                "python_path": "d3m.primitives.classification.general_relational_dataset.GeneralRelationalDataset",
+                "name": "General Relational Dataset"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        }
+    ]
+}

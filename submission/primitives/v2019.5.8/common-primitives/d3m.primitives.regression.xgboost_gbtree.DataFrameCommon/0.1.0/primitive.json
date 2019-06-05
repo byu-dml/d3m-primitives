@@ -1,0 +1,601 @@
+{
+    "id": "cdbb80e4-e9de-4caa-a710-16b5d727b959",
+    "version": "0.1.0",
+    "name": "XGBoost GBTree regressor",
+    "python_path": "d3m.primitives.regression.xgboost_gbtree.DataFrameCommon",
+    "keywords": [
+        "xgboost",
+        "decision tree",
+        "gradient boosted trees"
+    ],
+    "source": {
+        "name": "common-primitives",
+        "contact": "mailto:lin.yang@tamu.edu",
+        "uris": [
+            "https://gitlab.com/datadrivendiscovery/common-primitives.git"
+        ]
+    },
+    "installation": [
+        {
+            "type": "PIP",
+            "package_uri": "git+https://gitlab.com/datadrivendiscovery/common-primitives.git@e41047e96a4dc17d4259557bc74c733422e07aaf#egg=common-primitives"
+        }
+    ],
+    "algorithm_types": [
+        "GRADIENT_BOOSTING"
+    ],
+    "primitive_family": "REGRESSION",
+    "hyperparams_to_tune": [
+        "learning_rate",
+        "colsample_bytree",
+        "min_child_weight",
+        "subsample",
+        "max_depth",
+        "max_delta_step"
+    ],
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
+    "original_python_path": "common_primitives.xgboost_regressor.XGBoostGBTreeRegressorPrimitive",
+    "primitive_code": {
+        "class_type_arguments": {
+            "Inputs": "d3m.container.pandas.DataFrame",
+            "Outputs": "d3m.container.pandas.DataFrame",
+            "Params": "common_primitives.xgboost_regressor.Params",
+            "Hyperparams": "common_primitives.xgboost_regressor.Hyperparams"
+        },
+        "interfaces_version": "2019.5.8",
+        "interfaces": [
+            "base.SamplingCompositionalityMixin",
+            "base.ContinueFitMixin",
+            "supervised_learning.SupervisedLearnerPrimitiveBase",
+            "base.PrimitiveBase"
+        ],
+        "hyperparams": {
+            "n_estimators": {
+                "type": "d3m.metadata.hyperparams.UniformInt",
+                "default": 100,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter",
+                    "https://metadata.datadrivendiscovery.org/types/ResourcesUseParameter"
+                ],
+                "description": "The number of trees in the forest.",
+                "lower": 1,
+                "upper": 10000,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "n_more_estimators": {
+                "type": "d3m.metadata.hyperparams.UniformInt",
+                "default": 100,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter",
+                    "https://metadata.datadrivendiscovery.org/types/ResourcesUseParameter"
+                ],
+                "description": "When continuing a fit, it controls how many more trees to add every time.",
+                "lower": 1,
+                "upper": 10000,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "max_depth": {
+                "type": "d3m.metadata.hyperparams.Union",
+                "default": 3,
+                "structural_type": "typing.Union[NoneType, int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The maximum depth of the tree.",
+                "configuration": {
+                    "limit": {
+                        "type": "d3m.metadata.hyperparams.Bounded",
+                        "default": 3,
+                        "structural_type": "int",
+                        "semantic_types": [],
+                        "lower": 1,
+                        "upper": null,
+                        "lower_inclusive": true,
+                        "upper_inclusive": false
+                    },
+                    "unlimited": {
+                        "type": "d3m.metadata.hyperparams.Enumeration",
+                        "default": 0,
+                        "structural_type": "int",
+                        "semantic_types": [],
+                        "description": "Nodes are expanded until all leaves are pure or until all leaves contain less than \"min_samples_split\" samples.",
+                        "values": [
+                            0
+                        ]
+                    }
+                }
+            },
+            "learning_rate": {
+                "type": "d3m.metadata.hyperparams.Uniform",
+                "default": 0.1,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Boosting learning rate (xgb\\`s \\\"eta\\\")",
+                "lower": 0,
+                "upper": 1,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "gamma": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 0.0,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Minimum loss reduction required to make a further partition on a leaf node of the tree",
+                "lower": 0.0,
+                "upper": null,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "min_child_weight": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 1,
+                "structural_type": "int",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Minimum sum of instance weight (hessian) needed in a child. If the tree partition step results in a leaf node with the sum of instance weight less than min_child_weight, then the building process will give up further partitioning ",
+                "lower": 0,
+                "upper": null,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "max_delta_step": {
+                "type": "d3m.metadata.hyperparams.Union",
+                "default": 0,
+                "structural_type": "typing.Union[NoneType, int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Maximum delta step we allow.",
+                "configuration": {
+                    "limit": {
+                        "type": "d3m.metadata.hyperparams.Bounded",
+                        "default": 1,
+                        "structural_type": "int",
+                        "semantic_types": [],
+                        "description": "Maximum delta step we allow each leaf output to be.",
+                        "lower": 1,
+                        "upper": null,
+                        "lower_inclusive": true,
+                        "upper_inclusive": false
+                    },
+                    "unlimited": {
+                        "type": "d3m.metadata.hyperparams.Enumeration",
+                        "default": 0,
+                        "structural_type": "int",
+                        "semantic_types": [],
+                        "description": "No constraint.",
+                        "values": [
+                            0
+                        ]
+                    }
+                }
+            },
+            "subsample": {
+                "type": "d3m.metadata.hyperparams.Uniform",
+                "default": 1,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Subsample ratio of the training instances,this will prevent overfitting. Subsampling will occur once in every boosting iteration.",
+                "lower": 0.0001,
+                "upper": 1,
+                "lower_inclusive": true,
+                "upper_inclusive": true
+            },
+            "colsample_bytree": {
+                "type": "d3m.metadata.hyperparams.Uniform",
+                "default": 1,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Subsample ratio of columns when constructing each tree. Subsampling will occur once in every boosting iteration",
+                "lower": 0.0001,
+                "upper": 1,
+                "lower_inclusive": true,
+                "upper_inclusive": true
+            },
+            "colsample_bylevel": {
+                "type": "d3m.metadata.hyperparams.Uniform",
+                "default": 1,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Subsample ratio of columns for each split, in each level. Subsampling will occur each time a new split is made",
+                "lower": 0.0001,
+                "upper": 1,
+                "lower_inclusive": true,
+                "upper_inclusive": true
+            },
+            "reg_lambda": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 1,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "L2 regularization term on weights. Increasing this value will make model more conservative.",
+                "lower": 0,
+                "upper": null,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "reg_alpha": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 0,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "L1 regularization term on weights. Increasing this value will make model more conservative.",
+                "lower": 0,
+                "upper": null,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "scale_pos_weight": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 1,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "Control the balance of positive and negative weights, useful for unbalanced classes",
+                "lower": 0,
+                "upper": null,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "base_score": {
+                "type": "d3m.metadata.hyperparams.Bounded",
+                "default": 0.5,
+                "structural_type": "float",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The initial prediction score of all instances, global bias.",
+                "lower": 0,
+                "upper": null,
+                "lower_inclusive": true,
+                "upper_inclusive": false
+            },
+            "n_jobs": {
+                "type": "d3m.metadata.hyperparams.Union",
+                "default": 1,
+                "structural_type": "typing.Union[NoneType, int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ResourcesUseParameter"
+                ],
+                "description": "The number of jobs to run in parallel for both \"fit\" and \"produce\".",
+                "configuration": {
+                    "limit": {
+                        "type": "d3m.metadata.hyperparams.Bounded",
+                        "default": 1,
+                        "structural_type": "int",
+                        "semantic_types": [],
+                        "lower": 1,
+                        "upper": null,
+                        "lower_inclusive": true,
+                        "upper_inclusive": false
+                    },
+                    "all_cores": {
+                        "type": "d3m.metadata.hyperparams.Enumeration",
+                        "default": -1,
+                        "structural_type": "int",
+                        "semantic_types": [],
+                        "description": "The number of jobs is set to the number of cores.",
+                        "values": [
+                            -1
+                        ]
+                    }
+                }
+            },
+            "importance_type": {
+                "type": "d3m.metadata.hyperparams.Enumeration",
+                "default": "gain",
+                "structural_type": "str",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/TuningParameter"
+                ],
+                "description": "The feature importance type",
+                "values": [
+                    "gain",
+                    "weight",
+                    "cover",
+                    "total_gain",
+                    "total_cover"
+                ]
+            },
+            "use_inputs_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of inputs column indices to force primitive to operate on. If any specified column cannot be used, it is skipped.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "exclude_inputs_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of inputs column indices to not operate on. Applicable only if \"use_columns\" is not provided.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "use_outputs_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of outputs column indices to force primitive to operate on. If any specified column cannot be used, it is skipped.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "exclude_outputs_columns": {
+                "type": "d3m.metadata.hyperparams.Set",
+                "default": [],
+                "structural_type": "typing.Sequence[int]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "A set of outputs column indices to not operate on. Applicable only if \"use_columns\" is not provided.",
+                "elements": {
+                    "type": "d3m.metadata.hyperparams.Hyperparameter",
+                    "default": -1,
+                    "structural_type": "int",
+                    "semantic_types": []
+                },
+                "is_configuration": false,
+                "min_size": 0
+            },
+            "return_result": {
+                "type": "d3m.metadata.hyperparams.Enumeration",
+                "default": "append",
+                "structural_type": "str",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Should resulting columns be appended, should they replace original columns, or should only resulting columns be returned?",
+                "values": [
+                    "append",
+                    "replace",
+                    "new"
+                ]
+            },
+            "add_index_columns": {
+                "type": "d3m.metadata.hyperparams.UniformBool",
+                "default": true,
+                "structural_type": "bool",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Also include primary index columns if input data has them. Applicable only if \"return_result\" is set to \"new\"."
+            }
+        },
+        "arguments": {
+            "hyperparams": {
+                "type": "common_primitives.xgboost_regressor.Hyperparams",
+                "kind": "RUNTIME"
+            },
+            "random_seed": {
+                "type": "int",
+                "kind": "RUNTIME",
+                "default": 0
+            },
+            "timeout": {
+                "type": "typing.Union[NoneType, float]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "iterations": {
+                "type": "typing.Union[NoneType, int]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "produce_methods": {
+                "type": "typing.Sequence[str]",
+                "kind": "RUNTIME"
+            },
+            "inputs": {
+                "type": "d3m.container.pandas.DataFrame",
+                "kind": "PIPELINE"
+            },
+            "outputs": {
+                "type": "d3m.container.pandas.DataFrame",
+                "kind": "PIPELINE"
+            },
+            "num_samples": {
+                "type": "int",
+                "kind": "RUNTIME",
+                "default": 1
+            },
+            "params": {
+                "type": "common_primitives.xgboost_regressor.Params",
+                "kind": "RUNTIME"
+            }
+        },
+        "class_methods": {
+            "can_accept": {
+                "arguments": {
+                    "method_name": {
+                        "type": "str"
+                    },
+                    "arguments": {
+                        "type": "typing.Dict[str, typing.Union[d3m.metadata.base.Metadata, type]]"
+                    },
+                    "hyperparams": {
+                        "type": "common_primitives.xgboost_regressor.Hyperparams"
+                    }
+                },
+                "returns": "typing.Union[NoneType, d3m.metadata.base.DataMetadata]",
+                "description": "Returns a metadata object describing the output of a call of ``method_name`` method under\n``hyperparams`` with primitive arguments ``arguments``, if such arguments can be accepted by the method.\nOtherwise it returns ``None`` or raises an exception.\n\nDefault implementation checks structural types of ``arguments`` expected arguments' types\nand ignores ``hyperparams``.\n\nBy (re)implementing this method, a primitive can fine-tune which arguments it accepts\nfor its methods which goes beyond just structural type checking. For example, a primitive might\noperate only on images, so it can accept numpy arrays, but only those with semantic type\ncorresponding to an image. Or it might check dimensions of an array to assure it operates\non square matrix.\n\nPrimitive arguments are a superset of method arguments. This method receives primitive arguments and\nnot just method arguments so that it is possible to implement it without a state between calls\nto ``can_accept`` for multiple methods. For example, a call to ``fit`` could during normal execution\ninfluences what a later ``produce`` call outputs. But during ``can_accept`` call we can directly have\naccess to arguments which would have been given to ``fit`` to produce metadata of the ``produce`` call.\n\nNot all primitive arguments have to be provided, only those used by ``fit``, ``set_training_data``,\nand produce methods, and those used by the ``method_name`` method itself.\n\nParameters\n----------\nmethod_name : str\n    Name of the method which would be called.\narguments : Dict[str, Union[Metadata, type]]\n    A mapping between argument names and their metadata objects (for pipeline arguments) or types (for other).\nhyperparams : Hyperparams\n    Hyper-parameters under which the method would be called during regular primitive execution.\n\nReturns\n-------\nDataMetadata\n    Metadata object of the method call result, or ``None`` if arguments are not accepted\n    by the method."
+            }
+        },
+        "instance_methods": {
+            "__init__": {
+                "kind": "OTHER",
+                "arguments": [
+                    "hyperparams",
+                    "random_seed"
+                ],
+                "returns": "NoneType"
+            },
+            "continue_fit": {
+                "kind": "OTHER",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]",
+                "description": "Similar to base ``fit``, this method fits the primitive using inputs and outputs (if any)\nusing currently set training data.\n\nThe difference is what happens when currently set training data is different from\nwhat the primitive might have already been fitted on. ``fit`` fits the primitive from\nscratch, while ``continue_fit`` fits it further and does **not** start from scratch.\n\nCaller can still call ``continue_fit`` multiple times on the same training data as well,\nin which case primitive should try to improve the fit in the same way as with ``fit``.\n\nFrom the perspective of a caller of all other methods, the training data in effect\nis still just currently set training data. If a caller wants to call ``gradient_output``\non all data on which the primitive has been fitted through multiple calls of ``continue_fit``\non different training data, the caller should pass all this data themselves through\nanother call to ``set_training_data``, do not call ``fit`` or ``continue_fit`` again,\nand use ``gradient_output`` method. In this way primitives which truly support\ncontinuation of fitting and need only the latest data to do another fitting, do not\nhave to keep all past training data around themselves.\n\nIf a primitive supports this mixin, then both ``fit`` and ``continue_fit`` can be\ncalled. ``continue_fit`` always continues fitting, if it was started through ``fit``\nor ``continue_fit``. And ``fit`` always restarts fitting, even if previously\n``continue_fit`` was used.\n\nParameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value."
+            },
+            "fit": {
+                "kind": "OTHER",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]",
+                "description": "Fits primitive using inputs and outputs (if any) using currently set training data.\n\nThe returned value should be a ``CallResult`` object with ``value`` set to ``None``.\n\nIf ``fit`` has already been called in the past on different training data,\nthis method fits it **again from scratch** using currently set training data.\n\nOn the other hand, caller can call ``fit`` multiple times on the same training data\nto continue fitting.\n\nIf ``fit`` fully fits using provided training data, there is no point in making further\ncalls to this method with same training data, and in fact further calls can be noops,\nor a primitive can decide to refit from scratch.\n\nIn the case fitting can continue with same training data (even if it is maybe not reasonable,\nbecause the internal metric primitive is using looks like fitting will be degrading), if ``fit``\nis called again (without setting training data), the primitive has to continue fitting.\n\nCaller can provide ``timeout`` information to guide the length of the fitting process.\nIdeally, a primitive should adapt its fitting process to try to do the best fitting possible\ninside the time allocated. If this is not possible and the primitive reaches the timeout\nbefore fitting, it should raise a ``TimeoutError`` exception to signal that fitting was\nunsuccessful in the given time. The state of the primitive after the exception should be\nas the method call has never happened and primitive should continue to operate normally.\nThe purpose of ``timeout`` is to give opportunity to a primitive to cleanly manage\nits state instead of interrupting execution from outside. Maintaining stable internal state\nshould have precedence over respecting the ``timeout`` (caller can terminate the misbehaving\nprimitive from outside anyway). If a longer ``timeout`` would produce different fitting,\nthen ``CallResult``'s ``has_finished`` should be set to ``False``.\n\nSome primitives have internal fitting iterations (for example, epochs). For those, caller\ncan provide how many of primitive's internal iterations should a primitive do before returning.\nPrimitives should make iterations as small as reasonable. If ``iterations`` is ``None``,\nthen there is no limit on how many iterations the primitive should do and primitive should\nchoose the best amount of iterations on its own (potentially controlled through\nhyper-parameters). If ``iterations`` is a number, a primitive has to do those number of\niterations (even if not reasonable), if possible. ``timeout`` should still be respected\nand potentially less iterations can be done because of that. Primitives with internal\niterations should make ``CallResult`` contain correct values.\n\nFor primitives which do not have internal iterations, any value of ``iterations``\nmeans that they should fit fully, respecting only ``timeout``.\n\nParameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value."
+            },
+            "fit_multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "outputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling ``fit`` and after that multiple produce methods at once.\n\nThis method allows primitive author to implement an optimized version of both fitting\nand producing a primitive on same data.\n\nIf any additional method arguments are added to primitive's ``set_training_data`` method\nor produce method(s), or removed from them, they have to be added to or removed from this\nmethod as well. This method should accept an union of all arguments accepted by primitive's\n``set_training_data`` method and produce method(s) and then use them accordingly when\ncomputing results.\n\nThe default implementation of this method just calls first ``set_training_data`` method,\n``fit`` method, and all produce methods listed in ``produce_methods`` in order and is\npotentially inefficient.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to ``set_training_data`` and all produce methods.\noutputs : Outputs\n    The outputs given to ``set_training_data``.\ntimeout : float\n    A maximum time this primitive should take to both fit the primitive and produce outputs\n    for all produce methods listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do for both fitting and producing\n    outputs of all produce methods.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "get_params": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "common_primitives.xgboost_regressor.Params",
+                "description": "Returns parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nParameters should include all data which is necessary to create a new instance of this primitive\nbehaving exactly the same as this instance, when the new instance is created by passing the same\nparameters to the class constructor and calling ``set_params``.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nReturns\n-------\nParams\n    An instance of parameters."
+            },
+            "multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling multiple produce methods at once.\n\nWhen a primitive has multiple produce methods it is common that they might compute the\nsame internal results for same inputs but return different representations of those results.\nIf caller is interested in multiple of those representations, calling multiple produce\nmethods might lead to recomputing same internal results multiple times. To address this,\nthis method allows primitive author to implement an optimized version which computes\ninternal results only once for multiple calls of produce methods, but return those different\nrepresentations.\n\nIf any additional method arguments are added to primitive's produce method(s), they have\nto be added to this method as well. This method should accept an union of all arguments\naccepted by primitive's produce method(s) and then use them accordingly when computing\nresults.\n\nThe default implementation of this method just calls all produce methods listed in\n``produce_methods`` in order and is potentially inefficient.\n\nIf primitive should have been fitted before calling this method, but it has not been,\nprimitive should raise a ``PrimitiveNotFittedError`` exception.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to produce outputs for all produce methods\n    listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "produce": {
+                "kind": "PRODUCE",
+                "arguments": [
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.pandas.DataFrame]",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": "Produce primitive's best choice of the output for each of the inputs.\n\nThe output value should be wrapped inside ``CallResult`` object before returning.\n\nIn many cases producing an output is a quick operation in comparison with ``fit``, but not\nall cases are like that. For example, a primitive can start a potentially long optimization\nprocess to compute outputs. ``timeout`` and ``iterations`` can serve as a way for a caller\nto guide the length of this process.\n\nIdeally, a primitive should adapt its call to try to produce the best outputs possible\ninside the time allocated. If this is not possible and the primitive reaches the timeout\nbefore producing outputs, it should raise a ``TimeoutError`` exception to signal that the\ncall was unsuccessful in the given time. The state of the primitive after the exception\nshould be as the method call has never happened and primitive should continue to operate\nnormally. The purpose of ``timeout`` is to give opportunity to a primitive to cleanly\nmanage its state instead of interrupting execution from outside. Maintaining stable internal\nstate should have precedence over respecting the ``timeout`` (caller can terminate the\nmisbehaving primitive from outside anyway). If a longer ``timeout`` would produce\ndifferent outputs, then ``CallResult``'s ``has_finished`` should be set to ``False``.\n\nSome primitives have internal iterations (for example, optimization iterations).\nFor those, caller can provide how many of primitive's internal iterations\nshould a primitive do before returning outputs. Primitives should make iterations as\nsmall as reasonable. If ``iterations`` is ``None``, then there is no limit on\nhow many iterations the primitive should do and primitive should choose the best amount\nof iterations on its own (potentially controlled through hyper-parameters).\nIf ``iterations`` is a number, a primitive has to do those number of iterations,\nif possible. ``timeout`` should still be respected and potentially less iterations\ncan be done because of that. Primitives with internal iterations should make\n``CallResult`` contain correct values.\n\nFor primitives which do not have internal iterations, any value of ``iterations``\nmeans that they should run fully, respecting only ``timeout``.\n\nIf primitive should have been fitted before calling this method, but it has not been,\nprimitive should raise a ``PrimitiveNotFittedError`` exception.\n\nParameters\n----------\ninputs : Inputs\n    The inputs of shape [num_inputs, ...].\ntimeout : float\n    A maximum time this primitive should take to produce outputs during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[Outputs]\n    The outputs of shape [num_inputs, ...] wrapped inside ``CallResult``."
+            },
+            "produce_feature_importances": {
+                "kind": "PRODUCE",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.pandas.DataFrame]",
+                "singleton": false,
+                "inputs_across_samples": []
+            },
+            "sample": {
+                "kind": "OTHER",
+                "arguments": [
+                    "inputs",
+                    "num_samples",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[typing.Sequence[d3m.container.pandas.DataFrame]]",
+                "description": "Sample each input from ``inputs`` ``num_samples`` times.\n\nSemantics of ``timeout`` and ``iterations`` is the same as in ``produce``.\n\nParameters\n----------\ninputs : Inputs\n    The inputs of shape [num_inputs, ...].\nnum_samples : int\n    The number of samples to return in a set of samples.\ntimeout : float\n    A maximum time this primitive should take to sample outputs during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[Sequence[Outputs]]\n    The multiple sets of samples of shape [num_samples, num_inputs, ...] wrapped inside\n    ``CallResult``. While the output value type is specified as ``Sequence[Outputs]``, the\n    output value can be in fact any container type with dimensions/shape equal to combined\n    ``Sequence[Outputs]`` dimensions/shape. Subclasses should specify which exactly type\n    the output is."
+            },
+            "set_params": {
+                "kind": "OTHER",
+                "arguments": [
+                    "params"
+                ],
+                "returns": "NoneType",
+                "description": "Sets parameters of this primitive.\n\nParameters are all parameters of the primitive which can potentially change during a life-time of\na primitive. Parameters which cannot are passed through constructor.\n\nNo other arguments to the method are allowed (except for private arguments).\n\nParameters\n----------\nparams : Params\n    An instance of parameters."
+            },
+            "set_training_data": {
+                "kind": "OTHER",
+                "arguments": [
+                    "inputs",
+                    "outputs"
+                ],
+                "returns": "NoneType",
+                "description": "Sets training data of this primitive.\n\nStandard sublasses in this package do not adhere to the Liskov substitution principle when\ninheriting this method because they do not necessary accept all arguments found in the base\nclass. This means that one has to inspect which arguments are accepted at runtime, or in\nother words, one has to inspect which exactly subclass a primitive implements, if\nyou are accepting a wider range of primitives. This relaxation is allowed only for\nstandard subclasses found in this package. Primitives themselves should not break\nthe Liskov substitution principle but should inherit from a suitable base class.\n\nParameters\n----------\ninputs : Inputs\n    The inputs.\noutputs : Outputs\n    The outputs."
+            }
+        },
+        "class_attributes": {
+            "logger": "logging.Logger",
+            "metadata": "d3m.metadata.base.PrimitiveMetadata"
+        },
+        "instance_attributes": {
+            "hyperparams": "d3m.metadata.hyperparams.Hyperparams",
+            "random_seed": "int",
+            "docker_containers": "typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]",
+            "volumes": "typing.Dict[str, str]",
+            "temporary_directory": "typing.Union[NoneType, str]"
+        },
+        "params": {
+            "estimators": "typing.Union[NoneType, typing.List[xgboost.sklearn.XGBRegressor], xgboost.sklearn.XGBRegressor]",
+            "booster": "typing.Union[NoneType, typing.List[xgboost.core.Booster], xgboost.core.Booster]",
+            "objective": "typing.Union[NoneType, str]",
+            "multi_output_estimator_dict": "typing.Union[NoneType, typing.Dict]",
+            "target_columns_metadata": "typing.Union[NoneType, typing.List[collections.OrderedDict]]"
+        }
+    },
+    "structural_type": "common_primitives.xgboost_regressor.XGBoostGBTreeRegressorPrimitive",
+    "description": "A XGBoost classifier using ``xgb.XGBoostRegressor`` with GBTree Boosting type.\n\nIt uses semantic types to determine which columns to operate on.\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "digest": "b018c11673b872134bf240729920895efc7b492f7ac7d855ab152892df8b977a"
+}

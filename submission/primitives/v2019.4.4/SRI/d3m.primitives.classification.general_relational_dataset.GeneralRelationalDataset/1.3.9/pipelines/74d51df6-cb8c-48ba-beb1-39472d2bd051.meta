@@ -1,0 +1,15 @@
+{
+    "problem": "4550_MiceProtein_problem",
+    "full_inputs": [
+        "4550_MiceProtein_dataset"
+    ],
+    "train_inputs": [
+        "4550_MiceProtein_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "4550_MiceProtein_dataset_TEST"
+    ],
+    "score_inputs": [
+        "4550_MiceProtein_dataset_SCORE"
+    ]
+}

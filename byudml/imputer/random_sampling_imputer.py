@@ -9,7 +9,7 @@ from byudml import __version__ as __package_version__
 
 
 __primitive_version__ = '0.1.4'
-
+__python_path__ = 'd3m.primitives.data_preprocessing.random_sampling_imputer.BYU'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -49,7 +49,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py'
         ],
-        'python_path': 'd3m.primitives.data_preprocessing.random_sampling_imputer.BYU',
+        'python_path': __python_path__,
         'primitive_family': metadata_base.PrimitiveFamily.DATA_PREPROCESSING,
         'algorithm_types': [
             metadata_base.PrimitiveAlgorithmType.IMPUTATION

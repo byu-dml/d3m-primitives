@@ -1,0 +1,15 @@
+{
+    "problem": "1491_one_hundred_plants_margin_clust_problem",
+    "full_inputs": [
+        "1491_one_hundred_plants_margin_clust_dataset"
+    ],
+    "train_inputs": [
+        "1491_one_hundred_plants_margin_clust_dataset_TRAIN"
+    ],
+    "test_inputs": [
+        "1491_one_hundred_plants_margin_clust_dataset_TEST"
+    ],
+    "score_inputs": [
+        "1491_one_hundred_plants_margin_clust_dataset_SCORE"
+    ]
+}

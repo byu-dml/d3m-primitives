@@ -9,7 +9,7 @@ from tests import utils
 
 
 DATASETS_DIR = '/datasets/seed_datasets_current'
-PIPELINES_BASE_DIR = './pipelines'
+PIPELINES_BASE_DIR = 'submission/pipelines'
 PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'random_sampling_imputer')
 CLASSIFICATION_PIPELINE_FILENAMES = [
     'f4fe3fcc-45fe-4c85-8845-549e2f466f21.json',
