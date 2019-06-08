@@ -404,6 +404,9 @@ def remove_digests(
     for step in pipeline_json_structure['steps']:
         if step['primitive']['id'] not in exclude_primitives:
             del step['primitive']['digest']
+
+    while len(pipeline_json_structure["inputs"]) > 1:
+        del pipeline_json_structure["inputs"][-1]
         
 
     return pipeline_json_structure
@@ -525,7 +528,7 @@ def add_best_pipelines():
 
         # prepare meta file
         seed = dataset_id in list(seed_datasets_exlines.keys())
-        meta_file = create_meta_script_seed(dataset, seed=seed)
+        meta_file = create_meta_script_seed(dataset_id, seed=seed)
 
         print("Writing pipeline for dataset: {} to {}".format(dataset, IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json"))
         with open(IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json", "w") as file:
