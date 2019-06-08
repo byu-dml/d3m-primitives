@@ -4,6 +4,8 @@ from byudml import __version__
 from byudml import __imputer_path__
 from byudml import __metafeature_path__
 
+# make sure this is a valid entrypoint
+assert "d3m.primitives.metalearning.metafeature_extractor.BYU" == ("d3m.primitives." + ".".join(__metafeature_path__.split(".")[2:]))
 
 setup(
     name='byudml',
@@ -22,8 +24,8 @@ setup(
     ],
     entry_points = {
         'd3m.primitives': [
-            '{} = byudml.imputer.random_sampling_imputer:RandomSamplingImputer'.format("".join(__imputer_path__.split(".")[2:])),
-            '{} = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'.format("".join(__metafeature_path__.split(".")[2:]))
+            '{} = byudml.imputer.random_sampling_imputer:RandomSamplingImputer'.format(".".join(__imputer_path__.split(".")[2:])),
+            '{} = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'.format(".".join(__metafeature_path__.split(".")[2:]))
         ]
     }
 )

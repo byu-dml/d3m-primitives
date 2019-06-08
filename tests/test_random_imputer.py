@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from d3m import index, runtime as runtime_module
+from d3m import index
 
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 
