@@ -404,8 +404,6 @@ def remove_digests(
     for step in pipeline_json_structure['steps']:
         if step['primitive']['id'] not in exclude_primitives:
             del step['primitive']['digest']
-            if step["primitive"]["id"] == "dsbox-ensemble-voting":
-                step["primitive"]["id"]
         
 
     return pipeline_json_structure
