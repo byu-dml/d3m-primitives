@@ -17,7 +17,7 @@ def get_new_d3m_path():
 
 def create_meta_script_seed(problem):
     """
-    Update this as time goes on.  This is only for SEED datasets
+    Creates the meta file for a given problem.
     :param problem: the name of the problem for the dataset
     :return: the meta file
     """
@@ -37,17 +37,6 @@ def create_meta_script_seed(problem):
             "{0}_dataset_SCORE".format(problem)
         ]
     }
-
-
-def extract_byu_info(pipeline_json):
-    """
-
-    :param pipeline_json: the pipeline in json form
-    :returns the python path of the BYU primitive, and the version number of the primitive
-    """
-    for primitive_step in pipeline_json["steps"]:
-        if "BYU" in primitive_step["primitive"]["python_path"]:
-            return primitive_step["primitive"]["python_path"], primitive_step["primitive"]["version"]
 
 
 def clear_directory(dir_path):
@@ -72,14 +61,7 @@ def create_and_add_to_directory(primitive_dir, new_version_num, pipeline_json, p
     :param problem_name: the name of the problem
     """
     # make folders if they don't exist already
-    if not os.path.exists(primitive_dir):
-        os.makedirs(primitive_dir)
-
-    version_dir = os.path.join(primitive_dir, new_version_num)
-    if not os.path.exists(version_dir):
-        os.makedirs(version_dir)
-
-    pipeline_dir = os.path.join(version_dir, "pipelines")
+    pipeline_dir = os.path.join(primitive_dir, new_version_num, "pipelines")
     if not os.path.exists(pipeline_dir):
         os.makedirs(pipeline_dir)
 

@@ -6,11 +6,11 @@ from d3m.metadata import (
     base as metadata_base, pipeline as pipeline_module
 )
 
-from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
-from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
+from byudml.imputer.random_sampling_imputer import (RandomSamplingImputer, __primitive_version__ as imputer_version, __python_path__ as imputer_path)
+from byudml.metafeature_extraction.metafeature_extraction import (MetafeatureExtractor, __primitive_version__ as metafeatures_version, __python_path__ as metafeature_path)
 import sys
 sys.path.append(".")
-from submission.utils import get_new_d3m_path,  extract_byu_info, clear_directory, create_and_add_to_directory
+from submission.utils import get_new_d3m_path, clear_directory, create_and_add_to_directory
 
 def generate_imputer_pipeline(task_type):
     if task_type == 'classification':
@@ -416,7 +416,7 @@ def update_digest(
     :return a pipeline with updated digests
     """
     if pipeline_json_structure is None and filename is None:
-        raise Exception
+        raise ValueError("No pipeline json was given")
     elif pipeline_json_structure is None:
         with open(filename, "r") as file:
             # NOTE: must be a pipeline with no digests, or recent digests
@@ -435,7 +435,6 @@ def update_digest(
         check_step = primitive.to_json_structure()
         # lets verify that both are updated
         assert check_step["primitive"]["version"] == step["primitive"]["version"], "Updating version failed"
-        assert check_step["primitive"]["digest"] == step["primitive"]["digest"], "Updating digest failed"
 
     return pipeline_to_run
 
@@ -452,8 +451,7 @@ for task_type in ['classification', 'regression']:
                                              RandomSamplingImputer.metadata.query()['id']})
     pipeline_json_structure = update_digest(pipeline_json_structure)
     # place in submodule
-    imputer_path, imputer_version = extract_byu_info(pipeline_json_structure)
-    os.environ['imputer_location'] = os.path.join(byu_dir, imputer_path)
+    os.environ['imputer_location'] = os.path.join(byu_dir, )
     create_and_add_to_directory(os.path.join(byu_dir, imputer_path), str(imputer_version), pipeline_json_structure)
 
     # generate and update metafeatures
@@ -463,7 +461,6 @@ for task_type in ['classification', 'regression']:
                                              MetafeatureExtractor.metadata.query()['id']})
     pipeline_json_structure = update_digest(pipeline_json_structure)
     # place in submodule
-    metafeature_path, metafeatures_version = extract_byu_info(pipeline_json_structure)
     os.environ['metafeature_location'] = os.path.join(byu_dir, metafeature_path)
     create_and_add_to_directory(os.path.join(byu_dir, metafeature_path), str(metafeatures_version), pipeline_json_structure)
 
