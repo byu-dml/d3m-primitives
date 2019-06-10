@@ -10,7 +10,7 @@ from byudml.imputer.random_sampling_imputer import (RandomSamplingImputer, __pri
 from byudml.metafeature_extraction.metafeature_extraction import (MetafeatureExtractor, __primitive_version__ as metafeatures_version, __python_path__ as metafeature_path)
 import sys
 sys.path.append(".")
-from submission.utils import get_new_d3m_path, clear_directory, create_and_add_to_directory
+from submission.utils import get_new_d3m_path, clear_directory, create_and_add_pipelines_for_submission
 
 def generate_imputer_pipeline(task_type):
     if task_type == 'classification':
@@ -452,7 +452,7 @@ for task_type in ['classification', 'regression']:
     pipeline_json_structure = update_digest(pipeline_json_structure)
     # place in submodule
     os.environ['imputer_location'] = os.path.join(byu_dir, )
-    create_and_add_to_directory(os.path.join(byu_dir, imputer_path), str(imputer_version), pipeline_json_structure)
+    create_and_add_pipelines_for_submission(os.path.join(byu_dir, imputer_path), str(imputer_version), pipeline_json_structure, '185_baseball_problem')
 
     # generate and update metafeatures
     pipeline = generate_metafeature_pipeline(task_type)
@@ -462,7 +462,7 @@ for task_type in ['classification', 'regression']:
     pipeline_json_structure = update_digest(pipeline_json_structure)
     # place in submodule
     os.environ['metafeature_location'] = os.path.join(byu_dir, metafeature_path)
-    create_and_add_to_directory(os.path.join(byu_dir, metafeature_path), str(metafeatures_version), pipeline_json_structure)
+    create_and_add_pipelines_for_submission(os.path.join(byu_dir, metafeature_path), str(metafeatures_version), pipeline_json_structure, '185_baseball_problem')
 
 
 

@@ -52,7 +52,7 @@ def clear_directory(dir_path):
         shutil.rmtree(f)
 
 
-def create_and_add_to_directory(primitive_dir, new_version_num, pipeline_json, problem_name='185_baseball_problem'):
+def create_and_add_pipelines_for_submission(primitive_dir, new_version_num, pipeline_json, problem_name):
     """
     Adds pipelines to the submodule directory and creates directories if it needs it
     :param primitive_dir: the python path of the primitive
