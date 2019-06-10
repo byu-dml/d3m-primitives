@@ -402,7 +402,7 @@ def remove_digests(
     return pipeline_json_structure
 
 
-def update_digest(
+def update_pipeline(
     pipeline_json_structure, filename=None
 ):
     """
@@ -421,11 +421,11 @@ def update_digest(
         with open(filename, "r") as file:
             # NOTE: must be a pipeline with no digests, or recent digests
             # NOTE: reading this in as straight JSON doesn't work so we have to use the pipeline_module
-            pipeline_to_run = pipeline_module.Pipeline.from_json(string_or_file=file).to_json_structure()
+            pipeline_to_update = pipeline_module.Pipeline.from_json(string_or_file=file).to_json_structure()
     else:
-        pipeline_to_run = pipeline_module.Pipeline.from_json(json.dumps(pipeline_json_structure)).to_json_structure()
+        pipeline_to_update = pipeline_module.Pipeline.from_json(json.dumps(pipeline_json_structure)).to_json_structure()
 
-    for step in pipeline_to_run['steps']:
+    for step in pipeline_to_update['steps']:
         # if not updated, check and update
         primitive = pipeline_module.PrimitiveStep(
             primitive=d3m_index.get_primitive(
@@ -436,7 +436,7 @@ def update_digest(
         # lets verify that both are updated
         assert check_step["primitive"]["version"] == step["primitive"]["version"], "Updating version failed"
 
-    return pipeline_to_run
+    return pipeline_to_update
 
 
 # get directory ready
@@ -449,7 +449,7 @@ for task_type in ['classification', 'regression']:
     pipeline_json_structure = pipeline.to_json_structure()
     pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
                                              RandomSamplingImputer.metadata.query()['id']})
-    pipeline_json_structure = update_digest(pipeline_json_structure)
+    pipeline_json_structure = update_pipeline(pipeline_json_structure)
     # place in submodule
     create_and_add_pipelines_for_submission(os.path.join(byu_dir, imputer_path), str(imputer_version), pipeline_json_structure, '185_baseball_problem')
 
@@ -458,7 +458,7 @@ for task_type in ['classification', 'regression']:
     pipeline_json_structure = pipeline.to_json_structure()
     pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
                                              MetafeatureExtractor.metadata.query()['id']})
-    pipeline_json_structure = update_digest(pipeline_json_structure)
+    pipeline_json_structure = update_pipeline(pipeline_json_structure)
     # place in submodule
     create_and_add_pipelines_for_submission(os.path.join(byu_dir, metafeature_path), str(metafeatures_version), pipeline_json_structure, '185_baseball_problem')
 
