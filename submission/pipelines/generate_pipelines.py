@@ -451,7 +451,6 @@ for task_type in ['classification', 'regression']:
                                              RandomSamplingImputer.metadata.query()['id']})
     pipeline_json_structure = update_digest(pipeline_json_structure)
     # place in submodule
-    os.environ['imputer_location'] = os.path.join(byu_dir, )
     create_and_add_pipelines_for_submission(os.path.join(byu_dir, imputer_path), str(imputer_version), pipeline_json_structure, '185_baseball_problem')
 
     # generate and update metafeatures
@@ -461,7 +460,6 @@ for task_type in ['classification', 'regression']:
                                              MetafeatureExtractor.metadata.query()['id']})
     pipeline_json_structure = update_digest(pipeline_json_structure)
     # place in submodule
-    os.environ['metafeature_location'] = os.path.join(byu_dir, metafeature_path)
     create_and_add_pipelines_for_submission(os.path.join(byu_dir, metafeature_path), str(metafeatures_version), pipeline_json_structure, '185_baseball_problem')
 
 
