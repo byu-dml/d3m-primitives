@@ -11,7 +11,7 @@ from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtr
 from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
 import sys
 sys.path.append(".")
-from submission.utils import get_new_d3m_path, clear_directory, create_and_add_pipelines_for_submission
+from submission.utils import get_new_d3m_path, clear_directory, write_pipeline_for_submission
 
 def generate_imputer_pipeline(task_type):
     if task_type == 'classification':
@@ -440,29 +440,29 @@ def update_pipeline(
     return pipeline_to_update
 
 
-# get directory ready
-byu_dir = get_new_d3m_path()
-clear_directory(byu_dir)
+def main():
+    # get directory ready
+    byu_dir = get_new_d3m_path()
+    clear_directory(byu_dir)
 
-for task_type in ['classification', 'regression']:
-    # generate and update imputer
-    pipeline = generate_imputer_pipeline(task_type)
-    pipeline_json_structure = pipeline.to_json_structure()
-    pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
-                                             RandomSamplingImputer.metadata.query()['id']})
-    pipeline_json_structure = update_pipeline(pipeline_json_structure)
-    # place in submodule
-    create_and_add_pipelines_for_submission(os.path.join(byu_dir, __imputer_path__), str(__imputer_version__), pipeline_json_structure, '185_baseball_problem')
+    for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')]:
+        # generate and update imputer
+        pipeline = generate_imputer_pipeline(problem_type)
+        pipeline_json_structure = pipeline.to_json_structure()
+        pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
+                                                 RandomSamplingImputer.metadata.query()['id']})
+        pipeline_json_structure = update_pipeline(pipeline_json_structure)
+        # place in submodule
+        write_pipeline_for_submission(os.path.join(byu_dir, __imputer_path__), str(__imputer_version__), pipeline_json_structure, problem_name)
 
-    # generate and update metafeatures
-    pipeline = generate_metafeature_pipeline(task_type)
-    pipeline_json_structure = pipeline.to_json_structure()
-    pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
-                                             MetafeatureExtractor.metadata.query()['id']})
-    pipeline_json_structure = update_pipeline(pipeline_json_structure)
-    # place in submodule
-    create_and_add_pipelines_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, '185_baseball_problem')
+        # generate and update metafeatures
+        pipeline = generate_metafeature_pipeline(problem_type)
+        pipeline_json_structure = pipeline.to_json_structure()
+        pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
+                                                 MetafeatureExtractor.metadata.query()['id']})
+        pipeline_json_structure = update_pipeline(pipeline_json_structure)
+        # place in submodule
+        write_pipeline_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, problem_name)
 
-
-
-
+if __name__ == '__main__':
+    main()

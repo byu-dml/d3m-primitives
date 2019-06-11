@@ -48,11 +48,10 @@ def clear_directory(dir_path):
     """
     files = glob.glob(dir_path + '/*')
     for f in files:
-        print("Deleting all files in", f)
         shutil.rmtree(f)
 
 
-def create_and_add_pipelines_for_submission(primitive_dir, new_version_num, pipeline_json, problem_name):
+def write_pipeline_for_submission(primitive_dir, new_version_num, pipeline_json, problem_name):
     """
     Adds pipelines to the submodule directory and creates directories if it needs it
     :param primitive_dir: the python path of the primitive
