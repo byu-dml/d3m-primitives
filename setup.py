@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
 
 from byudml import __version__
+from byudml import __imputer_path__
+from byudml import __metafeature_path__
 
 
 setup(
@@ -20,8 +22,8 @@ setup(
     ],
     entry_points = {
         'd3m.primitives': [
-            'data_preprocessing.random_sampling_imputer.BYU = byudml.imputer.random_sampling_imputer:RandomSamplingImputer',
-            'metalearning.metafeature_extractor.BYU = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
+            '{} = byudml.imputer.random_sampling_imputer:RandomSamplingImputer'.format("".join(__imputer_path__.split(".")[2:])),
+            '{} = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'.format("".join(__metafeature_path__.split(".")[2:]))
         ]
     }
 )

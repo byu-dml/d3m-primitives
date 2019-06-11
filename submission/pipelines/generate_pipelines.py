@@ -8,6 +8,10 @@ from d3m.metadata import (
 
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
+from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
+import sys
+sys.path.append('./submission')
+from utils import get_new_d3m_path, clear_directory, write_pipeline_for_submission
 
 
 def generate_imputer_pipeline(task_type):
@@ -400,29 +404,66 @@ def remove_digests(
     return pipeline_json_structure
 
 
-for task_type in ['classification', 'regression']:
-    pipeline = generate_imputer_pipeline(task_type)
-    pipeline_json_structure = pipeline.to_json_structure()
-    remove_digests(
-        pipeline_json_structure, exclude_primitives={
-            RandomSamplingImputer.metadata.query()['id']
-        }
-    )
-    pipeline_path = './pipelines/random_sampling_imputer/{}.json'.format(
-        pipeline_json_structure['id']
-    )
-    json.dump(pipeline_json_structure, open(pipeline_path, 'w'), indent=4)
-    os.chmod(pipeline_path, 0o777)
+def update_pipeline(
+    pipeline_json_structure, filename=None
+):
+    """
+    This function updates the pipeline's digests and version numbers
 
-    pipeline = generate_metafeature_pipeline(task_type)
-    pipeline_json_structure = pipeline.to_json_structure()
-    remove_digests(
-        pipeline_json_structure, exclude_primitives={
-            MetafeatureExtractor.metadata.query()['id']
-        }
-    )
-    pipeline_path = './pipelines/metafeature_extractor/{}.json'.format(
-        pipeline_json_structure['id']
-    )
-    json.dump(pipeline_json_structure, open(pipeline_path, 'w'), indent=4)
-    os.chmod(pipeline_path, 0o777)
+    Parameters
+    ----------
+    pipeline_json_structure: the pipeline in JSON form (WITHOUT) digests.  This or the `filename` parameter is mandatory
+    filename: the filename of the pipeline json, so we can read it in
+
+    :return a pipeline with updated digests
+    """
+    if pipeline_json_structure is None and filename is None:
+        raise ValueError("No pipeline json was given")
+    elif pipeline_json_structure is None:
+        with open(filename, "r") as file:
+            # NOTE: must be a pipeline with no digests, or recent digests
+            # NOTE: reading this in as straight JSON doesn't work so we have to use the pipeline_module
+            pipeline_to_update = pipeline_module.Pipeline.from_json(string_or_file=file).to_json_structure()
+    else:
+        pipeline_to_update = pipeline_module.Pipeline.from_json(json.dumps(pipeline_json_structure)).to_json_structure()
+
+    for step in pipeline_to_update['steps']:
+        # if not updated, check and update
+        primitive = pipeline_module.PrimitiveStep(
+            primitive=d3m_index.get_primitive(
+                step["primitive"]["python_path"]
+            )
+        )
+        check_step = primitive.to_json_structure()
+        # lets verify that both are updated
+        assert check_step["primitive"]["version"] == step["primitive"]["version"], "Updating version failed"
+
+    return pipeline_to_update
+
+
+def main():
+    # get directory ready
+    byu_dir = get_new_d3m_path()
+    clear_directory(byu_dir)
+
+    for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')]:
+        # generate and update imputer
+        pipeline = generate_imputer_pipeline(problem_type)
+        pipeline_json_structure = pipeline.to_json_structure()
+        pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
+                                                 RandomSamplingImputer.metadata.query()['id']})
+        pipeline_json_structure = update_pipeline(pipeline_json_structure)
+        # place in submodule
+        write_pipeline_for_submission(os.path.join(byu_dir, __imputer_path__), str(__imputer_version__), pipeline_json_structure, problem_name)
+
+        # generate and update metafeatures
+        pipeline = generate_metafeature_pipeline(problem_type)
+        pipeline_json_structure = pipeline.to_json_structure()
+        pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
+                                                 MetafeatureExtractor.metadata.query()['id']})
+        pipeline_json_structure = update_pipeline(pipeline_json_structure)
+        # place in submodule
+        write_pipeline_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, problem_name)
+
+if __name__ == '__main__':
+    main()
