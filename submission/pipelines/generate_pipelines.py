@@ -10,8 +10,9 @@ from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
 from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
 import sys
-sys.path.append(".")
-from submission.utils import get_new_d3m_path, clear_directory, write_pipeline_for_submission
+sys.path.append('./submission')
+from utils import get_new_d3m_path, clear_directory, write_pipeline_for_submission
+
 
 def generate_imputer_pipeline(task_type):
     if task_type == 'classification':
