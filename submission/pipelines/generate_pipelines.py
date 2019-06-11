@@ -6,8 +6,9 @@ from d3m.metadata import (
     base as metadata_base, pipeline as pipeline_module
 )
 
-from byudml.imputer.random_sampling_imputer import (RandomSamplingImputer, __primitive_version__ as imputer_version, __python_path__ as imputer_path)
-from byudml.metafeature_extraction.metafeature_extraction import (MetafeatureExtractor, __primitive_version__ as metafeatures_version, __python_path__ as metafeature_path)
+from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
+from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
+from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
 import sys
 sys.path.append(".")
 from submission.utils import get_new_d3m_path, clear_directory, create_and_add_pipelines_for_submission
@@ -451,7 +452,7 @@ for task_type in ['classification', 'regression']:
                                              RandomSamplingImputer.metadata.query()['id']})
     pipeline_json_structure = update_pipeline(pipeline_json_structure)
     # place in submodule
-    create_and_add_pipelines_for_submission(os.path.join(byu_dir, imputer_path), str(imputer_version), pipeline_json_structure, '185_baseball_problem')
+    create_and_add_pipelines_for_submission(os.path.join(byu_dir, __imputer_path__), str(__imputer_version__), pipeline_json_structure, '185_baseball_problem')
 
     # generate and update metafeatures
     pipeline = generate_metafeature_pipeline(task_type)
@@ -460,7 +461,7 @@ for task_type in ['classification', 'regression']:
                                              MetafeatureExtractor.metadata.query()['id']})
     pipeline_json_structure = update_pipeline(pipeline_json_structure)
     # place in submodule
-    create_and_add_pipelines_for_submission(os.path.join(byu_dir, metafeature_path), str(metafeatures_version), pipeline_json_structure, '185_baseball_problem')
+    create_and_add_pipelines_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, '185_baseball_problem')
 
 
 
