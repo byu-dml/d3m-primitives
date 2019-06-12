@@ -10,13 +10,13 @@ from d3m.metadata import (
 from byudml import __imputer_path__
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
+from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
 import sys
-sys.path.append(".")
-from submission.utils import get_new_d3m_path,  extract_byu_info, clear_directory, create_and_add_to_directory, seed_datasets_exlines, create_meta_script_seed
+sys.path.append('./submission')
+from utils import get_new_d3m_path, clear_directory, write_pipeline_for_submission
 
 real_mongo_port=12345
 lab_hostname = "computer"
-
 
 def generate_imputer_pipeline(task_type):
     if task_type == 'classification':
@@ -409,7 +409,7 @@ def remove_digests(
     return pipeline_json_structure
 
 
-def update_digest(
+def update_pipeline(
     pipeline_json_structure, filename=None
 ):
     """
@@ -423,7 +423,7 @@ def update_digest(
     :return a pipeline with updated digests
     """
     if pipeline_json_structure is None and filename is None:
-        raise Exception
+        raise ValueError("No pipeline json was given")
     elif pipeline_json_structure is None:
         with open(filename, "r") as file:
             # NOTE: must be a pipeline with no digests, or recent digests
@@ -572,3 +572,32 @@ if __name__ == "__main__":
         # add any other pipelines
         add_best_pipelines()
 
+    return pipeline_to_update
+
+
+def main():
+    # get directory ready
+    byu_dir = get_new_d3m_path()
+    clear_directory(byu_dir)
+
+    for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')]:
+        # generate and update imputer
+        pipeline = generate_imputer_pipeline(problem_type)
+        pipeline_json_structure = pipeline.to_json_structure()
+        pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
+                                                 RandomSamplingImputer.metadata.query()['id']})
+        pipeline_json_structure = update_pipeline(pipeline_json_structure)
+        # place in submodule
+        write_pipeline_for_submission(os.path.join(byu_dir, __imputer_path__), str(__imputer_version__), pipeline_json_structure, problem_name)
+
+        # generate and update metafeatures
+        pipeline = generate_metafeature_pipeline(problem_type)
+        pipeline_json_structure = pipeline.to_json_structure()
+        pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
+                                                 MetafeatureExtractor.metadata.query()['id']})
+        pipeline_json_structure = update_pipeline(pipeline_json_structure)
+        # place in submodule
+        write_pipeline_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, problem_name)
+
+if __name__ == '__main__':
+    main()
