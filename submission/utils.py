@@ -85,6 +85,24 @@ def write_pipeline_for_submission(primitive_dir, new_version_num, pipeline_json,
         f.write(json.dumps(create_meta_script_seed(problem_name), indent=4))
         os.chmod(pipeline_name, 0o777)
 
+def get_pipeline_from_database(pipeline_id, mongo_client):
+    """
+    This function gets a pipeline from our local database given an id
+
+    Parameters
+    ----------
+    pipeline_id: the id of the pipeline to grab
+    mongo_client: a connection to the database
+
+    :return a pipeline matching the id
+    """
+    collection = mongo_client.metalearning.pipelines
+    pipeline_to_write = collection.find({"id": pipeline_id})
+    for pipeline in pipeline_to_write:
+        # should only be one pipeline
+        return pipeline
+    raise FileExistsError("Pipeline ID does not exist in the database")
+
 
 seed_datasets_exlines = {
     "1491_one_hundred_plants_margin": {"score" : 0.862722, "mit-score": 0.693786, "problem": "accuracy"},
