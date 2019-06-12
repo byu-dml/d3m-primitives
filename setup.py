@@ -4,9 +4,6 @@ from byudml import __version__
 from byudml import __imputer_path__
 from byudml import __metafeature_path__
 
-# make sure this is a valid entrypoint
-assert "d3m.primitives.metalearning.metafeature_extractor.BYU" == ("d3m.primitives." + ".".join(__metafeature_path__.split(".")[2:]))
-
 setup(
     name='byudml',
     packages = find_packages(include=['byudml', 'byudml.*']),
