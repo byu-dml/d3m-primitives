@@ -17,7 +17,7 @@ def get_new_d3m_path():
 
 def create_meta_script_seed(problem, seed=True):
     """
-    Update this as time goes on.  This is only for SEED datasets
+    Creates the meta file for a given problem.
     :param problem: the name of the problem for the dataset
     :return: the meta file
     """
@@ -48,17 +48,6 @@ def create_meta_script_seed(problem, seed=True):
             }
 
 
-def extract_byu_info(pipeline_json):
-    """
-
-    :param pipeline_json: the pipeline in json form
-    :returns the python path of the BYU primitive, and the version number of the primitive
-    """
-    for primitive_step in pipeline_json["steps"]:
-        if "BYU" in primitive_step["primitive"]["python_path"]:
-            return primitive_step["primitive"]["python_path"], primitive_step["primitive"]["version"]
-
-
 def clear_directory(dir_path):
     """
     CAREFUL: this will DELETE ALL FILES in dirs_path
@@ -68,11 +57,10 @@ def clear_directory(dir_path):
     """
     files = glob.glob(dir_path + '/*')
     for f in files:
-        print("Deleting all files in", f)
         shutil.rmtree(f)
 
 
-def create_and_add_to_directory(primitive_dir, new_version_num, pipeline_json, problem_name='185_baseball'):
+def write_pipeline_for_submission(primitive_dir, new_version_num, pipeline_json, problem_name):
     """
     Adds pipelines to the submodule directory and creates directories if it needs it
     :param primitive_dir: the python path of the primitive
@@ -81,14 +69,7 @@ def create_and_add_to_directory(primitive_dir, new_version_num, pipeline_json, p
     :param problem_name: the name of the problem
     """
     # make folders if they don't exist already
-    if not os.path.exists(primitive_dir):
-        os.makedirs(primitive_dir)
-
-    version_dir = os.path.join(primitive_dir, new_version_num)
-    if not os.path.exists(version_dir):
-        os.makedirs(version_dir)
-
-    pipeline_dir = os.path.join(version_dir, "pipelines")
+    pipeline_dir = os.path.join(primitive_dir, new_version_num, "pipelines")
     if not os.path.exists(pipeline_dir):
         os.makedirs(pipeline_dir)
 
@@ -103,6 +84,24 @@ def create_and_add_to_directory(primitive_dir, new_version_num, pipeline_json, p
     with open(meta_name, "w") as f:
         f.write(json.dumps(create_meta_script_seed(problem_name), indent=4))
         os.chmod(pipeline_name, 0o777)
+
+def get_pipeline_from_database(pipeline_id, mongo_client):
+    """
+    This function gets a pipeline from our local database given an id
+
+    Parameters
+    ----------
+    pipeline_id: the id of the pipeline to grab
+    mongo_client: a connection to the database
+
+    :return a pipeline matching the id
+    """
+    collection = mongo_client.metalearning.pipelines
+    pipeline_to_write = collection.find({"id": pipeline_id})
+    for pipeline in pipeline_to_write:
+        # should only be one pipeline
+        return pipeline
+    raise FileExistsError("Pipeline ID does not exist in the database")
 
 
 seed_datasets_exlines = {
@@ -150,9 +149,4 @@ seed_datasets_exlines = {
     "uu5_heartstatlog": {"score" : 0.657143, "mit-score": 0.657143,"problem": "accuracy"},
     "uu6_hepatitis": {"score" : 0.421053,"mit-score": 0.421053, "problem": "accuracy"},
     "uu7_pima_diabetes": {"score" : 0.56, "mit-score": 0.56, "problem": "accuracy"},
-}
-
-
-update_id_table : {
-    "ebfeb6f0-e366-4082-b1a7-602fd50acc96": "ebfeb6f0-e366-4082-b1a7-602fd50acc96"
 }

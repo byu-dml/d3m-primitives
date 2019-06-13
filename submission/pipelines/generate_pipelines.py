@@ -7,16 +7,16 @@ from d3m.metadata import (
     base as metadata_base, pipeline as pipeline_module
 )
 
-from byudml import __imputer_path__
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
+from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
 import sys
-sys.path.append(".")
-from submission.utils import get_new_d3m_path,  extract_byu_info, clear_directory, create_and_add_to_directory, seed_datasets_exlines, create_meta_script_seed
+sys.path.append('.')
+from submission.utils import (get_new_d3m_path, clear_directory, write_pipeline_for_submission, get_pipeline_from_database, \
+                              seed_datasets_exlines, create_meta_script_seed)
 
-real_mongo_port=12345
+real_mongo_port = 12345
 lab_hostname = "computer"
-
 
 def generate_imputer_pipeline(task_type):
     if task_type == 'classification':
@@ -408,12 +408,11 @@ def remove_digests(
     while len(pipeline_json_structure["inputs"]) > 1:
         del pipeline_json_structure["inputs"][-1]
         
-
     return pipeline_json_structure
 
 
-def update_digest(
-    pipeline_json_structure, filename=None
+def update_pipeline(
+    pipeline_to_update, filename=None
 ):
     """
     This function updates the pipeline's digests and version numbers
@@ -425,19 +424,19 @@ def update_digest(
 
     :return a pipeline with updated digests
     """
-    if pipeline_json_structure is None and filename is None:
-        raise Exception
-    elif pipeline_json_structure is None:
+    if pipeline_to_update is None and filename is None:
+        raise ValueError("No pipeline json was given")
+    elif pipeline_to_update is None:
         with open(filename, "r") as file:
             # NOTE: must be a pipeline with no digests, or recent digests
             # NOTE: reading this in as straight JSON doesn't work so we have to use the pipeline_module
-            pipeline_json_structure = pipeline_module.Pipeline.from_json(string_or_file=file).to_json_structure()
+            pipeline_to_update = pipeline_module.Pipeline.from_json(string_or_file=file).to_json_structure()
     else:
         try:
-            pipeline_json_structure = pipeline_module.Pipeline.from_json(json.dumps(pipeline_json_structure)).to_json_structure()
+            pipeline_to_update = pipeline_module.Pipeline.from_json(json.dumps(pipeline_to_update)).to_json_structure()
         except Exception as e:
             pass
-    for step in pipeline_json_structure['steps']:
+    for step in pipeline_to_update['steps']:
         # if not updated, check and update
         primitive = pipeline_module.PrimitiveStep(
             primitive=d3m_index.get_primitive(
@@ -453,31 +452,10 @@ def update_digest(
         version_matches = check_step["primitive"]["version"] == step["primitive"]["version"]
         if not version_matches:
             step["primitive"]["version"] = check_step["primitive"]["version"]
-        # make sure the digest exists
-        digests_match = "digest" in step["primitive"] and check_step["primitive"]["digest"] == step["primitive"]["digest"]
-        if not digests_match:
-            step["primitive"]["digest"] = check_step["primitive"]["digest"]
 
-    return pipeline_json_structure
-
-def get_pipeline_from_database(pipeline_id, mongo_client):
-    """
-    This function gets a pipeline from our local database given an id
-
-    Parameters
-    ----------
-    pipeline_id: the id of the pipeline to grab
-    mongo_client: a connection to the database
-
-    :return a pipeline matching the id
-    """
-    collection = mongo_client.metalearning.pipelines
-    pipeline_to_write = collection.find({"id": pipeline_id})
-    for pipeline in pipeline_to_write:
-        # should only be one pipeline
-        return pipeline
-
-def add_best_pipelines():
+    return pipeline_to_update
+        
+def add_best_pipelines(base_dir):
     """
     This function checks the best_pipelines.csv for the best pipelines for a dataset, prepares and updates it, and writes it to the submodule.
     It also check how many pipelines beat MIT-LL and the EXlines.
@@ -519,12 +497,11 @@ def add_best_pipelines():
         best_pipeline_json = get_pipeline_from_database(best_pipeline_id, mongo_client)
         del best_pipeline_json["_id"]
         no_digest_pipeline = remove_digests(best_pipeline_json)
-        updated_pipeline = update_digest(no_digest_pipeline)
+        updated_pipeline = update_pipeline(no_digest_pipeline)
             
         # get directory to put new pipelines
         if imputer_version == None:
-            _, imputer_version = extract_byu_info(updated_pipeline)
-            IMPUTER_PIPELINE_PATH = os.path.join(byu_dir, __imputer_path__, imputer_version, "pipelines/")
+            IMPUTER_PIPELINE_PATH = os.path.join(base_dir, __imputer_path__, __imputer_version__, "pipelines/")
 
         # prepare meta file
         seed = dataset_id in list(seed_datasets_exlines.keys())
@@ -543,35 +520,33 @@ def add_best_pipelines():
     print(beat_exlines, " pipelines beat EXlines")
     print(has_pipeline, " pipelines for seed datasets")
 
-
-if __name__ == "__main__":
+def main():
     # get directory ready
     byu_dir = get_new_d3m_path()
     clear_directory(byu_dir)
 
-    for task_type in ['classification', 'regression']:
+    # add our basic pipelines
+    for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')]:
         # generate and update imputer
-        pipeline = generate_imputer_pipeline(task_type)
+        pipeline = generate_imputer_pipeline(problem_type)
         pipeline_json_structure = pipeline.to_json_structure()
         pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
                                                  RandomSamplingImputer.metadata.query()['id']})
-        pipeline_json_structure = update_digest(pipeline_json_structure)
+        pipeline_json_structure = update_pipeline(pipeline_json_structure)
         # place in submodule
-        imputer_path, imputer_version = extract_byu_info(pipeline_json_structure)
-        os.environ['imputer_location'] = os.path.join(byu_dir, imputer_path)
-        create_and_add_to_directory(os.path.join(byu_dir, imputer_path), str(imputer_version), pipeline_json_structure)
+        write_pipeline_for_submission(os.path.join(byu_dir, __imputer_path__), str(__imputer_version__), pipeline_json_structure, problem_name)
 
         # generate and update metafeatures
-        pipeline = generate_metafeature_pipeline(task_type)
+        pipeline = generate_metafeature_pipeline(problem_type)
         pipeline_json_structure = pipeline.to_json_structure()
         pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
                                                  MetafeatureExtractor.metadata.query()['id']})
-        pipeline_json_structure = update_digest(pipeline_json_structure)
+        pipeline_json_structure = update_pipeline(pipeline_json_structure)
         # place in submodule
-        metafeature_path, metafeatures_version = extract_byu_info(pipeline_json_structure)
-        os.environ['metafeature_location'] = os.path.join(byu_dir, metafeature_path)
-        create_and_add_to_directory(os.path.join(byu_dir, metafeature_path), str(metafeatures_version), pipeline_json_structure)
+        write_pipeline_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, problem_name)
 
-        # add any other pipelines
-        add_best_pipelines()
+    # add other best pipelines
+    add_best_pipelines(byu_dir)
 
+if __name__ == '__main__':
+    main()

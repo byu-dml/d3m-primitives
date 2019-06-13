@@ -6,10 +6,8 @@ from d3m.primitive_interfaces.base import CallResult
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 
 from byudml import __version__ as __package_version__
+from byudml import __imputer_path__, __imputer_version__
 
-
-__primitive_version__ = '0.1.4'
-__python_path__ = 'd3m.primitives.data_preprocessing.random_sampling_imputer.BYU'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -30,7 +28,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
 
     metadata = metadata_base.PrimitiveMetadata({
         'id': 'ebfeb6f0-e366-4082-b1a7-602fd50acc96',
-        'version': __primitive_version__,
+        'version': __imputer_version__,
         'name': 'Random Sampling Imputer',
         'source': {
             'name': 'byu-dml',
@@ -49,7 +47,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py'
         ],
-        'python_path': __python_path__,
+        'python_path': __imputer_path__,
         'primitive_family': metadata_base.PrimitiveFamily.DATA_PREPROCESSING,
         'algorithm_types': [
             metadata_base.PrimitiveAlgorithmType.IMPUTATION
