@@ -6,7 +6,7 @@ from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtr
 from byudml import __imputer_path__, __metafeature_path__, __imputer_version__, __metafeature_version__
 import sys
 sys.path.append(".")
-from submission.utils import get_new_d3m_path
+from submission.utils import get_new_d3m_path, clear_directory
 
 PRIMITIVE_JSON = "primitive.json"
 
@@ -22,7 +22,9 @@ def save_primitive_json(primitive, path):
         os.chmod(path, 0o777)
 
 
+
 byu_dir = get_new_d3m_path()
+clear_directory(byu_dir)
 IMPUTER_JSON_PATH = os.path.join(byu_dir, __imputer_path__, __imputer_version__, PRIMITIVE_JSON)
 METAFEATURE_JSON_PATH = os.path.join(byu_dir, __metafeature_path__, __metafeature_version__, PRIMITIVE_JSON)
 

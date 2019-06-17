@@ -524,7 +524,6 @@ def add_best_pipelines(base_dir):
 def main():
     # get directory ready
     byu_dir = get_new_d3m_path()
-    clear_directory(byu_dir)
 
     # add our basic pipelines
     for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')]:
