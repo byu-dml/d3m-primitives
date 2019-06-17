@@ -9,6 +9,7 @@ byu_dir = get_new_d3m_path()
 print("##### Validating json files with D3M Validation #####")
 
 primitive_jsons = Path(byu_dir).glob('**/primitive.json')
+# TODO: add validation for primitive jsons
 # for filename in primitive_jsons:
 #     # strip the init file path off, since we are changing directories
 #     filename_real = "/".join(str(filename).split("/")[2:])
