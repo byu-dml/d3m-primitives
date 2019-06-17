@@ -405,6 +405,7 @@ def remove_digests(
         if step['primitive']['id'] not in exclude_primitives:
             del step['primitive']['digest']
 
+    # delete any extra inputs.  TODO: change the experimenter to not do this
     while len(pipeline_json_structure["inputs"]) > 1:
         del pipeline_json_structure["inputs"][-1]
         
