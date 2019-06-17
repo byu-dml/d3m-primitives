@@ -19,8 +19,7 @@ def save_primitive_json(primitive, path):
         print("Writing JSON primitive to", path)
         primitive_json = primitive.metadata.to_json_structure()
         json.dump(primitive_json, f, indent=4, sort_keys=True)
-
-    os.chmod(path, 0o777)
+        os.chmod(path, 0o777)
 
 
 byu_dir = get_new_d3m_path()

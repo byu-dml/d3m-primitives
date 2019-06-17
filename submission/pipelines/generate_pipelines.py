@@ -547,7 +547,8 @@ def main():
         write_pipeline_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, problem_name)
 
     # add other best pipelines
-    add_best_pipelines(byu_dir)
+    # TODO: update the experimenter to produce valid pipelines
+    # add_best_pipelines(byu_dir)
 
 if __name__ == '__main__':
     main()

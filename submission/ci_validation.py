@@ -7,7 +7,7 @@ from submission.utils import get_new_d3m_path
 
 byu_dir = get_new_d3m_path()
 print("##### Validating json files with D3M Validation #####")
-# validate primitive jsons
+
 primitive_jsons = Path(byu_dir).glob('**/primitive.json')
 for filename in primitive_jsons:
     # strip the init file path off, since we are changing directories
