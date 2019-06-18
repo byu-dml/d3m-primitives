@@ -2,6 +2,7 @@ import json
 import os
 import pymongo
 import pandas as pd
+import uuid
 from d3m import index as d3m_index
 from d3m.metadata import (
     base as metadata_base, pipeline as pipeline_module
@@ -18,8 +19,10 @@ from submission.utils import (get_new_d3m_path, clear_directory, write_pipeline_
 real_mongo_port = 12345
 lab_hostname = "computer"
 
-def generate_imputer_pipeline(task_type):
-    if task_type == 'classification':
+def generate_imputer_pipeline(task_type, random_id=False):
+    if random_id:
+        pipeline_id = str(uuid.uuid4())
+    elif task_type == 'classification':
         pipeline_id = 'f4fe3fcc-45fe-4c85-8845-549e2f466f21'
     elif task_type == 'regression':
         pipeline_id = '74f5ccb1-053a-46cf-ad7f-005f67a15652'
@@ -194,8 +197,10 @@ def generate_imputer_pipeline(task_type):
     return pipeline
 
 
-def generate_metafeature_pipeline(task_type):
-    if task_type == 'classification':
+def generate_metafeature_pipeline(task_type, random_id=False):
+    if random_id:
+        pipeline_id = str(uuid.uuid4())
+    elif task_type == 'classification':
         pipeline_id = 'b32b9af1-34b4-437b-ad83-650f7df10acb'
     elif task_type == 'regression':
         pipeline_id = '3013ad40-7c51-4991-b0fb-dbec65607979'
@@ -524,11 +529,13 @@ def add_best_pipelines(base_dir):
 def main():
     # get directory ready
     byu_dir = get_new_d3m_path()
+    challenge_names = ["534_cps_85_wages", "1491_one_hundred_plants_margin", "LL0_acled_reduced"]
     challenge_problems = [('regression', '534_cps_85_wages'), ('classification', '1491_one_hundred_plants_margin'), ('regression', 'LL0_acled_reduced')]
     # add our basic pipelines
     for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')] + challenge_problems:
+        is_challenge_prob = problem_name in challenge_names
         # generate and update imputer
-        pipeline = generate_imputer_pipeline(problem_type)
+        pipeline = generate_imputer_pipeline(problem_type, random_id=is_challenge_prob)
         pipeline_json_structure = pipeline.to_json_structure()
         pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
                                                  RandomSamplingImputer.metadata.query()['id']})
@@ -537,7 +544,7 @@ def main():
         write_pipeline_for_submission(os.path.join(byu_dir, __imputer_path__), str(__imputer_version__), pipeline_json_structure, problem_name)
 
         # generate and update metafeatures
-        pipeline = generate_metafeature_pipeline(problem_type)
+        pipeline = generate_metafeature_pipeline(problem_type, random_id=is_challenge_prob)
         pipeline_json_structure = pipeline.to_json_structure()
         pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
                                                  MetafeatureExtractor.metadata.query()['id']})
