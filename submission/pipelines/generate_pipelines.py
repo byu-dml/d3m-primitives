@@ -524,9 +524,9 @@ def add_best_pipelines(base_dir):
 def main():
     # get directory ready
     byu_dir = get_new_d3m_path()
-
+    challenge_problems = [('regression', '534_cps_85_wages'), ('classification', '1491_one_hundred_plants_margin'), ('regression', 'LL0_acled_reduced')]
     # add our basic pipelines
-    for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')]:
+    for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')] + challenge_problems:
         # generate and update imputer
         pipeline = generate_imputer_pipeline(problem_type)
         pipeline_json_structure = pipeline.to_json_structure()
