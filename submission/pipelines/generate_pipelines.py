@@ -404,6 +404,10 @@ def remove_digests(
     for step in pipeline_json_structure['steps']:
         if step['primitive']['id'] not in exclude_primitives:
             del step['primitive']['digest']
+
+    # delete any extra inputs.  TODO: change the experimenter to not do this
+    while len(pipeline_json_structure["inputs"]) > 1:
+        del pipeline_json_structure["inputs"][-1]
         
     return pipeline_json_structure
 
@@ -502,7 +506,7 @@ def add_best_pipelines(base_dir):
 
         # prepare meta file
         seed = dataset_id in list(seed_datasets_exlines.keys())
-        meta_file = create_meta_script_seed(dataset, seed=seed)
+        meta_file = create_meta_script_seed(dataset_id, seed=seed)
 
         print("Writing pipeline for dataset: {} to {}".format(dataset, IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json"))
         with open(IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json", "w") as file:
@@ -520,7 +524,6 @@ def add_best_pipelines(base_dir):
 def main():
     # get directory ready
     byu_dir = get_new_d3m_path()
-    clear_directory(byu_dir)
 
     # add our basic pipelines
     for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')]:
@@ -543,7 +546,8 @@ def main():
         write_pipeline_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, problem_name)
 
     # add other best pipelines
-    add_best_pipelines(byu_dir)
+    # TODO: update the experimenter to produce valid pipelines
+    # add_best_pipelines(byu_dir)
 
 if __name__ == '__main__':
     main()
