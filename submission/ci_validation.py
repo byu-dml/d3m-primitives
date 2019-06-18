@@ -18,7 +18,8 @@ primitive_jsons = Path(byu_dir).glob('**/primitive.json')
 
 # check pipelines and meta files
 for filename in Path(byu_dir).glob('**/*.json'):
-    if filename in primitive_jsons:
+    if str(filename).split("/")[-1] == "primitive.json":
+        # don't validate the primitive.json as a pipeline
         continue
     # strip the init file path off, since we are changing directories
     print("Validating pipeline:", filename)
