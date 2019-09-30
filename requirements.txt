@@ -10,7 +10,7 @@ Bottleneck==1.2.1
 certifi==2019.3.9
 chardet==3.0.4
 -e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@28bd535c730fcf47d4b82adf72b89b740f799e2a#egg=common_primitives
-cryptography==2.1.4
+cryptography==2.3
 custom-inherit==2.2.0
 cycler==0.10.0
 cymem==2.0.2
