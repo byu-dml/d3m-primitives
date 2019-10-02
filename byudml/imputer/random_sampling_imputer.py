@@ -13,17 +13,28 @@ Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 
+class Hyperparams(hyperparams.Hyperparams):
+    drop_cols_all_unknown_vals = hyperparams.Enumeration[bool](
+        values=[True, False],
+        default=True,
+        semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
+
+    )
+
+
 class Params(params.Params):
 
     known_values: container.list.List
 
 
-class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, hyperparams.Hyperparams]):
+class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
     """
     This imputes missing values in a DataFrame by sampling known values from
     each column independently. If the training data has no known values in a
-    particular column, no values are imputed.
+    particular column, no values are imputed. The default behavior is to
+    remove columns with no known values. These columns can be retained by
+    setting the drop_cols_all_unknown_vals hyperparameter to True.
     """
 
     metadata = metadata_base.PrimitiveMetadata({
@@ -58,7 +69,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
         ]
     })
 
-    def __init__(self, *, hyperparams: hyperparams.Hyperparams, random_seed: int=0) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int=0) -> None:
         super().__init__(hyperparams=hyperparams, random_seed = random_seed)
         self._column_vals: container.list.List[container.list.List] = None
         self._random_state = np.random.RandomState(self.random_seed)
@@ -96,7 +107,10 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
                 )
             )
 
-        columns_to_remove: list = []  # Columns that have no known values in them need to be dropped
+        drop_cols_all_unknown_vals: bool = self.hyperparams['drop_cols_all_unknown_vals']
+        if drop_cols_all_unknown_vals:
+            columns_to_remove: list = []  # Columns that have no known values in them need to be dropped
+
         for i, col_name in enumerate(inputs):
             # ignores empty columns
             if len(self._known_values[i]) > 0:
@@ -108,15 +122,12 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
                     )
                     # TODO: update column metadata?
             else:
-                self.logger.warning(
-                    'Cannot sample values to impute from column {} \'{}\', which has no known values'.format(
-                        i, col_name
-                    )
-                )
-                # Remove the column that has no values
-                self.logger.warning('Removing column {} \'{}\''.format(i, col_name))
-                columns_to_remove.append(i)
-        inputs: Inputs = inputs.remove_columns(columns_to_remove)
+                if drop_cols_all_unknown_vals:
+                    # Remove the column that has no values
+                    columns_to_remove.append(i)
+
+        if drop_cols_all_unknown_vals:
+            inputs: Inputs = inputs.remove_columns(columns_to_remove)
 
         # TODO: update global metadata if any values were imputed?
         # inputs.metadata = inputs.metadata.update((), {

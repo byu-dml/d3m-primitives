@@ -21,7 +21,7 @@ DATA_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'fixed-split-tabular-split
 SCORING_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'scoring.yml')
 
 
-class TestMetafeatureExtractor(unittest.TestCase):
+class TestRandomSamplingImputer(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
