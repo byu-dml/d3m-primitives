@@ -27,7 +27,7 @@ class TestMetafeatureExtractor(unittest.TestCase):
     def setUpClass(cls):
         index.register_primitive(RandomSamplingImputer.metadata.query()['python_path'], RandomSamplingImputer)
 
-        cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '185_baseball')
+        cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '38_sick')
         cls.classification_pipeline_paths = []
         for filename in CLASSIFICATION_PIPELINE_FILENAMES:
             cls.classification_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))

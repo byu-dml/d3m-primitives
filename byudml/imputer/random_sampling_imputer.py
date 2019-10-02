@@ -96,6 +96,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
                 )
             )
 
+        columns_to_remove: list = []  # Columns that have no known values in them need to be dropped
         for i, col_name in enumerate(inputs):
             # ignores empty columns
             if len(self._known_values[i]) > 0:
@@ -108,8 +109,14 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
                     # TODO: update column metadata?
             else:
                 self.logger.warning(
-                    'Cannot sample values to impute from column {} \'{}\', which has no known values'.format(i. col_name)
+                    'Cannot sample values to impute from column {} \'{}\', which has no known values'.format(
+                        i, col_name
+                    )
                 )
+                # Remove the column that has no values
+                self.logger.warning('Removing column {} \'{}\''.format(i, col_name))
+                columns_to_remove.append(i)
+        inputs: Inputs = inputs.remove_columns(columns_to_remove)
 
         # TODO: update global metadata if any values were imputed?
         # inputs.metadata = inputs.metadata.update((), {
