@@ -18,7 +18,8 @@ class Hyperparams(hyperparams.Hyperparams):
         values=[True, False],
         default=True,
         semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
-
+        description='If a column has all unknown values, none of its values can be imputed. If this hyperparameter\n' \
+        'is True, such columns will be dropped. Otherwise, nothing will be done to columns with all unknown values.'
     )
 
 
