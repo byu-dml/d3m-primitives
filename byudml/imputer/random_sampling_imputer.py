@@ -5,6 +5,7 @@ from d3m.metadata import base as metadata_base, hyperparams, params
 from d3m.primitive_interfaces.base import CallResult
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 
+from byudml import strings
 from byudml import __version__ as __package_version__
 from byudml import __imputer_path__, __imputer_version__
 
@@ -17,9 +18,8 @@ class Hyperparams(hyperparams.Hyperparams):
     drop_cols_all_unknown_vals = hyperparams.Enumeration[bool](
         values=[True, False],
         default=True,
-        semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
-        description='If a column has all unknown values, none of its values can be imputed. If this hyperparameter\n' \
-        'is True, such columns will be dropped. Otherwise, nothing will be done to columns with all unknown values.'
+        semantic_types=[strings.CONTROL_PARAMETER_SEMANTIC_TYPE_URL],
+        description=strings.DROP_COLS_ALL_UNKNOWN_VALS_DESC
     )
 
 
@@ -108,7 +108,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
                 )
             )
 
-        drop_cols_all_unknown_vals: bool = self.hyperparams['drop_cols_all_unknown_vals']
+        drop_cols_all_unknown_vals: bool = self.hyperparams[strings.DROP_COLS_ALL_UNKNOWN_VALS_NAME]
         if drop_cols_all_unknown_vals:
             columns_to_remove: list = []  # Columns that have no known values in them need to be dropped
 
