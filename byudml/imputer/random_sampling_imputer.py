@@ -118,7 +118,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
                 inputs_isnull = inputs[col_name].isnull()
                 n_missing = sum(inputs_isnull)
                 if n_missing > 0:
-                    inputs[col_name][inputs_isnull] = self._random_state.choice(
+                    inputs.loc[inputs_isnull, col_name] = self._random_state.choice(
                         self._known_values[i], n_missing, replace=True
                     )
                     # TODO: update column metadata?

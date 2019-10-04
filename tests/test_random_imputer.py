@@ -71,23 +71,24 @@ class TestRandomSamplingImputer(unittest.TestCase):
         leftover_cols: list = list(data_frame)
         leftover_cols.remove(test_strings.ALL_UNKNOWN_KEY)
 
-        # Test dropping a column with all unknown values
-        output_data_frame: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=True)
-        output_cols: list = list(output_data_frame)
-        self.assertEqual(output_cols, leftover_cols)
-        self.assertNotEqual(output_cols, original_cols)
-
         # Test retaining a column with all unknown values
         output_data_frame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=False)
         output_cols: list = list(output_data_frame)
         self.assertEqual(output_cols, original_cols)
         self.assertNotEqual(output_cols, leftover_cols)
 
+        # Test dropping a column with all unknown values
+        data_frame = self._get_test_data_frame()
+        output_data_frame: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=True)
+        output_cols: list = list(output_data_frame)
+        self.assertEqual(output_cols, leftover_cols)
+        self.assertNotEqual(output_cols, original_cols)
+        self.assertTrue(len(output_cols) < len(original_cols))
+
     def _get_imputer_output(self, data_frame: DataFrame, drop_cols_all_unknown_vals: bool):
         imputer = self._get_imputer(data_frame, drop_cols_all_unknown_vals)
         imputer.fit()
-        input_data_frame = data_frame.copy(deep=True)
-        output_data_frame = imputer.produce(inputs=input_data_frame).value
+        output_data_frame = imputer.produce(inputs=data_frame).value
         return output_data_frame
 
     @staticmethod
