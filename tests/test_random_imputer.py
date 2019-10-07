@@ -4,6 +4,7 @@ import unittest
 
 from d3m import index
 from d3m.container.pandas import DataFrame
+from d3m.metadata.base import DataMetadata, ALL_ELEMENTS
 
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.imputer.random_sampling_imputer import Hyperparams
@@ -72,23 +73,27 @@ class TestRandomSamplingImputer(unittest.TestCase):
         leftover_cols.remove(test_strings.ALL_UNKNOWN_KEY)
 
         # Test retaining a column with all unknown values
-        output_data_frame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=False)
+        output_data_frame: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=False)
         output_cols: list = list(output_data_frame)
         self.assertEqual(output_cols, original_cols)
         self.assertNotEqual(output_cols, leftover_cols)
+        metadata_cols: list = self._get_metadata_cols(output_data_frame.metadata)
+        self.assertEqual(metadata_cols, output_cols)
 
         # Test dropping a column with all unknown values
-        data_frame = self._get_test_data_frame()
+        data_frame: DataFrame = self._get_test_data_frame()
         output_data_frame: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=True)
         output_cols: list = list(output_data_frame)
         self.assertEqual(output_cols, leftover_cols)
         self.assertNotEqual(output_cols, original_cols)
         self.assertTrue(len(output_cols) < len(original_cols))
+        metadata_cols: list = self._get_metadata_cols(output_data_frame.metadata)
+        self.assertEqual(metadata_cols, output_cols)
 
-    def _get_imputer_output(self, data_frame: DataFrame, drop_cols_all_unknown_vals: bool):
-        imputer = self._get_imputer(data_frame, drop_cols_all_unknown_vals)
+    def _get_imputer_output(self, data_frame: DataFrame, drop_cols_all_unknown_vals: bool) -> DataFrame:
+        imputer: RandomSamplingImputer = self._get_imputer(data_frame, drop_cols_all_unknown_vals)
         imputer.fit()
-        output_data_frame = imputer.produce(inputs=data_frame).value
+        output_data_frame: DataFrame = imputer.produce(inputs=data_frame).value
         return output_data_frame
 
     @staticmethod
@@ -116,3 +121,11 @@ class TestRandomSamplingImputer(unittest.TestCase):
         imputer: RandomSamplingImputer = RandomSamplingImputer(hyperparams=hyperparams)
         imputer.set_training_data(inputs=data_frame)
         return imputer
+
+    @staticmethod
+    def _get_metadata_cols(metadata: DataMetadata) -> list:
+        col_names: list = []
+        for i in metadata.get_elements((list(()) + [ALL_ELEMENTS])):
+            col_name: str = metadata.query_column_field(i, test_strings.COL_NAME_KEY)
+            col_names.append(col_name)
+        return col_names
