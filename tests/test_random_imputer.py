@@ -90,6 +90,21 @@ class TestRandomSamplingImputer(unittest.TestCase):
         metadata_cols: list = self._get_metadata_cols(output_data_frame.metadata)
         self.assertEqual(metadata_cols, output_cols)
 
+    def test_imputation_works(self):
+        """
+        Tests to make sure missing values are imputed in columns with some unknown values.
+        """
+        data_frame: DataFrame = self._get_test_data_frame()
+
+        output_df_no_drop: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=False)
+        self.assertFalse(output_df_no_drop[test_strings.ALL_KNOWN_KEY].isnull().values.any())
+        self.assertFalse(output_df_no_drop[test_strings.SOME_KNOWN_KEY].isnull().values.any())
+        self.assertTrue(output_df_no_drop[test_strings.ALL_UNKNOWN_KEY].isnull().values.any())
+
+        output_df_with_drop: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=True)
+        self.assertFalse(output_df_no_drop[test_strings.ALL_KNOWN_KEY].isnull().values.any())
+        self.assertFalse(output_df_with_drop[test_strings.SOME_KNOWN_KEY].isnull().values.any())
+
     def _get_imputer_output(self, data_frame: DataFrame, drop_cols_all_unknown_vals: bool) -> DataFrame:
         imputer: RandomSamplingImputer = self._get_imputer(data_frame, drop_cols_all_unknown_vals)
         imputer.fit()
