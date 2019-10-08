@@ -15,8 +15,7 @@ Outputs = container.pandas.DataFrame
 
 
 class Hyperparams(hyperparams.Hyperparams):
-    drop_cols_all_unknown_vals = hyperparams.Enumeration[bool](
-        values=[True, False],
+    drop_cols_all_unknown_vals = hyperparams.UniformBool(
         default=True,
         semantic_types=[strings.CONTROL_PARAMETER_SEMANTIC_TYPE_URL],
         description=strings.DROP_COLS_ALL_UNKNOWN_VALS_DESC
@@ -24,7 +23,6 @@ class Hyperparams(hyperparams.Hyperparams):
 
 
 class Params(params.Params):
-
     known_values: container.list.List
 
 
