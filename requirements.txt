@@ -80,7 +80,7 @@ pandas==0.23.4
 pathos==0.2.3
 patsy==0.5.1
 -e git+https://github.com/NewKnowledge/pcafeatures-d3m-wrapper.git@e61e47271324f57f04bb00e4530a0f63aa8fe9eb#egg=PcafeaturesD3MWrapper
-Pillow==6.0.0
+Pillow==6.2.0
 plac==0.9.6
 ply==3.11
 pox==0.2.5
