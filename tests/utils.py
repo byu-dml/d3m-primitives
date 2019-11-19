@@ -1,13 +1,20 @@
+from typing import List, NamedTuple
 import argparse
 import inspect
 import json
 import os
 
 from d3m import cli
+from d3m import container
 from d3m.metadata import problem as problem_module
+from d3m.metadata import base as metadata_base
+import pandas as pd
 
 DEFAULT_DATASET_DIR = '/datasets/training_datasets/LL0'
 
+# Semantic Types
+ATTRIBUTE = 'https://metadata.datadrivendiscovery.org/types/Attribute'
+PREDICTED_TARGET = 'https://metadata.datadrivendiscovery.org/types/PredictedTarget'
 
 def get_dataset_doc_path(dataset_name, dataset_dir=DEFAULT_DATASET_DIR):
     return os.path.join(
@@ -48,6 +55,53 @@ def get_data_splits_path(dataset_name, dataset_dir=DEFAULT_DATASET_DIR):
     return os.path.join(
         dataset_dir, dataset_name, dataset_name + '_problem', 'dataSplits.csv'
     )
+
+class Column(NamedTuple):
+    """
+    Represents a column in a d3m.container.DataFrame.
+    Used to make constructing d3m dataframes used for
+    testing more simple.
+    """
+    name: str
+    data: list
+    semantic_types: List[str]
+
+def make_df(cols: List[Column]) -> container.DataFrame:
+    """
+    Builds a d3m.container.DataFrame. Used to make constructing
+    d3m dataframes used for testing more simple.
+    """
+    # Make the data
+    df = container.DataFrame(
+        pd.DataFrame({ col.name: col.data for col in cols }),
+        generate_metadata=True
+    )
+    # Add each column's semantic types
+    for col in cols:
+        for semantic_type in col.semantic_types:
+            df.metadata = df.metadata.add_semantic_type(
+                (metadata_base.ALL_ELEMENTS, df.columns.get_loc(col.name)),
+                semantic_type
+            )
+    return df
+
+def print_df(df: container.DataFrame, name: str) -> None:
+    """Debug helper"""
+    print(f'\n"{name}" Data Frame:')
+    print(df)
+    print('column dtypes:')
+    print(df.dtypes)
+    print('column metadata:')
+    for col_i in range(df.shape[1]):
+        print(df.metadata.query_column(col_i))
+
+def are_df_elements_equal(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
+    """
+    Checks if all elemenst are equal between the dataframes using the
+    `==` operator. the pandas.DataFrame.equals method is finicky and
+    won't always return true when you expect it too.
+    """
+    return (df1 == df2).all(axis=None)
 
 
 class D3MDatasetUtil:
