@@ -155,7 +155,7 @@ typing==3.6.6
 typing-inspect==0.3.1
 tzlocal==1.5.1
 update-checker==0.16
-urllib3==1.23
+urllib3==1.24.2
 wasabi==0.2.2
 webcolors==1.8.1
 websocket-client==0.56.0
