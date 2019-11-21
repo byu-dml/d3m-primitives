@@ -3,7 +3,10 @@ import os
 import pymongo
 import pandas as pd
 import uuid
+from typing import Callable
+
 from d3m import index as d3m_index
+from d3m.primitive_interfaces.base import PrimitiveBase
 from d3m.metadata import (
     base as metadata_base, pipeline as pipeline_module
 )
@@ -14,7 +17,8 @@ from byudml import __imputer_version__, __imputer_path__,  __metafeature_version
 import sys
 sys.path.append('.')
 from submission.utils import (get_new_d3m_path, clear_directory, write_pipeline_for_submission, get_pipeline_from_database, \
-                              seed_datasets_exlines, create_meta_script_seed)
+                              seed_datasets_exlines)
+from submission.pipelines.run_pipeline import run_and_save_pipeline_for_submission
 
 real_mongo_port = 12345
 lab_hostname = "computer"
@@ -56,7 +60,7 @@ def generate_imputer_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.column_parser.DataFrameCommon'
+            'd3m.primitives.data_transformation.column_parser.Common'
         )
     )
     step.add_argument(
@@ -71,7 +75,7 @@ def generate_imputer_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon'
+            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.Common'
         )
     )
     step.add_hyperparameter(
@@ -90,7 +94,7 @@ def generate_imputer_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon'
+            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.Common'
         )
     )
     step.add_hyperparameter(
@@ -173,7 +177,7 @@ def generate_imputer_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.construct_predictions.DataFrameCommon'
+            'd3m.primitives.data_transformation.construct_predictions.Common'
         )
     )
     step.add_argument(
@@ -234,7 +238,7 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.column_parser.DataFrameCommon'
+            'd3m.primitives.data_transformation.column_parser.Common'
         )
     )
     step.add_argument(
@@ -264,7 +268,7 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon'
+            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.Common'
         )
     )
     step.add_hyperparameter(
@@ -283,7 +287,7 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon'
+            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.Common'
         )
     )
     step.add_hyperparameter(
@@ -370,7 +374,7 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.construct_predictions.DataFrameCommon'
+            'd3m.primitives.data_transformation.construct_predictions.Common'
         )
     )
     step.add_argument(
@@ -509,16 +513,11 @@ def add_best_pipelines(base_dir):
         if imputer_version == None:
             IMPUTER_PIPELINE_PATH = os.path.join(base_dir, __imputer_path__, __imputer_version__, "pipelines/")
 
-        # prepare meta file
-        seed = dataset_id in list(seed_datasets_exlines.keys())
-        meta_file = create_meta_script_seed(dataset_id, seed=seed)
-
         print("Writing pipeline for dataset: {} to {}".format(dataset, IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json"))
         with open(IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json", "w") as file:
             file.write(json.dumps(updated_pipeline, indent=4))
-
-        with open(IMPUTER_PIPELINE_PATH + best_pipeline_id + ".meta", "w") as file:
-            file.write(json.dumps(meta_file, indent=4))
+        
+        # TODO: Run the pipeline and save the pipeline run as well.
 
 
     print("############## RESULTS #################")
@@ -526,31 +525,67 @@ def add_best_pipelines(base_dir):
     print(beat_exlines, " pipelines beat EXlines")
     print(has_pipeline, " pipelines for seed datasets")
 
+def generate_and_update_primitive_pipeline(
+    primitive: PrimitiveBase,
+    pipeline_gen_f: Callable,
+    problem_type: str,
+    is_challenge_prob: bool
+) -> None:
+    pipeline = pipeline_gen_f(problem_type, random_id=is_challenge_prob)
+    pipeline_json_structure = pipeline.to_json_structure()
+    pipeline_json_structure = remove_digests(
+        pipeline_json_structure,
+        exclude_primitives={primitive.metadata.query()['id']}
+    )
+    return update_pipeline(pipeline_json_structure)
+
 def main():
     # get directory ready
     byu_dir = get_new_d3m_path()
+
+    # primitive and problem data
     challenge_names = ["534_cps_85_wages", "1491_one_hundred_plants_margin"]
     challenge_problems = [('regression', '534_cps_85_wages'), ('classification', '1491_one_hundred_plants_margin')]
-    # add our basic pipelines
+    primitives_data = [
+        {
+            'primitive': RandomSamplingImputer,
+            'gen_method': generate_imputer_pipeline,
+            'version': __imputer_version__
+        },
+        {
+            'primitive': MetafeatureExtractor,
+            'gen_method': generate_metafeature_pipeline,
+            'version': __metafeature_version__
+        }
+    ]
+
+    # add our basic pipelines to the submission
     for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')] + challenge_problems:
         is_challenge_prob = problem_name in challenge_names
-        # generate and update imputer
-        pipeline = generate_imputer_pipeline(problem_type, random_id=is_challenge_prob)
-        pipeline_json_structure = pipeline.to_json_structure()
-        pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
-                                                 RandomSamplingImputer.metadata.query()['id']})
-        pipeline_json_structure = update_pipeline(pipeline_json_structure)
-        # place in submodule
-        write_pipeline_for_submission(os.path.join(byu_dir, __imputer_path__), str(__imputer_version__), pipeline_json_structure, problem_name)
 
-        # generate and update metafeatures
-        pipeline = generate_metafeature_pipeline(problem_type, random_id=is_challenge_prob)
-        pipeline_json_structure = pipeline.to_json_structure()
-        pipeline_json_structure = remove_digests(pipeline_json_structure, exclude_primitives={
-                                                 MetafeatureExtractor.metadata.query()['id']})
-        pipeline_json_structure = update_pipeline(pipeline_json_structure)
-        # place in submodule
-        write_pipeline_for_submission(os.path.join(byu_dir, __metafeature_path__), str(__metafeature_version__), pipeline_json_structure, problem_name)
+        for primitive_data in primitives_data:
+            primitive = primitive_data['primitive']
+            # generate and update the pipeline for this primitive
+            pipeline_json = generate_and_update_primitive_pipeline(
+                primitive,
+                primitive_data['gen_method'],
+                problem_type,
+                is_challenge_prob
+            )
+            # save it into the primitives submodule for TA1 submission
+            primitive_path = primitive.metadata.query()['python_path']
+            submission_path = os.path.join(byu_dir, primitive_path, primitive_data['version'])
+            pipeline_path = write_pipeline_for_submission(
+                submission_path,
+                pipeline_json
+            )
+            # now run the pipeline and save its pipeline run into the
+            # submission as well
+            run_and_save_pipeline_for_submission(
+                pipeline_path, problem_name,
+                submission_path,
+                f'{pipeline_json["id"]}_{problem_name}'
+            )
 
     # add other best pipelines
     # TODO: update the experimenter to produce valid pipelines
