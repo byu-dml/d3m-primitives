@@ -10,7 +10,6 @@ from d3m.primitive_interfaces.base import PrimitiveBase
 from d3m.metadata import (
     base as metadata_base, pipeline as pipeline_module
 )
-from experimenter.pipeline_builder import EZPipeline
 
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
@@ -25,6 +24,7 @@ sys.path.append('.')
 from submission.utils import (get_new_d3m_path, clear_directory, write_pipeline_for_submission, get_pipeline_from_database, \
                               seed_datasets_exlines)
 from submission.pipelines.run_pipeline import run_and_save_pipeline_for_submission
+from submission.pipelines.pipeline_builder import EZPipeline
 
 real_mongo_port = 12345
 lab_hostname = "computer"

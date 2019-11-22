@@ -1,2 +1,5 @@
 pymongo==3.9.0
--e git+https://github.com/byu-dml/d3m-experimenter.git@develop#egg=d3m-experimenter
+# TODO: Once the newest dsbox gets added to the new docker container
+# we can remove this install. We need to use an updated version of
+# their encoder.
+-e git+https://github.com/usc-isi-i2/dsbox-primitives.git@master#egg=dsbox
