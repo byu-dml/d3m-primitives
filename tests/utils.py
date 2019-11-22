@@ -6,8 +6,8 @@ import os
 from d3m import cli
 from d3m.metadata import problem as problem_module
 
-DEFAULT_DATASET_DIR = '/datasets/training_datasets/LL0'
-DATASETS_DIR = '/datasets/seed_datasets_current'
+from tests.test_strings import DEFAULT_DATASET_DIR, DATASETS_DIR
+
 
 
 def get_dataset_doc_path(dataset_name, dataset_dir=DEFAULT_DATASET_DIR):
