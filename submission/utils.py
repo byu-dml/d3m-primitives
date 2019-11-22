@@ -2,6 +2,9 @@ import glob
 import json
 import os
 import shutil
+import gzip
+
+import yaml
 
 
 def get_new_d3m_path():
@@ -9,43 +12,10 @@ def get_new_d3m_path():
     Gets the name of the newest version path for d3m/byudml
     :return:
     """
-    new_directory = max(glob.glob('submission/primitives/v????.?.?'))
+    new_directory = max(glob.glob('submission/primitives/v????.??.??'))
     byu_path = "byu-dml"
     byu_dir = os.path.join(new_directory, byu_path)
     return byu_dir
-
-
-def create_meta_script_seed(problem, seed=True):
-    """
-    Creates the meta file for a given problem.
-    :param problem: the name of the problem for the dataset
-    :return: the meta file
-    """
-    if seed:
-        return \
-            {
-            "problem": "{0}_problem".format(problem),
-            "full_inputs": [
-                "{0}_dataset".format(problem)
-            ],
-            "train_inputs": [
-                "{0}_dataset_TRAIN".format(problem)
-            ],
-            "test_inputs": [
-                "{0}_dataset_TEST".format(problem)
-            ],
-            "score_inputs": [
-                "{0}_dataset_SCORE".format(problem)
-            ]
-        }
-    else:
-        return \
-            {
-                "problem": "{0}_problem".format(problem),
-                "full_inputs": [
-                    "{0}_dataset".format(problem)
-                ],
-            }
 
 
 def clear_directory(dir_path):
@@ -60,30 +30,26 @@ def clear_directory(dir_path):
         shutil.rmtree(f)
 
 
-def write_pipeline_for_submission(primitive_dir, new_version_num, pipeline_json, problem_name):
+def write_pipeline_for_submission(submission_path: str, pipeline_json: dict):
     """
-    Adds pipelines to the submodule directory and creates directories if it needs it
-    :param primitive_dir: the python path of the primitive
-    :param new_version_num: the latest version number of the primitive
+    Adds a pipeline to the submodule directory and creates directories if it needs it
+    :param submission_path: The directory where the primitive's pipelines and pipeline_runs go
     :param pipeline_json: the pipeline to be written to file
-    :param problem_name: the name of the problem
+    :returns pipeline_path: The path the pipeline was saved to
     """
     # make folders if they don't exist already
-    pipeline_dir = os.path.join(primitive_dir, new_version_num, "pipelines")
+    pipeline_dir = os.path.join(submission_path, "pipelines")
     if not os.path.exists(pipeline_dir):
         os.makedirs(pipeline_dir)
 
     # write json pipeline out
-    pipeline_name = os.path.join(pipeline_dir, pipeline_json["id"]+ ".json")
-    meta_name = os.path.join(pipeline_dir, pipeline_json["id"]+ ".meta")
+    pipeline_path = os.path.join(pipeline_dir, pipeline_json["id"]+ ".json")
 
-    with open(pipeline_name, "w") as f:
+    with open(pipeline_path, "w") as f:
         f.write(json.dumps(pipeline_json, indent=4))
-        os.chmod(pipeline_name, 0o777)
+        os.chmod(pipeline_path, 0o777)
 
-    with open(meta_name, "w") as f:
-        f.write(json.dumps(create_meta_script_seed(problem_name), indent=4))
-        os.chmod(pipeline_name, 0o777)
+    return pipeline_path
 
 def get_pipeline_from_database(pipeline_id, mongo_client):
     """
@@ -103,6 +69,26 @@ def get_pipeline_from_database(pipeline_id, mongo_client):
         return pipeline
     raise FileExistsError("Pipeline ID does not exist in the database")
 
+def check_pipeline_run_was_successful(pipeline_run_path: str) -> None:
+    with open(pipeline_run_path, 'r') as f:
+        for pipeline_run in yaml.full_load_all(f):
+            run_status = pipeline_run['status']['state']
+            if run_status != 'SUCCESS':
+                raise AssertionError(f'pipeline run {pipeline_run_path} was unsuccessful, with status: {run_status}')
+
+def gzip_file(file_path: str, *, remove_original: bool = False) -> str:
+    """
+    gzips the file at `file_path`, removing the original if
+    `remove_original = True`. Returns the file path of the
+    saved gzipped file.
+    """
+    zipped_file_name = f'{file_path}.gz'
+    with open(file_path, 'rb') as f_in:
+        with gzip.open(zipped_file_name, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    if remove_original:
+        os.remove(file_path)
+    return zipped_file_name
 
 seed_datasets_exlines = {
     "1491_one_hundred_plants_margin": {"score" : 0.862722, "mit-score": 0.693786, "problem": "accuracy"},

@@ -14,7 +14,6 @@ from tests import utils
 from tests import test_strings
 
 
-DATASETS_DIR = '/datasets/seed_datasets_current'
 PIPELINES_BASE_DIR = 'submission/pipelines'
 PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'random_sampling_imputer')
 CLASSIFICATION_PIPELINE_FILENAMES = [
@@ -33,12 +32,12 @@ class TestRandomSamplingImputer(unittest.TestCase):
     def setUpClass(cls):
         index.register_primitive(RandomSamplingImputer.metadata.query()['python_path'], RandomSamplingImputer)
 
-        cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, test_strings.CLASSIFICATION_DATASET_NAME)
+        cls.classification_dataset_util = utils.D3MDatasetUtil(utils.DATASETS_DIR, test_strings.CLASSIFICATION_DATASET_NAME)
         cls.classification_pipeline_paths = []
         for filename in CLASSIFICATION_PIPELINE_FILENAMES:
             cls.classification_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))
 
-        cls.regression_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '196_autoMpg')
+        cls.regression_dataset_util = utils.D3MDatasetUtil(utils.DATASETS_DIR, '196_autoMpg')
         cls.regression_pipeline_paths = []
         for filename in REGRESSION_PIPELINE_FILENAMES:
             cls.regression_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))

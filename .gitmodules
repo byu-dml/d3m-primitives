@@ -1,4 +1,5 @@
+
 [submodule "submission/primitives"]
 	path = submission/primitives
 	url = https://gitlab.com/byu-dml/primitives.git
-	branch = dyu-dml
+	branch = byu-dml
