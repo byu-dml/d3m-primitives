@@ -11,6 +11,7 @@ from d3m.metadata import base as metadata_base
 import pandas as pd
 
 DEFAULT_DATASET_DIR = '/datasets/training_datasets/LL0'
+DATASETS_DIR = '/datasets/seed_datasets_current'
 
 # Semantic Types
 ATTRIBUTE = 'https://metadata.datadrivendiscovery.org/types/Attribute'
@@ -107,7 +108,7 @@ def are_df_elements_equal(df1: pd.DataFrame, df2: pd.DataFrame) -> bool:
 class D3MDatasetUtil:
 
     def __init__(
-        self, dataset_dir: str = '/datasets/seed_datasets_current',
+        self, dataset_dir: str = DATASETS_DIR,
         dataset_name: str = '185_baseball'
     ):
         self.dataset_dir = dataset_dir

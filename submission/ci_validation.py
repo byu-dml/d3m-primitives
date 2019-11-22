@@ -16,14 +16,10 @@ primitive_jsons = Path(byu_dir).glob('**/primitive.json')
 #     print("Validating primitive:", filename_real)
 #     os.system("cd submission/primitives/; python3 run_validation.py {}; cd ../..".format(filename_real))  
 
-# check pipelines and meta files
-for filename in Path(byu_dir).glob('**/*.json'):
-    if str(filename).split("/")[-1] == "primitive.json":
-        # don't validate the primitive.json as a pipeline
-        continue
+# check the pipelines' validity
+for filename in Path(byu_dir).glob('**/pipelines/*.json'):
     # strip the init file path off, since we are changing directories
     print("Validating pipeline:", filename)
     meta_name = str(filename).replace(".json", ".meta")
-    os.system("python3 -m d3m pipeline describe {}".format(filename)) 
-    os.system("python3 -m d3m runtime -d /datasets fit-score -m {} -p {}".format(meta_name, filename))  
+    os.system("python3 -m d3m pipeline describe {}".format(filename))  
  
