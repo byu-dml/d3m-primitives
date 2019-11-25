@@ -16,7 +16,7 @@ setup(
     keywords = ['metalearning', 'metafeature', 'machine learning', 'metalearn', 'd3m_primitive'],
     install_requires = [
         'd3m',
-        'metalearn==0.5.4',
+        'metalearn==0.6.0',
         'numpy<=1.17.3',
         'pandas<=0.25.2'
     ],
