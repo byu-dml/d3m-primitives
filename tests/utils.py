@@ -6,24 +6,21 @@ import os
 from d3m import cli
 from d3m.metadata import problem as problem_module
 
-from tests.test_strings import DEFAULT_DATASET_DIR, DATASETS_DIR
 
-
-
-def get_dataset_doc_path(dataset_name, dataset_dir=DEFAULT_DATASET_DIR):
+def get_dataset_doc_path(dataset_name, dataset_dir):
     return os.path.join(
         dataset_dir, dataset_name, dataset_name + '_dataset', 'datasetDoc.json'
     )
 
 
-def get_dataset_doc(dataset_name, dataset_dir=DEFAULT_DATASET_DIR):
+def get_dataset_doc(dataset_name, dataset_dir):
     dataset_doc_path = get_dataset_doc_path(dataset_name, dataset_dir)
     with open(dataset_doc_path, 'r') as f:
         dataset_doc = json.load(f)
     return dataset_doc
 
 
-def get_problem_path(dataset_name, dataset_dir=DEFAULT_DATASET_DIR):
+def get_problem_path(dataset_name, dataset_dir):
     return os.path.join(
         dataset_dir, dataset_name, dataset_name + '_problem', 'problemDoc.json'
     )
@@ -45,7 +42,7 @@ def get_default_args(f):
     }
 
 
-def get_data_splits_path(dataset_name, dataset_dir=DEFAULT_DATASET_DIR):
+def get_data_splits_path(dataset_name, dataset_dir):
     return os.path.join(
         dataset_dir, dataset_name, dataset_name + '_problem', 'dataSplits.csv'
     )
@@ -53,10 +50,7 @@ def get_data_splits_path(dataset_name, dataset_dir=DEFAULT_DATASET_DIR):
 
 class D3MDatasetUtil:
 
-    def __init__(
-        self, dataset_dir: str = DATASETS_DIR,
-        dataset_name: str = '185_baseball'
-    ):
+    def __init__(self, dataset_dir: str, dataset_name: str):
         self.dataset_dir = dataset_dir
         self.dataset_name = dataset_name
 

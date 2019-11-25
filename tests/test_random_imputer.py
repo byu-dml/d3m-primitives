@@ -1,19 +1,18 @@
 import os
-import pandas as pd
 import unittest
 
-from d3m import index
-from d3m.container.pandas import DataFrame
-from d3m.metadata.base import DataMetadata, ALL_ELEMENTS
+import d3m
+from d3m import index, container
+from d3m.metadata import base as metadata_base
+import numpy as np
+import pandas as pd
 
-from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
-from byudml.imputer.random_sampling_imputer import Hyperparams
-from byudml import strings
+from byudml.imputer.random_sampling_imputer import Hyperparams, RandomSamplingImputer
 
 from tests import utils
-from tests import test_strings
 
 
+DATASETS_DIR = '/datasets/seed_datasets_current'
 PIPELINES_BASE_DIR = 'submission/pipelines'
 PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'random_sampling_imputer')
 CLASSIFICATION_PIPELINE_FILENAMES = [
@@ -26,18 +25,18 @@ DATA_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'fixed-split-tabular-split
 SCORING_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'scoring.yml')
 
 
-class TestRandomSamplingImputer(unittest.TestCase):
+class RandomSamplingImputerTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         index.register_primitive(RandomSamplingImputer.metadata.query()['python_path'], RandomSamplingImputer)
 
-        cls.classification_dataset_util = utils.D3MDatasetUtil(test_strings.DATASETS_DIR, test_strings.CLASSIFICATION_DATASET_NAME)
+        cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '38_sick')
         cls.classification_pipeline_paths = []
         for filename in CLASSIFICATION_PIPELINE_FILENAMES:
             cls.classification_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))
 
-        cls.regression_dataset_util = utils.D3MDatasetUtil(test_strings.DATASETS_DIR, '196_autoMpg')
+        cls.regression_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '196_autoMpg')
         cls.regression_pipeline_paths = []
         for filename in REGRESSION_PIPELINE_FILENAMES:
             cls.regression_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))
@@ -60,86 +59,97 @@ class TestRandomSamplingImputer(unittest.TestCase):
                 self.regression_dataset_util.problem_path
             )
 
-    def test_column_with_all_unknown_values(self):
-        """
-        Tests the Random Sampling Imputer's ability to handle columns that have all unknown values
-        :return: None
-        """
+    @staticmethod
+    def _get_test_data_frame() -> container.pandas.DataFrame:
+        return container.pandas.DataFrame(
+            {
+                'all_known': [1,2,3,4],
+                'some_missing': [6,None,10,12],
+                'all_missing': [None, None, None, None],
+            },
+            generate_metadata=True
+        )
 
-        data_frame: DataFrame = self._get_test_data_frame()
-        original_cols: list = list(data_frame)
-        leftover_cols: list = list(data_frame)
-        leftover_cols.remove(test_strings.ALL_UNKNOWN_KEY)
+    @staticmethod
+    def _get_imputer(drop_missing_values, how):
+        hyperparams = Hyperparams({'drop_missing_values': drop_missing_values, 'how': how})
+        return RandomSamplingImputer(hyperparams=hyperparams)
 
-        # Test retaining a column with all unknown values
-        output_data_frame: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=False)
-        output_cols: list = list(output_data_frame)
-        self.assertEqual(output_cols, original_cols)
-        self.assertNotEqual(output_cols, leftover_cols)
-        metadata_cols: list = self._get_metadata_cols(output_data_frame.metadata)
-        self.assertEqual(metadata_cols, output_cols)
+    @staticmethod
+    def _get_metadata_cols(metadata) -> list:
+        return [metadata.query_column_field(i, 'name') for i in metadata.get_elements([metadata_base.ALL_ELEMENTS])]
 
-        # Test dropping a column with all unknown values
-        data_frame: DataFrame = self._get_test_data_frame()
-        output_data_frame: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=True)
-        output_cols: list = list(output_data_frame)
-        self.assertEqual(output_cols, leftover_cols)
-        self.assertNotEqual(output_cols, original_cols)
-        self.assertTrue(len(output_cols) < len(original_cols))
-        metadata_cols: list = self._get_metadata_cols(output_data_frame.metadata)
-        self.assertEqual(metadata_cols, output_cols)
+    def _test_output_column_names(self, outputs, expected_output_col_names):
+        output_col_names = list(outputs.columns)
+        self.assertEqual(output_col_names, expected_output_col_names)
+        output_metadata_col_names = self._get_metadata_cols(outputs.metadata)
+        self.assertEqual(output_metadata_col_names, expected_output_col_names)
 
-    def test_imputation_works(self):
-        """
-        Tests to make sure missing values are imputed in columns with some unknown values.
-        """
-        data_frame: DataFrame = self._get_test_data_frame()
+    def test_no_drop(self):
+        data = self._get_test_data_frame()
+        for how in ['all', 'any']:
+            imputer = self._get_imputer(False, how)
 
-        output_df_no_drop: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=False)
-        self.assertFalse(output_df_no_drop[test_strings.ALL_KNOWN_KEY].isnull().values.any())
-        self.assertFalse(output_df_no_drop[test_strings.SOME_KNOWN_KEY].isnull().values.any())
-        self.assertTrue(output_df_no_drop[test_strings.ALL_UNKNOWN_KEY].isnull().values.any())
+            imputer.set_training_data(inputs=data)
+            imputer.fit()
+            result = imputer.produce(inputs=data)
 
-        output_df_with_drop: DataFrame = self._get_imputer_output(data_frame, drop_cols_all_unknown_vals=True)
-        self.assertFalse(output_df_no_drop[test_strings.ALL_KNOWN_KEY].isnull().values.any())
-        self.assertFalse(output_df_with_drop[test_strings.SOME_KNOWN_KEY].isnull().values.any())
+            expected_output_col_names = ['all_known', 'some_missing', 'all_missing']
+            self._test_output_column_names(result.value, expected_output_col_names)
 
-    def _get_imputer_output(self, data_frame: DataFrame, drop_cols_all_unknown_vals: bool) -> DataFrame:
-        imputer: RandomSamplingImputer = self._get_imputer(data_frame, drop_cols_all_unknown_vals)
+            for col_name in data:
+                self.assertTrue(result.value[col_name].isin(data[col_name]).all())
+
+    def test_drop_all(self):
+        data = self._get_test_data_frame()
+        imputer = self._get_imputer(True, 'all')
+
+        imputer.set_training_data(inputs=data)
         imputer.fit()
-        output_data_frame: DataFrame = imputer.produce(inputs=data_frame).value
-        return output_data_frame
+        result = imputer.produce(inputs=data)
 
-    @staticmethod
-    def _get_test_data_frame() -> DataFrame:
-        nan = float('nan')
-        data_frame_dict: dict = {
-            test_strings.ALL_KNOWN_KEY: [1, 2, 3, 3],
-            test_strings.SOME_KNOWN_KEY: [1, nan, 1, 2],
-            test_strings.ALL_UNKNOWN_KEY: [nan, nan, nan, nan]
-        }
-        data_frame: pd.DataFrame = pd.DataFrame(data_frame_dict)
-        data_frame: DataFrame = DataFrame(data_frame, generate_metadata=True)
-        return data_frame
+        expected_output_col_names = ['all_known', 'some_missing']
+        self._test_output_column_names(result.value, expected_output_col_names)
 
-    @staticmethod
-    def _get_imputer_hyperparams(drop_cols_all_unknown_vals: bool) -> Hyperparams:
-        hyperparams: dict = {
-            strings.DROP_COLS_ALL_UNKNOWN_VALS_NAME: drop_cols_all_unknown_vals
-        }
-        hyperparams: Hyperparams = Hyperparams(hyperparams)
-        return hyperparams
+        self.assertFalse(result.value.isnull().any().any())
+        self.assertTrue(result.value['some_missing'].isin(data['some_missing']).all())
 
-    def _get_imputer(self, data_frame: DataFrame, drop_cols_all_unknown_vals: bool) -> RandomSamplingImputer:
-        hyperparams: Hyperparams = self._get_imputer_hyperparams(drop_cols_all_unknown_vals)
-        imputer: RandomSamplingImputer = RandomSamplingImputer(hyperparams=hyperparams)
-        imputer.set_training_data(inputs=data_frame)
-        return imputer
+    def test_drop_any(self):
+        data = self._get_test_data_frame()
+        imputer = self._get_imputer(True, 'any')
 
-    @staticmethod
-    def _get_metadata_cols(metadata: DataMetadata) -> list:
-        col_names: list = []
-        for i in metadata.get_elements((list(()) + [ALL_ELEMENTS])):
-            col_name: str = metadata.query_column_field(i, test_strings.COL_NAME_KEY)
-            col_names.append(col_name)
-        return col_names
+        imputer.set_training_data(inputs=data)
+        imputer.fit()
+        result = imputer.produce(inputs=data)
+
+        expected_output_col_names = ['all_known']
+        self._test_output_column_names(result.value, expected_output_col_names)
+
+        self.assertFalse(result.value.isnull().any().any())
+
+    def test_params(self):
+        data = self._get_test_data_frame()
+        imputer = self._get_imputer(True, 'all')
+
+        # test get_params error
+        with self.assertRaises(d3m.exceptions.PrimitiveNotFittedError) as cm:
+            imputer.get_params()
+
+        imputer.set_training_data(inputs=data)
+        imputer.fit()
+
+        # test get_ and set_params without error
+        params = imputer.get_params()
+        imputer.set_params(params=params)
+
+        # test set_params with new imputer instance without error
+        imputer = self._get_imputer(True, 'all')
+        imputer.set_params(params=params)
+        result = imputer.produce(inputs=data)
+
+        # test imputed data after set_params
+        expected_output_col_names = ['all_known', 'some_missing']
+        self._test_output_column_names(result.value, expected_output_col_names)
+
+        self.assertFalse(result.value.isnull().any().any())
+        self.assertTrue(result.value['some_missing'].isin(data['some_missing']).all())

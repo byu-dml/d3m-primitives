@@ -7,9 +7,9 @@ from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
 
 from tests import utils
-from tests.test_strings import DATASETS_DIR
 
 
+DATASETS_DIR = '/datasets/seed_datasets_current'
 PIPELINES_BASE_DIR = 'submission/pipelines'
 PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'metafeature_extractor')
 CLASSIFICATION_PIPELINE_FILENAMES = [
