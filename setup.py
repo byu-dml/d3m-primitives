@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 from byudml import __version__
 from byudml import __imputer_path__
 from byudml import __metafeature_path__
+from byudml import __aggregator_path__
 
 setup(
     name='byudml',
@@ -22,7 +23,8 @@ setup(
     entry_points = {
         'd3m.primitives': [
             '{} = byudml.imputer.random_sampling_imputer:RandomSamplingImputer'.format(".".join(__imputer_path__.split(".")[2:])),
-            '{} = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'.format(".".join(__metafeature_path__.split(".")[2:]))
+            '{} = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'.format(".".join(__metafeature_path__.split(".")[2:])),
+            '{} = byudml.aggregator.aggregator:Aggregator'.format(".".join(__aggregator_path__.split(".")[2:]))
         ]
     }
 )

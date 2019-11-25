@@ -13,12 +13,18 @@ from d3m.metadata import (
 
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
-from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
+from byudml.aggregator.aggregator import Aggregator
+from byudml import (
+    __imputer_version__, __imputer_path__,
+    __metafeature_version__,  __metafeature_path__,
+    __aggregator_version__, __aggregator_path__
+)
 import sys
 sys.path.append('.')
 from submission.utils import (get_new_d3m_path, clear_directory, write_pipeline_for_submission, get_pipeline_from_database, \
                               seed_datasets_exlines)
 from submission.pipelines.run_pipeline import run_and_save_pipeline_for_submission
+from submission.pipelines.pipeline_builder import EZPipeline
 
 real_mongo_port = 12345
 lab_hostname = "computer"
@@ -397,6 +403,70 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
     return pipeline
 
+def generate_aggregator_pipeline(task_type, random_id=False):
+    if random_id:
+        pipeline_id = str(uuid.uuid4())
+    elif task_type == 'classification':
+        pipeline_id = '740841a5-56fa-4ee3-a4b5-71832e3b9daa'
+    elif task_type == 'regression':
+        pipeline_id = '914e8251-9d94-4f56-bb5a-c2d98aebcaa2'
+    else:
+        raise ValueError('Invalid task_type: {}'.format(task_type))
+
+    pipeline = EZPipeline(pipeline_id, add_preparation_steps=True)
+
+    if task_type not in ['classification', 'regression']:
+        raise ValueError('Invalid task_type: {}'.format(task_type))
+
+    d3m_index.register_primitive(
+        Aggregator.metadata.query()['python_path'],
+        Aggregator
+    )
+
+    regressors = [
+        'd3m.primitives.regression.random_forest.SKlearn',
+        'd3m.primitives.regression.k_neighbors.SKlearn',
+        'd3m.primitives.regression.lasso.SKlearn'
+    ]
+    classifiers = [
+        'd3m.primitives.classification.random_forest.SKlearn',
+        'd3m.primitives.classification.bernoulli_naive_bayes.SKlearn',
+        'd3m.primitives.classification.mlp.SKlearn'
+    ]
+
+    if task_type == 'regression':
+        models_to_use = regressors
+    elif task_type == 'classification':
+        models_to_use = classifiers
+
+    predictor_outputs = []
+    for model in models_to_use:
+        # ensemble a few models
+        pipeline.add_primitive_step(model, pipeline.data_ref_of('attrs'))
+        predictor_outputs.append(pipeline.curr_step_data_ref)
+
+    concat_output = pipeline.concatenate_inputs(*predictor_outputs)
+
+    if task_type == 'regression':
+        ensemble_aggregator = 'mean'
+    elif task_type == 'classification':
+        ensemble_aggregator = 'mode'
+    
+    # Now ensemble the models together
+    pipeline.add_primitive_step(
+        'd3m.primitives.data_transformation.aggregator.BYU',
+        concat_output,
+        value_hyperparams={
+            'aggregator': ensemble_aggregator,
+            'use_mode_column_name': True,
+            'output_semantic_types': ['https://metadata.datadrivendiscovery.org/types/PredictedTarget']
+        }
+    )
+
+    pipeline.add_predictions_constructor()
+    pipeline.add_output(name='Output', data_reference=pipeline.curr_step_data_ref)
+    return pipeline
+
 def remove_digests(
     pipeline_json_structure, *, exclude_primitives: set = set()
 ):
@@ -556,6 +626,11 @@ def main():
             'primitive': MetafeatureExtractor,
             'gen_method': generate_metafeature_pipeline,
             'version': __metafeature_version__
+        },
+        {
+            'primitive': Aggregator,
+            'gen_method': generate_aggregator_pipeline,
+            'version': __aggregator_version__
         }
     ]
 
