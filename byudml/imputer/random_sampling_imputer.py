@@ -1,36 +1,49 @@
 import numpy as np
+import typing
 
-from d3m import container
+from d3m import container, exceptions as d3m_exceptions
 from d3m.metadata import base as metadata_base, hyperparams, params
 from d3m.primitive_interfaces.base import CallResult
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 
+from byudml import __imputer_path__, __imputer_version__
 from byudml import __version__ as __package_version__
-
-
-__primitive_version__ = '0.1.4'
 
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 
+class Hyperparams(hyperparams.Hyperparams):
+    drop_missing_values = hyperparams.UniformBool(
+        default=True,
+        semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
+        description='Determines whether to drop columns containing missing values.'
+    )
+    how = hyperparams.Enumeration[str](
+        values=['all', 'any'],
+        default='all',
+        semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
+        description='Determines how to drop missing values. If "all", drops columns where all values are missing. If "any", drops columns where any values are missing (note no imputation is performed).'
+    )
+
+
 class Params(params.Params):
+    known_values: typing.Sequence[typing.Any]
+    drop_cols: typing.Sequence[bool]
+    drop_col_indices: typing.Sequence[int]
 
-    known_values: container.list.List
 
-
-class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, hyperparams.Hyperparams]):
-
+class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     """
-    This imputes missing values in a DataFrame by sampling known values from
-    each column independently. If the training data has no known values in a
-    particular column, no values are imputed.
+    This imputes missing values in a DataFrame by sampling known values from each column independently. If the training
+    data has no known values in a particular column, no values are imputed. Alternatively, columns with missing values
+    can be dropped. By default columns of all missing values are dropped.
     """
 
     metadata = metadata_base.PrimitiveMetadata({
         'id': 'ebfeb6f0-e366-4082-b1a7-602fd50acc96',
-        'version': __primitive_version__,
+        'version': __imputer_version__,
         'name': 'Random Sampling Imputer',
         'source': {
             'name': 'byu-dml',
@@ -49,7 +62,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py'
         ],
-        'python_path': 'd3m.primitives.data_preprocessing.random_sampling_imputer.BYU',
+        'python_path': __imputer_path__,
         'primitive_family': metadata_base.PrimitiveFamily.DATA_PREPROCESSING,
         'algorithm_types': [
             metadata_base.PrimitiveAlgorithmType.IMPUTATION
@@ -60,69 +73,91 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
         ]
     })
 
-    def __init__(self, *, hyperparams: hyperparams.Hyperparams, random_seed: int=0) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0) -> None:
         super().__init__(hyperparams=hyperparams, random_seed = random_seed)
-        self._column_vals: container.list.List[container.list.List] = None
         self._random_state = np.random.RandomState(self.random_seed)
-        self._training_inputs: Inputs = None
+
         self._fitted: bool = False
+        self._training_inputs: Inputs = None
+        self._known_values = None
+        self._drop_cols = None
+        self._drop_col_indices = None
 
     def set_training_data(self, *, inputs: Inputs) -> None:
-        self._training_inputs = inputs
         self._fitted = False
+        self._training_inputs = inputs
+        self._known_values = []
+        self._drop_cols = []
+        self._drop_col_indices = []
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
         if self._fitted:
             return CallResult(None)
 
         if self._training_inputs is None:
-            raise ValueError('Missing training data.')
+            raise d3m_exceptions.MissingValueError('set_training_data must be called before fit')
 
         # operate on columns by index, not name
-        self._known_values = []
-        for col_name in self._training_inputs.columns:
-            self._known_values.append(self._training_inputs[col_name].dropna(axis=0, how='any'))
+        for i, (col_name, col) in enumerate(self._training_inputs.iteritems()):
+            drop_col = False
+            if self.hyperparams['drop_missing_values']:
+                if self.hyperparams['how'] == 'all' and col.isnull().all():
+                    drop_col = True
+                elif self.hyperparams['how'] == 'any' and col.isnull().any():
+                    drop_col = True
+            self._drop_cols.append(drop_col)
+            if drop_col:
+                self._drop_col_indices.append(i)
+
+            col_known_values = None
+            if not drop_col:
+                col_known_values = col.dropna(axis=0, how='any').tolist()
+            self._known_values.append(col_known_values)
 
         self._fitted = True
+        self._training_inputs = None  # free memory
 
         return CallResult(None)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         if not self._fitted:
-            raise ValueError('Calling produce before fitting.')
+            raise d3m_exceptions.PrimitiveNotFittedError('fit must be called before produce')
 
         if inputs.shape[1] != len(self._known_values):
-            raise ValueError(
+            raise d3m_exceptions.DimensionalityMismatchError(
                 'The number of input columns does not match the training data: {} != {}'.format(
                     inputs.shape[1], len(self._known_values)
                 )
             )
 
-        for i, col_name in enumerate(inputs):
-            # ignores empty columns
-            if len(self._known_values[i]) > 0:
-                inputs_isnull = inputs[col_name].isnull()
-                n_missing = sum(inputs_isnull)
-                if n_missing > 0:
-                    inputs[col_name][inputs_isnull] = self._random_state.choice(
+        outputs = inputs.copy()
+        for i, (col_name, col) in enumerate(inputs.iteritems()):
+            if self._drop_cols[i]:
+                assert self._known_values[i] is None
+            else:
+                indices_of_missing_values = col.isnull().index
+                n_missing = len(indices_of_missing_values)
+                n_known = len(self._known_values[i])
+                if n_missing > 0 and n_known > 0:  # k_known == 0 implies drop_missing_values == False
+                    outputs.iloc[indices_of_missing_values, i] = self._random_state.choice(
                         self._known_values[i], n_missing, replace=True
                     )
                     # TODO: update column metadata?
-            else:
-                self.logger.warning(
-                    'Cannot sample values to impute from column {} \'{}\', which has no known values'.format(i. col_name)
-                )
+
+        outputs = outputs.remove_columns(self._drop_col_indices)
 
         # TODO: update global metadata if any values were imputed?
-        # inputs.metadata = inputs.metadata.update((), {
-        #     'schema': metadata_base.CONTAINER_SCHEMA_VERSION,
-        #     'structural_type': type(outputs)
-        # })
 
-        return CallResult(inputs)
+        return CallResult(outputs)
 
     def get_params(self) -> Params:
-        return Params(known_values=self._known_values)
+        if not self._fitted:
+            raise d3m_exceptions.PrimitiveNotFittedError('fit must be called before get_params')
+        return Params(known_values=self._known_values, drop_cols=self._drop_cols, drop_col_indices=self._drop_col_indices)
 
     def set_params(self, *, params: Params) -> None:
+        self._fitted = True
+        self._training_inputs = None
         self._known_values = params['known_values']
+        self._drop_cols = params['drop_cols']
+        self._drop_col_indices = params['drop_col_indices']

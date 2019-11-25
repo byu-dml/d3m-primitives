@@ -11,15 +11,17 @@ from d3m.primitive_interfaces.featurization import FeaturizationTransformerPrimi
 from d3m.metadata import base as metadata_base, hyperparams
 
 from metalearn.metafeatures.metafeatures import Metafeatures
+import metalearn.metafeatures.constants as mf_consts
 
 from byudml import __version__ as __package_version__
+from byudml import __metafeature_path__, __metafeature_version__
 
-__primitive_version__ = '0.4.4'
 
 Inputs = DataFrame
 Outputs = DataFrame
 
 INDEX_COLUMN_NAME = 'd3mIndex'
+
 
 class Hyperparams(hyperparams.Hyperparams):
 
@@ -65,7 +67,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_base.PrimitiveMetadata({
         'id': '28d12214-8cb0-4ac0-8946-d31fcbcd4142',
-        'version': __primitive_version__,
+        'version': __metafeature_version__,
         'name': 'Dataset Metafeature Extraction',
         'source': {
             'name': 'byu-dml',
@@ -84,7 +86,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         'location_uris': [
             'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/metafeature_extraction/metafeature_extraction.py'
         ],
-        'python_path': 'd3m.primitives.metalearning.metafeature_extractor.BYU',
+        'python_path': __metafeature_path__,
         'primitive_family': metadata_base.PrimitiveFamily.METALEARNING,
         'algorithm_types': [
             metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,
@@ -177,7 +179,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         if landmarking_name not in data_metafeatures:
             primitive_field_path = [landmarking_name, 'primitive']
             random_seed_field_path = [landmarking_name, 'random_seed']
-            primitive_field_val = {'id': self.metadata.query()['id'], 'version': __primitive_version__, 'python_path': self.metadata.query()['python_path'], 'name': self.metadata.query()['name']}
+            primitive_field_val = {'id': self.metadata.query()['id'], 'version': __metafeature_version__, 'python_path': self.metadata.query()['python_path'], 'name': self.metadata.query()['name']}
             if 'digest' in self.metadata.query():
                 primitive_field_val['digest'] = self.metadata.query()['digest']
             random_seed_field_val = self.random_seed
@@ -194,7 +196,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
             if column_name[-4:] != 'Time':
                 data_metafeatures_path = mapping[column_name]['data_metafeatures_path'].split('.')
                 metafeature_val = metafeatures[column_name][0]
-                if pd.notna(metafeature_val) and metafeature_val not in (Metafeatures.TIMEOUT, Metafeatures.NO_TARGETS, Metafeatures.NUMERIC_TARGETS):
+                if pd.notna(metafeature_val) and metafeature_val not in (mf_consts.TIMEOUT, mf_consts.NO_TARGETS, mf_consts.NUMERIC_TARGETS):
                     if column_name in self._get_landmarking_metafeatures():
                         data_metafeatures = self._set_implementation_fields(data_metafeatures, data_metafeatures_path)
                     if mapping[column_name]['required_type']=='integer':
@@ -222,12 +224,12 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     def _update_column_type(self, data, column_name, semantic_types, column_types):
         if 'http://schema.org/Float' in semantic_types \
             or 'http://schema.org/Integer' in semantic_types and 'https://metadata.datadrivendiscovery.org/types/CategoricalData' not in semantic_types:
-            column_types[column_name] = Metafeatures.NUMERIC
+            column_types[column_name] = mf_consts.NUMERIC
             actual_type = str(data[column_name].dtype)
             if 'int' not in actual_type and 'float' not in actual_type:
                 data[column_name] = pd.to_numeric(data[column_name])
         else:
-            column_types[column_name] = Metafeatures.CATEGORICAL
+            column_types[column_name] = mf_consts.CATEGORICAL
 
     # remove redacted column from data by checking if it has one of the redacted semantic types
     def _remove_redacted_column(self, data, column_name, semantic_types):
@@ -258,6 +260,6 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
 
         # compute metafeatures and return in metadata
         metafeatures = Metafeatures().compute(data, target_series, column_types=column_types, metafeature_ids=metalearn_metafeatures_to_compute, seed=self.random_seed)
-        metafeature_df = pd.DataFrame.from_dict([{mf: metafeatures[mf][Metafeatures.VALUE_KEY] for mf in metafeatures}])
+        metafeature_df = pd.DataFrame.from_dict([{mf: metafeatures[mf][mf_consts.VALUE_KEY] for mf in metafeatures}])
         metadata = self._populate_metadata(metafeature_df, metadata)
         return metadata

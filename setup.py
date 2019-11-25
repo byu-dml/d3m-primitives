@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
 
 from byudml import __version__
+from byudml import __imputer_path__
+from byudml import __metafeature_path__
 
 
 setup(
@@ -14,14 +16,14 @@ setup(
     keywords = ['metalearning', 'metafeature', 'machine learning', 'metalearn', 'd3m_primitive'],
     install_requires = [
         'd3m',
-        'metalearn==0.5.4',
-        'numpy<=1.15.4',
-        'pandas<=0.23.4'
+        'metalearn==0.6.0',
+        'numpy<=1.17.3',
+        'pandas<=0.25.2'
     ],
     entry_points = {
         'd3m.primitives': [
-            'data_preprocessing.random_sampling_imputer.BYU = byudml.imputer.random_sampling_imputer:RandomSamplingImputer',
-            'metalearning.metafeature_extractor.BYU = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'
+            '{} = byudml.imputer.random_sampling_imputer:RandomSamplingImputer'.format(".".join(__imputer_path__.split(".")[2:])),
+            '{} = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'.format(".".join(__metafeature_path__.split(".")[2:]))
         ]
     }
 )
