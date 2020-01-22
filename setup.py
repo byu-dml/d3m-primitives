@@ -17,8 +17,8 @@ setup(
     install_requires = [
         'd3m',
         'metalearn==0.6.0',
-        'numpy<=1.17.3',
-        'pandas<=0.25.2'
+        'numpy<=1.18.1',
+        'pandas<=0.25.3'
     ],
     entry_points = {
         'd3m.primitives': [

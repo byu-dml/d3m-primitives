@@ -22,7 +22,6 @@ REGRESSION_PIPELINE_FILENAMES = [
     '74f5ccb1-053a-46cf-ad7f-005f67a15652.json',
 ]
 DATA_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'fixed-split-tabular-split.yml')
-SCORING_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'scoring.yml')
 
 
 class RandomSamplingImputerTestCase(unittest.TestCase):
@@ -31,12 +30,12 @@ class RandomSamplingImputerTestCase(unittest.TestCase):
     def setUpClass(cls):
         index.register_primitive(RandomSamplingImputer.metadata.query()['python_path'], RandomSamplingImputer)
 
-        cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '38_sick')
+        cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '38_sick_MIN_METADATA')
         cls.classification_pipeline_paths = []
         for filename in CLASSIFICATION_PIPELINE_FILENAMES:
             cls.classification_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))
 
-        cls.regression_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '196_autoMpg')
+        cls.regression_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '196_autoMpg_MIN_METADATA')
         cls.regression_pipeline_paths = []
         for filename in REGRESSION_PIPELINE_FILENAMES:
             cls.regression_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))
@@ -45,7 +44,7 @@ class RandomSamplingImputerTestCase(unittest.TestCase):
         for pipeline_path in self.classification_pipeline_paths:
             utils.evaluate_pipeline(
                 pipeline_path, DATA_PIPELINE_PATH,
-                self.classification_dataset_util.data_splits_path, SCORING_PIPELINE_PATH,
+                self.classification_dataset_util.data_splits_path,
                 self.classification_dataset_util.dataset_doc_path,
                 self.classification_dataset_util.problem_path
             )
@@ -54,7 +53,7 @@ class RandomSamplingImputerTestCase(unittest.TestCase):
         for pipeline_path in self.regression_pipeline_paths:
             utils.evaluate_pipeline(
                 pipeline_path, DATA_PIPELINE_PATH,
-                self.regression_dataset_util.data_splits_path, SCORING_PIPELINE_PATH,
+                self.regression_dataset_util.data_splits_path,
                 self.regression_dataset_util.dataset_doc_path,
                 self.regression_dataset_util.problem_path
             )

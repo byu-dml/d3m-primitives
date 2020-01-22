@@ -16,8 +16,14 @@ from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtr
 from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
 import sys
 sys.path.append('.')
-from submission.utils import (get_new_d3m_path, clear_directory, write_pipeline_for_submission, get_pipeline_from_database, \
-                              seed_datasets_exlines)
+from submission.utils import (
+    get_new_d3m_path,
+    clear_directory,
+    write_pipeline_for_testing,
+    write_pipeline_for_submission,
+    get_pipeline_from_database,
+    seed_datasets_exlines,
+)
 from submission.pipelines.run_pipeline import run_and_save_pipeline_for_submission
 
 real_mongo_port = 12345
@@ -60,12 +66,27 @@ def generate_imputer_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.column_parser.Common'
+            'd3m.primitives.schema_discovery.profiler.Common'
         )
     )
     step.add_argument(
         name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
         data_reference=raw_data_data_reference
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    profiled_data_reference = 'steps.{}.produce'.format(step_counter)
+    step_counter += 1
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.data_transformation.column_parser.Common'
+        )
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference=profiled_data_reference
     )
     step.add_output('produce')
     pipeline.add_step(step)
@@ -238,12 +259,27 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_transformation.column_parser.Common'
+            'd3m.primitives.schema_discovery.profiler.Common'
         )
     )
     step.add_argument(
         name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
         data_reference=raw_data_data_reference
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    profiled_data_reference = 'steps.{}.produce'.format(step_counter)
+    step_counter += 1
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.data_transformation.column_parser.Common'
+        )
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference=profiled_data_reference
     )
     step.add_output('produce')
     pipeline.add_step(step)
@@ -544,23 +580,25 @@ def main():
     byu_dir = get_new_d3m_path()
 
     # primitive and problem data
-    challenge_names = ["534_cps_85_wages", "1491_one_hundred_plants_margin"]
-    challenge_problems = [('regression', '534_cps_85_wages'), ('classification', '1491_one_hundred_plants_margin')]
+    challenge_names = []
+    challenge_problems = []
     primitives_data = [
         {
             'primitive': RandomSamplingImputer,
             'gen_method': generate_imputer_pipeline,
-            'version': __imputer_version__
+            'version': __imputer_version__,
+            'primitive_simple_name': 'random_sampling_imputer'
         },
         {
             'primitive': MetafeatureExtractor,
             'gen_method': generate_metafeature_pipeline,
-            'version': __metafeature_version__
+            'version': __metafeature_version__,
+            'primitive_simple_name': 'metafeature_extractor'
         }
     ]
 
     # add our basic pipelines to the submission
-    for (problem_type, problem_name) in [('classification', '185_baseball'), ('regression', '196_autoMpg')] + challenge_problems:
+    for (problem_type, problem_name) in [('classification', '185_baseball_MIN_METADATA'), ('regression', '196_autoMpg_MIN_METADATA')] + challenge_problems:
         is_challenge_prob = problem_name in challenge_names
 
         for primitive_data in primitives_data:
@@ -579,6 +617,9 @@ def main():
                 submission_path,
                 pipeline_json
             )
+            # save it to a local folder so our unit tests can use it
+            write_pipeline_for_testing(primitive_data['primitive_simple_name'], pipeline_json)
+
             # now run the pipeline and save its pipeline run into the
             # submission as well
             run_and_save_pipeline_for_submission(

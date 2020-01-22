@@ -12,7 +12,7 @@ def get_new_d3m_path():
     Gets the name of the newest version path for d3m/byudml
     :return:
     """
-    new_directory = max(glob.glob('submission/primitives/v????.??.??'))
+    new_directory = max(glob.glob('submission/primitives/v????.?.?'))
     byu_path = "byu-dml"
     byu_dir = os.path.join(new_directory, byu_path)
     return byu_dir
@@ -29,6 +29,25 @@ def clear_directory(dir_path):
     for f in files:
         shutil.rmtree(f)
 
+def write_pipeline_for_testing(primitive_name: str, pipeline_json: dict):
+    pipeline_dir = os.path.join("submission", "pipelines", primitive_name)
+
+    if not os.path.exists(pipeline_dir):
+        os.makedirs(pipeline_dir)
+
+    # write json pipeline out
+    pipeline_path = os.path.join(pipeline_dir, pipeline_json["id"]+ ".json")
+
+    print("\n")
+    print(f"WRITING PIPELINE TO PATH {pipeline_path}")
+    print(f"*****************************************")
+    print("\n")
+    
+    with open(pipeline_path, "w") as f:
+        f.write(json.dumps(pipeline_json, indent=4))
+        os.chmod(pipeline_path, 0o777)
+
+    return pipeline_path
 
 def write_pipeline_for_submission(submission_path: str, pipeline_json: dict):
     """
