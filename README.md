@@ -34,7 +34,7 @@ Imputes missing values in tabular data by randomly sampling other known values f
     * `docker exec -it test-d3m-primitives bash`
     * `./run_tests.sh` This command will verify that nothing is broken, generate new pipeline and primitive jsons with updated digests and versions, and place them in the correct folder in the submodule of the `primitive` repo.
     * `exit`
-4. Commit the update primitive jsons and pipelines in the submodule.
+4. Commit the updated primitive jsons and pipelines in the submodule i.e. our fork of the D3M primitives repo. **Note**: Do not commit straight to the master branch, but to a branch that semantically represents the new D3M package version and our organization.
 5. Update **this** repo by committing the changes to the submodule `git add submission/primitives/` and `git add`, `git commit`, and `git push`.
 6. Release this package.
 7. Push the primitives submodule `git push origin byu-dml` (push to https://gitlab.com/byu-dml/primitives) and verify that the CI passes.  If this fails, start over at step 4. NOTE: this package must be released before it can be tested with CI.

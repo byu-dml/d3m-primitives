@@ -37,11 +37,6 @@ def write_pipeline_for_testing(primitive_name: str, pipeline_json: dict):
 
     # write json pipeline out
     pipeline_path = os.path.join(pipeline_dir, pipeline_json["id"]+ ".json")
-
-    print("\n")
-    print(f"WRITING PIPELINE TO PATH {pipeline_path}")
-    print(f"*****************************************")
-    print("\n")
     
     with open(pipeline_path, "w") as f:
         f.write(json.dumps(pipeline_json, indent=4))

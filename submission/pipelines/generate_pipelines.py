@@ -33,9 +33,9 @@ def generate_imputer_pipeline(task_type, random_id=False):
     if random_id:
         pipeline_id = str(uuid.uuid4())
     elif task_type == 'classification':
-        pipeline_id = 'f4fe3fcc-45fe-4c85-8845-549e2f466f21'
+        pipeline_id = '168d3fbf-a3fe-456a-93a3-d2720ef8cb42'
     elif task_type == 'regression':
-        pipeline_id = '74f5ccb1-053a-46cf-ad7f-005f67a15652'
+        pipeline_id = 'faeb3eb9-648f-4059-b067-791ebff47bc4'
     else:
         raise ValueError('Invalid task_type: {}'.format(task_type))
 
@@ -226,9 +226,9 @@ def generate_metafeature_pipeline(task_type, random_id=False):
     if random_id:
         pipeline_id = str(uuid.uuid4())
     elif task_type == 'classification':
-        pipeline_id = 'b32b9af1-34b4-437b-ad83-650f7df10acb'
+        pipeline_id = 'baa68a80-3a7d-472d-8d4f-54918cc1bd8f'
     elif task_type == 'regression':
-        pipeline_id = '3013ad40-7c51-4991-b0fb-dbec65607979'
+        pipeline_id = '28e413f9-6085-4e34-b2c2-a5182a322a4b'
     else:
         raise ValueError('Invalid task_type: {}'.format(task_type))
 

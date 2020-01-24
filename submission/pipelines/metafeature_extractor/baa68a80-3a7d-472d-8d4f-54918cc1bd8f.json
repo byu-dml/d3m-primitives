@@ -1,7 +1,7 @@
 {
-    "id": "3013ad40-7c51-4991-b0fb-dbec65607979",
+    "id": "baa68a80-3a7d-472d-8d4f-54918cc1bd8f",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2020-01-22T23:29:08.113509Z",
+    "created": "2020-01-23T21:11:34.201326Z",
     "inputs": [
         {
             "name": "inputs"
@@ -186,11 +186,11 @@
         {
             "type": "PRIMITIVE",
             "primitive": {
-                "id": "f0fd7a62-09b5-3abc-93bb-f5f999f7cc80",
+                "id": "1dd82833-5692-39cb-84fb-2455683075f3",
                 "version": "2019.11.13",
-                "python_path": "d3m.primitives.regression.random_forest.SKlearn",
-                "name": "sklearn.ensemble.forest.RandomForestRegressor",
-                "digest": "4bf2c5e6dd0cc1baedaf1f1dd601d773ebb716d569582db803908c5926d7c349"
+                "python_path": "d3m.primitives.classification.random_forest.SKlearn",
+                "name": "sklearn.ensemble.forest.RandomForestClassifier",
+                "digest": "93abe4b22214ba6202c13c6a2fe5b2b4d03cdc28a78fa02b6f2759e7b125eaed"
             },
             "arguments": {
                 "inputs": {
@@ -240,5 +240,5 @@
             ]
         }
     ],
-    "digest": "475accca734a186825b3d7194f223fd5962dc292cdd8b0e3753b2acf6808e7c4"
+    "digest": "932f144ebc087370cd7f5a3f89b3a54f1fe6eb3f4fb91f47a14e6f2db04720ad"
 }
