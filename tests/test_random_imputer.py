@@ -153,3 +153,24 @@ class RandomSamplingImputerTestCase(unittest.TestCase):
 
         self.assertFalse(result.value.isnull().any().any())
         self.assertTrue(result.value['some_missing'].isin(data['some_missing']).all())
+
+    def test_non_null_data_not_modified(self):
+        """
+        Non-null data should not be altered in any way.
+        """
+        data = self._get_test_data_frame()
+        imputer = self._get_imputer(True, 'all')
+
+        imputer.set_training_data(inputs=data)
+        imputer.fit()
+        result = imputer.produce(inputs=data).value
+
+        # All null values should have been imputed.
+        self.assertFalse(result.isnull().any().any())
+
+        # Original non-null values should not be changed.
+        self.assertTrue((data.all_known == result.all_known).all())
+        self.assertTrue(
+            # Check just the values that were non-null.
+            (data.some_missing.iloc[[0,2,3]] == result.some_missing.iloc[[0,2,3]]).all()
+        )

@@ -135,11 +135,11 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
             if self._drop_cols[i]:
                 assert self._known_values[i] is None
             else:
-                indices_of_missing_values = col.isnull().index
-                n_missing = len(indices_of_missing_values)
+                indices_of_missing_values = col.isnull()
+                n_missing = indices_of_missing_values.sum()
                 n_known = len(self._known_values[i])
                 if n_missing > 0 and n_known > 0:  # k_known == 0 implies drop_missing_values == False
-                    outputs.iloc[indices_of_missing_values, i] = self._random_state.choice(
+                    outputs.loc[indices_of_missing_values, col_name] = self._random_state.choice(
                         self._known_values[i], n_missing, replace=True
                     )
                     # TODO: update column metadata?
