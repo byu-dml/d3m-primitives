@@ -16,10 +16,10 @@ DATASETS_DIR = '/datasets/seed_datasets_current'
 PIPELINES_BASE_DIR = 'submission/pipelines'
 PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'random_sampling_imputer')
 CLASSIFICATION_PIPELINE_FILENAMES = [
-    'f4fe3fcc-45fe-4c85-8845-549e2f466f21.json',
+    '168d3fbf-a3fe-456a-93a3-d2720ef8cb42.json',
 ]
 REGRESSION_PIPELINE_FILENAMES = [
-    '74f5ccb1-053a-46cf-ad7f-005f67a15652.json',
+    'faeb3eb9-648f-4059-b067-791ebff47bc4.json',
 ]
 DATA_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'fixed-split-tabular-split.yml')
 

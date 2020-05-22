@@ -13,10 +13,10 @@ DATASETS_DIR = '/datasets/seed_datasets_current'
 PIPELINES_BASE_DIR = 'submission/pipelines'
 PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'metafeature_extractor')
 CLASSIFICATION_PIPELINE_FILENAMES = [
-    'b32b9af1-34b4-437b-ad83-650f7df10acb.json'
+    'baa68a80-3a7d-472d-8d4f-54918cc1bd8f.json'
 ]
 REGRESSION_PIPELINE_FILENAMES = [
-    '3013ad40-7c51-4991-b0fb-dbec65607979.json'
+    '28e413f9-6085-4e34-b2c2-a5182a322a4b.json'
 ]
 DATA_PIPELINE_PATH = os.path.join(PIPELINES_BASE_DIR, 'fixed-split-tabular-split.yml')
 
