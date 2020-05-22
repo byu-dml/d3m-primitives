@@ -60,7 +60,7 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
             }
         ],
         'location_uris': [
-            'https://github.com/byu-dml/d3m-primitives/blob/master/byu_dml/imputer/random_sampling_imputer.py'
+            'https://github.com/byu-dml/d3m-primitives/blob/master/byudml/imputer/random_sampling_imputer.py'
         ],
         'python_path': __imputer_path__,
         'primitive_family': metadata_base.PrimitiveFamily.DATA_PREPROCESSING,
