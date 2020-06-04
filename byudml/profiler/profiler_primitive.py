@@ -510,25 +510,25 @@ class SimpleProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimitive
         column_info = self.embed(input_column,self.model_weights_path)
         return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'integer'
 
-    def _is_string(self, input_column: container.DataFrame) -> bool:
+    def _is_text(self, input_column: container.DataFrame) -> bool:
         input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
         column_info = self.embed(input_column,self.model_weights_path)
         return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'string'
         
-    def _is_dateTime(self, input_column: container.DataFrame) -> bool:
+    def _is_datetime(self, input_column: container.DataFrame) -> bool:
         input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
         column_info = self.embed(input_column,self.model_weights_path)
         return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'dateTime'
         
-    def _is_real(self, input_column: container.DataFrame) -> bool:
+    def _is_float(self, input_column: container.DataFrame) -> bool:
         input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
         column_info = self.embed(input_column,self.model_weights_path)
         return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'real'
         
-    def _is_realVector(self, input_column: container.DataFrame) -> bool:
+    def _is_float_vector(self, input_column: container.DataFrame) -> bool:
         input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
         column_info = self.embed(input_column,self.model_weights_path)
