@@ -25,6 +25,8 @@ from submission.utils import (
     seed_datasets_exlines,
 )
 from submission.pipelines.run_pipeline import run_and_save_pipeline_for_submission
+from submission.problems import get_tabular_problems
+from submission import config
 
 real_mongo_port = 12345
 lab_hostname = "computer"
@@ -561,6 +563,7 @@ def add_best_pipelines(base_dir):
     print(beat_exlines, " pipelines beat EXlines")
     print(has_pipeline, " pipelines for seed datasets")
 
+
 def generate_and_update_primitive_pipeline(
     primitive: PrimitiveBase,
     pipeline_gen_f: Callable,
@@ -575,13 +578,21 @@ def generate_and_update_primitive_pipeline(
     )
     return update_pipeline(pipeline_json_structure)
 
+
 def main():
+    """
+    Generates pipelines and runs them on each problem found in
+    `submission.config.DATASETS_DIR`, saving them in the
+    correct place for submission.
+    """
+    
     # get directory ready
     byu_dir = get_new_d3m_path()
 
     # primitive and problem data
-    challenge_names = []
+    problems = get_tabular_problems(config.DATASETS_DIR)
     challenge_problems = []
+    challenge_names = {p.name for p in challenge_problems}
     primitives_data = [
         {
             'primitive': RandomSamplingImputer,
@@ -598,8 +609,8 @@ def main():
     ]
 
     # add our basic pipelines to the submission
-    for (problem_type, problem_name) in [('classification', '185_baseball_MIN_METADATA'), ('regression', '196_autoMpg_MIN_METADATA')] + challenge_problems:
-        is_challenge_prob = problem_name in challenge_names
+    for problem in problems + challenge_problems:
+        is_challenge_prob = problem.name in challenge_names
 
         for primitive_data in primitives_data:
             primitive = primitive_data['primitive']
@@ -607,7 +618,7 @@ def main():
             pipeline_json = generate_and_update_primitive_pipeline(
                 primitive,
                 primitive_data['gen_method'],
-                problem_type,
+                problem.problem_type,
                 is_challenge_prob
             )
             # save it into the primitives submodule for TA1 submission
@@ -623,14 +634,16 @@ def main():
             # now run the pipeline and save its pipeline run into the
             # submission as well
             run_and_save_pipeline_for_submission(
-                pipeline_path, problem_name,
+                pipeline_path,
+                problem,
                 submission_path,
-                f'{pipeline_json["id"]}_{problem_name}'
+                f'{pipeline_json["id"]}_{problem.name}'
             )
 
     # add other best pipelines
     # TODO: update the experimenter to produce valid pipelines
     # add_best_pipelines(byu_dir)
+
 
 if __name__ == '__main__':
     main()
