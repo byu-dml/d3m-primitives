@@ -483,72 +483,56 @@ class SimpleProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimitive
     
     def embed(df: pd.DataFrame, model_weights_path: str) -> pd.DataFrame:
         model, emb_size = self.initialize_model(model_weights_path)
-
-        dataset_names = df['datasetName']
-        dataset_name_embs = model.embed_sentences(df['datasetName'].str.lower(), num_threads=_NUM_THREADS)
-        description_embs = model.embed_sentences(df['description'].str.lower(), num_threads=_NUM_THREADS)
-        col_name_embs = model.embed_sentences(df['colName'].str.lower(), num_threads=_NUM_THREADS)
-
-        group_type_df = pd.DataFrame({'datasetName': dataset_names})
+        #now embed
+        dataset_name_embs = model.embed_sentences([df['datasetName'].lower()], num_threads=_NUM_THREADS)
+        description_embs = model.embed_sentences([df['description'].lower()], num_threads=_NUM_THREADS)
+        col_name_embs = model.embed_sentences([df['colName'].lower()], num_threads=_NUM_THREADS)
+        #create the pandas dataframe
         embeddings_df = pd.DataFrame(data=np.hstack((dataset_name_embs, description_embs, col_name_embs)),     columns=['emb_{}'.format(i) for i in range(3*emb_size)])
 
-        return pd.concat([group_type_df, embeddings_df], axis=1)
+        return embeddings_df
 
     def _is_boolean(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.applymap(str)
+        input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
-        input_col_embed = self.embed(input_column,self.model_weights_path)
-        #extract the needed info from the input column
-        column_info = input_col_embed.drop(['datasetName'],axis=1)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1)) == 'boolean'
+        column_info = self.embed(input_column,self.model_weights_path)
+        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'boolean'
 
     def _is_categorical(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.applymap(str)
+        input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
-        input_col_embed = self.embed(input_column,self.model_weights_path)
-        #extract the needed info from the input column
-        column_info = input_col_embed.drop(['datasetName'],axis=1)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1)) == 'categorical'
+        column_info = self.embed(input_column,self.model_weights_path)
+        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'categorical'
 
     def _is_integer(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.applymap(str)
+        input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
-        input_col_embed = self.embed(input_column,self.model_weights_path)
-        #extract the needed info from the input column
-        column_info = input_col_embed.drop(['datasetName'],axis=1)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1)) == 'integer'
+        column_info = self.embed(input_column,self.model_weights_path)
+        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'integer'
 
     def _is_string(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.applymap(str)
+        input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
-        input_col_embed = self.embed(input_column,self.model_weights_path)
-        #extract the needed info from the input column
-        column_info = input_col_embed.drop(['datasetName'],axis=1)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1)) == 'string'
+        column_info = self.embed(input_column,self.model_weights_path)
+        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'string'
         
     def _is_dateTime(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.applymap(str)
+        input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
-        input_col_embed = self.embed(input_column,self.model_weights_path)
-        #extract the needed info from the input column
-        column_info = input_col_embed.drop(['datasetName'],axis=1)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1)) == 'dateTime'
+        column_info = self.embed(input_column,self.model_weights_path)
+        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'dateTime'
         
     def _is_real(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.applymap(str)
+        input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
-        input_col_embed = self.embed(input_column,self.model_weights_path)
-        #extract the needed info from the input column
-        column_info = input_col_embed.drop(['datasetName'],axis=1)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1)) == 'real'
+        column_info = self.embed(input_column,self.model_weights_path)
+        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'real'
         
     def _is_realVector(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.applymap(str)
+        input_column = input_column.apply(str)
         #embed the data using the embed function in the profiler
-        input_col_embed = self.embed(input_column,self.model_weights_path)
-        #extract the needed info from the input column
-        column_info = input_col_embed.drop(['datasetName'],axis=1)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1)) == 'realVector'  
+        column_info = self.embed(input_column,self.model_weights_path)
+        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'realVector'  
 
     def _is_unique_key(self, input_column: container.DataFrame) -> bool:
         column_values = input_column.iloc[:, 0]
