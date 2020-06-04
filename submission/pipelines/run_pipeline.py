@@ -61,6 +61,7 @@ def run_pipeline(
     ]
     if should_output_scores:
         run_args += ['--scores', pipeline_run_scores_path]
+    print(f"Running pipeline {pipeline_path} on problem '{problem.name}'")
     cli.main(run_args)
 
     return pipeline_run_path, pipeline_run_scores_path

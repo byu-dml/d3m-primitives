@@ -1,6 +1,7 @@
 import json
 import os
-import pymongo
+import traceback
+# import pymongo
 import pandas as pd
 import uuid
 from typing import Callable
@@ -503,65 +504,65 @@ def update_pipeline(
 
     return pipeline_to_update
         
-def add_best_pipelines(base_dir):
-    """
-    This function checks the best_pipelines.csv for the best pipelines for a dataset, prepares and updates it, and writes it to the submodule.
-    It also check how many pipelines beat MIT-LL and the EXlines.
-    """
-    mongo_client = pymongo.MongoClient(lab_hostname, real_mongo_port)
+# def add_best_pipelines(base_dir):
+#     """
+#     This function checks the best_pipelines.csv for the best pipelines for a dataset, prepares and updates it, and writes it to the submodule.
+#     It also check how many pipelines beat MIT-LL and the EXlines.
+#     """
+#     mongo_client = pymongo.MongoClient(lab_hostname, real_mongo_port)
 
-    imputer_version = None
-    best_pipelines_df = pd.read_csv("submission/pipelines/best_pipelines.csv", index_col=0)
+#     imputer_version = None
+#     best_pipelines_df = pd.read_csv("submission/pipelines/best_pipelines.csv", index_col=0)
 
-    beat_mit = 0
-    beat_exlines = 0
-    has_pipeline = 0
-    for index, dataset in enumerate(best_pipelines_df):
-        dataset_id = dataset.replace("_dataset", "", 1)
-        if dataset_id not in list(seed_datasets_exlines.keys()):
-            continue
+#     beat_mit = 0
+#     beat_exlines = 0
+#     has_pipeline = 0
+#     for index, dataset in enumerate(best_pipelines_df):
+#         dataset_id = dataset.replace("_dataset", "", 1)
+#         if dataset_id not in list(seed_datasets_exlines.keys()):
+#             continue
 
-        # grab the best pipeline
-        pipelines = best_pipelines_df[dataset]
-        best_pipeline_id = pipelines.idxmax()
-        best_pipeline_score = pipelines.max()
-        has_pipeline += 1
+#         # grab the best pipeline
+#         pipelines = best_pipelines_df[dataset]
+#         best_pipeline_id = pipelines.idxmax()
+#         best_pipeline_score = pipelines.max()
+#         has_pipeline += 1
 
-        # See how well we do compared to others
-        problem_details = seed_datasets_exlines[dataset_id]
-        if problem_details["problem"] == "accuracy":
-            if problem_details["score"] <= best_pipeline_score:
-                beat_exlines += 1
-            if problem_details["mit-score"] <= best_pipeline_score:
-                beat_mit += 1
-        else:
-            ## is regression
-            if problem_details["score"] >= best_pipeline_score:
-                beat_exlines += 1
-            if problem_details["mit-score"] >= best_pipeline_score:
-                beat_mit += 1
+#         # See how well we do compared to others
+#         problem_details = seed_datasets_exlines[dataset_id]
+#         if problem_details["problem"] == "accuracy":
+#             if problem_details["score"] <= best_pipeline_score:
+#                 beat_exlines += 1
+#             if problem_details["mit-score"] <= best_pipeline_score:
+#                 beat_mit += 1
+#         else:
+#             ## is regression
+#             if problem_details["score"] >= best_pipeline_score:
+#                 beat_exlines += 1
+#             if problem_details["mit-score"] >= best_pipeline_score:
+#                 beat_mit += 1
 
-        # get the best pipeline and update it
-        best_pipeline_json = get_pipeline_from_database(best_pipeline_id, mongo_client)
-        del best_pipeline_json["_id"]
-        no_digest_pipeline = remove_digests(best_pipeline_json)
-        updated_pipeline = update_pipeline(no_digest_pipeline)
+#         # get the best pipeline and update it
+#         best_pipeline_json = get_pipeline_from_database(best_pipeline_id, mongo_client)
+#         del best_pipeline_json["_id"]
+#         no_digest_pipeline = remove_digests(best_pipeline_json)
+#         updated_pipeline = update_pipeline(no_digest_pipeline)
             
-        # get directory to put new pipelines
-        if imputer_version == None:
-            IMPUTER_PIPELINE_PATH = os.path.join(base_dir, __imputer_path__, __imputer_version__, "pipelines/")
+#         # get directory to put new pipelines
+#         if imputer_version == None:
+#             IMPUTER_PIPELINE_PATH = os.path.join(base_dir, __imputer_path__, __imputer_version__, "pipelines/")
 
-        print("Writing pipeline for dataset: {} to {}".format(dataset, IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json"))
-        with open(IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json", "w") as file:
-            file.write(json.dumps(updated_pipeline, indent=4))
+#         print("Writing pipeline for dataset: {} to {}".format(dataset, IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json"))
+#         with open(IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json", "w") as file:
+#             file.write(json.dumps(updated_pipeline, indent=4))
         
-        # TODO: Run the pipeline and save the pipeline run as well.
+#         # TODO: Run the pipeline and save the pipeline run as well.
 
 
-    print("############## RESULTS #################")
-    print(beat_mit, " pipelines beat MIT")
-    print(beat_exlines, " pipelines beat EXlines")
-    print(has_pipeline, " pipelines for seed datasets")
+#     print("############## RESULTS #################")
+#     print(beat_mit, " pipelines beat MIT")
+#     print(beat_exlines, " pipelines beat EXlines")
+#     print(has_pipeline, " pipelines for seed datasets")
 
 
 def generate_and_update_primitive_pipeline(
@@ -610,6 +611,8 @@ def main():
 
     # add our basic pipelines to the submission
     for problem in problems + challenge_problems:
+        if problem.name in config.PROBLEM_BLACKLIST:
+            continue
         is_challenge_prob = problem.name in challenge_names
 
         for primitive_data in primitives_data:
@@ -633,12 +636,21 @@ def main():
 
             # now run the pipeline and save its pipeline run into the
             # submission as well
-            run_and_save_pipeline_for_submission(
-                pipeline_path,
-                problem,
-                submission_path,
-                f'{pipeline_json["id"]}_{problem.name}'
-            )
+            try:
+                run_and_save_pipeline_for_submission(
+                    pipeline_path,
+                    problem,
+                    submission_path,
+                    f'{pipeline_json["id"]}_{problem.name}'
+                )
+            except Exception:
+                print(
+                    f"Executing pipeline {pipeline_path} on "
+                    f"problem {problem.name} failed. Details:"
+                )
+                print(traceback.format_exc())
+                # Continue on and try the next one.
+
 
     # add other best pipelines
     # TODO: update the experimenter to produce valid pipelines
