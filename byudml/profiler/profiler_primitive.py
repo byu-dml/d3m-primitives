@@ -474,14 +474,14 @@ class SimpleProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimitive
 
         return columns_to_use, output_columns
 
-    def initialize_model(self,model_weights_path: str) -> (sent2vec.Sent2vecModel, int):
+    def initialize_model(self, model_weights_path: str) -> (sent2vec.Sent2vecModel, int):
         model = sent2vec.Sent2vecModel()
         model.load_model(model_weights_path)
         emb_size = model.get_emb_size()
     
         return model, emb_size
     
-    def embed(df: pd.DataFrame, model_weights_path: str) -> pd.DataFrame:
+    def embed(self, df: pd.DataFrame, model_weights_path: str) -> pd.DataFrame:
         model, emb_size = self.initialize_model(model_weights_path)
         #now embed
         dataset_name_embs = model.embed_sentences([df['datasetName'].lower()], num_threads=_NUM_THREADS)
