@@ -40,7 +40,7 @@ PROBLEM_BLACKLIST = {
     # GPS data in another file
     "LL1_726_TIDY_GPS_carpool_bus_service_rating_prediction",
     # Large, takes a long time: ~150k rows.
-    "SEMI_1217_click_prediction_small"
+    "SEMI_1217_click_prediction_small",
     "66_chlorineConcentration",
     "LL0_1485_madelon",  # too long
     "LL0_1468_cnae_9",  # also too long
