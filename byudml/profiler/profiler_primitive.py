@@ -180,24 +180,23 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
       when it is ``d3mIndex``.
     """
 
-    __author__ = 'Louis Huang'
+    __author__ = 'Brandon Schoenfeld'
     metadata = metadata_base.PrimitiveMetadata(
         {
-            'id': 'e193afa1-b45e-4d29-918f-5bb1fa3b88a7',
-            'version': '0.2.0',
-            'name': "Determine missing semantic types for columns automatically",
-            'python_path': 'd3m.primitives.schema_discovery.profiler.Common',
+            'id': 'af214333-e67b-4e59-a49b-b16f5501a925',
+            'version': __profiler_version__,
+            'name': 'TODO',
+            'python_path': __profiler_path__,
             'source': {
-                'name': common_primitives.__author__,
-                'contact': 'mailto:luyih@berkeley.edu',
+                'name': 'Brandon Schoenfeld',
+                'contact': 'mailto:bjschoenfeld@gmail.com',
                 'uris': [
-                    'https://gitlab.com/datadrivendiscovery/common-primitives/blob/master/common_primitives/simple_profiler.py',
-                    'https://gitlab.com/datadrivendiscovery/common-primitives.git',
+                    # TODO
                 ],
             },
             'installation': [{
                 'type': metadata_base.PrimitiveInstallationType.PIP,
-                'package_uri': 'git+https://gitlab.com/datadrivendiscovery/common-primitives.git@{git_commit}#egg=common_primitives'.format(
+                'package_uri': 'git+https://github.com/byu-dml/d3m-primitives.git@{git_commit}#egg=common_primitives'.format(
                     git_commit=d3m_utils.current_git_commit(os.path.dirname(__file__)),
                 ),
             }],
