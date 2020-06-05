@@ -505,7 +505,9 @@ def update_pipeline(
             step["primitive"]["version"] = check_step["primitive"]["version"]
 
     return pipeline_to_update
-        
+
+
+# TODO: do we still want this code?
 # def add_best_pipelines(base_dir):
 #     """
 #     This function checks the best_pipelines.csv for the best pipelines for a dataset, prepares and updates it, and writes it to the submodule.
