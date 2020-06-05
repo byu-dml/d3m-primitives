@@ -24,7 +24,6 @@ from submission.utils import (
     write_pipeline_for_submission,
     get_pipeline_from_database,
     seed_datasets_exlines,
-    is_blacklisted
 )
 from submission.pipelines.run_pipeline import run_and_save_pipeline_for_submission
 from submission.problems import get_tabular_problems
@@ -625,15 +624,26 @@ def main():
                 problem.problem_type,
                 is_challenge_prob
             )
-            # save it into the primitives submodule for TA1 submission
+
             primitive_path = primitive.metadata.query()['python_path']
             submission_path = os.path.join(byu_dir, primitive_path, primitive_data['version'])
+            pipeline_run_name = f'{pipeline_json["id"]}_{problem.name}'
+            pipeline_run_path = os.path.join(submission_path, 'pipeline_runs', f"{pipeline_run_name}.yml.gz")
+            if os.path.isfile(pipeline_run_path):
+                print(
+                    f"pipeline {pipeline_json['id']} has already "
+                    f"been run on problem {problem.name}, skipping."
+                )
+                continue
+
+            # save the pipeline into the primitives submodule for TA1 submission
             pipeline_path = write_pipeline_for_submission(
                 submission_path,
                 pipeline_json
             )
             # save it to a local folder so our unit tests can use it
             write_pipeline_for_testing(primitive_data['primitive_simple_name'], pipeline_json)
+
 
             # now run the pipeline and save its pipeline run into the
             # submission as well
@@ -642,7 +652,7 @@ def main():
                     pipeline_path,
                     problem,
                     submission_path,
-                    f'{pipeline_json["id"]}_{problem.name}'
+                    pipeline_run_name
                 )
             except Exception:
                 print(
