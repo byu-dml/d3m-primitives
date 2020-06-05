@@ -32,7 +32,7 @@ Imputes missing values in tabular data by randomly sampling other known values f
 2. Update the primitives, if necessary. At the least you'll likely need to update the dependencies in this repo to honor the dependencies and their version ranges found in the D3M core package. Be sure to update the version numbers in `byudml/__init__.py`.
 3. Next, to run the tests, generate the primitive json files, generate the pipelines, and run the pipelines:
     * Execute `docker exec -it test-d3m-primitives bash` to enter the docker container.
-    * `./run_tests.sh` This command will verify that nothing is broken, generate new pipeline and primitive jsons with updated digests and versions, run the pipelines, and place them in the correct folder in the submodule of the `primitives` repo.
+    * `./run_tests.sh` This command will verify that nothing is broken, generate new pipeline and primitive jsons with updated digests and versions, run the pipelines, and place them in the correct folder in the submodule of the `primitives` repo. NOTE: Verify that the glob pattern in `submission.utils.get_new_d3m_path` will correctly capture the D3M version in the `primitives` submodule.
     * `exit`
 4. Commit the updated primitive jsons and pipelines in the submodule i.e. our fork of the D3M primitives repo. **Note**: Do not commit straight to the master branch, but to a branch that semantically represents the new D3M package version and our organization.
 5. Update **this** repo by committing the changes to the submodule `git add submission/primitives/` and `git add`, `git commit`, and `git push`.
