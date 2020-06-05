@@ -62,7 +62,14 @@ def run_pipeline(
     if should_output_scores:
         run_args += ['--scores', pipeline_run_scores_path]
     print(f"Running pipeline {pipeline_path} on problem '{problem.name}'")
-    cli.main(run_args)
+
+    try:
+        cli.main(run_args)
+    except Exception as e:
+        # Let's clean up after ourselves. We don't want to keep the document
+        # of a pipeline run that failed.
+        os.remove(pipeline_run_path)
+        raise e
 
     return pipeline_run_path, pipeline_run_scores_path
 
@@ -119,7 +126,14 @@ def run_pipeline_run(
     ]
     if should_output_scores:
         rerun_args += ['--scores', pipeline_rerun_scores_path]
-    cli.main(rerun_args)
+    try:
+        cli.main(rerun_args)
+    except Exception as e:
+        # Let's clean up after ourselves. We don't want to keep documents
+        # for pipeline runs that failed.
+        os.remove(pipeline_run_path)
+        os.remove(pipeline_rerun_path)
+        raise e
 
     return pipeline_rerun_path, pipeline_rerun_scores_path
 
@@ -130,7 +144,7 @@ def run_and_save_pipeline_for_submission(
     submission_path: str,
     run_output_name: str,
     should_output_scores: bool = False
-) -> str:
+):
     """
     Run a pipeline on a problem using the d3m reference runtime and
     save the pipeline run in gzip format to the proper submission_path.
@@ -170,10 +184,9 @@ def run_and_save_pipeline_for_submission(
         run_output_name,
         should_output_scores
     )
-    print(f'checking {pipeline_run_path} was successful')
     check_pipeline_run_was_successful(pipeline_run_path)
 
-    # Next, rerun the pipeline run doc to verify reproducibility.
+    print(f"Rerunning pipeline run {pipeline_run_path} to verify reproducibility.")
     rerun_output_name = f'{run_output_name}_rerun'
     pipeline_rerun_path, _ = run_pipeline_run(
         pipeline_run_path,
@@ -182,10 +195,8 @@ def run_and_save_pipeline_for_submission(
         rerun_output_name,
         should_output_scores
     )
-    print(f'checking {pipeline_rerun_path} was successful')
     check_pipeline_run_was_successful(pipeline_rerun_path)
 
+    # The pipeline run and rerun were successful. Let's keep the submission.
     os.remove(pipeline_rerun_path)  # the rerun isn't part of the submission
     gzip_file(pipeline_run_path, remove_original=True)
-
-    return pipeline_run_path

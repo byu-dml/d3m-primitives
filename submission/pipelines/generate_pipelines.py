@@ -644,7 +644,6 @@ def main():
             # save it to a local folder so our unit tests can use it
             write_pipeline_for_testing(primitive_data['primitive_simple_name'], pipeline_json)
 
-
             # now run the pipeline and save its pipeline run into the
             # submission as well
             try:
