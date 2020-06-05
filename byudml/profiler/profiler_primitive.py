@@ -17,6 +17,9 @@ from d3m.base import utils as base_utils
 from d3m.metadata import base as metadata_base, hyperparams as hyperparams_module, params
 from d3m.primitive_interfaces import base, unsupervised_learning
 
+from byudml import __version__ as __package_version__
+from byudml import __profiler_path__, __profiler_version__
+
 import common_primitives
 from common_primitives import utils
 
@@ -142,7 +145,7 @@ class Hyperparams(hyperparams_module.Hyperparams):
     )
 
 
-class SimpleProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
+class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     """
     A primitive which determines missing semantic types for columns and adds
     them automatically. It uses a set of hard-coded rules/heuristics to determine

@@ -13,6 +13,7 @@ from d3m.metadata import (
 
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
+from byudml.profiler.profiler_primitive import SemanticProfilerPrimitive
 from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
 import sys
 sys.path.append('.')
@@ -433,6 +434,193 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
     return pipeline
 
+
+def generate_imputer_pipeline(task_type, random_id=False):
+    pipeline_id = str(uuid.uuid4())
+
+    d3m_index.register_primitive(
+        SemanticProfilerPrimitive.metadata.query()['python_path'],
+        SemanticProfilerPrimitive
+    )
+
+    pipeline = pipeline_module.Pipeline(pipeline_id)
+    pipeline.add_input(name='inputs')
+    step_counter = 0
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.data_transformation.dataset_to_dataframe.Common'
+        )
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference='inputs.0'
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    raw_data_data_reference = 'steps.{}.produce'.format(step_counter)
+    step_counter += 1
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.schema_discovery.profiler.BYU'
+        )
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference=raw_data_data_reference
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    profiled_data_reference = 'steps.{}.produce'.format(step_counter)
+    step_counter += 1
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.data_transformation.column_parser.Common'
+        )
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference=profiled_data_reference
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    parsed_data_data_reference = 'steps.{}.produce'.format(step_counter)
+    step_counter += 1
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.Common'
+        )
+    )
+    step.add_hyperparameter(
+        name='semantic_types', argument_type=metadata_base.ArgumentType.VALUE,
+        data=['https://metadata.datadrivendiscovery.org/types/Attribute']
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference=parsed_data_data_reference
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    raw_attributes_data_reference = 'steps.{}.produce'.format(step_counter)
+    step_counter += 1
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.data_transformation.extract_columns_by_semantic_types.Common'
+        )
+    )
+    step.add_hyperparameter(
+        name='semantic_types', argument_type=metadata_base.ArgumentType.VALUE,
+        data=['https://metadata.datadrivendiscovery.org/types/TrueTarget']
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference=parsed_data_data_reference
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    true_targets_data_reference = 'steps.{}.produce'.format(step_counter)
+    step_counter += 1
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.data_preprocessing.random_sampling_imputer.BYU'
+        )
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference=raw_attributes_data_reference
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    imputed_attributes_data_reference = 'steps.{}.produce'.format(step_counter)
+    step_counter += 1
+
+
+    if task_type == 'regression':
+        step = pipeline_module.PrimitiveStep(
+            primitive=d3m_index.get_primitive(
+                'd3m.primitives.regression.random_forest.SKlearn'
+            )
+        )
+        step.add_hyperparameter(
+            name='use_semantic_types',
+            argument_type=metadata_base.ArgumentType.VALUE, data=True
+        )
+        step.add_argument(
+            name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+            data_reference=imputed_attributes_data_reference
+        )
+        step.add_argument(
+            name='outputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+            data_reference=true_targets_data_reference
+        )
+        step.add_output('produce')
+        pipeline.add_step(step)
+        step_counter += 1
+
+
+    elif task_type == 'classification':
+        step = pipeline_module.PrimitiveStep(
+            primitive=d3m_index.get_primitive(
+                'd3m.primitives.classification.random_forest.SKlearn'
+            )
+        )
+        step.add_hyperparameter(
+            name='use_semantic_types',
+            argument_type=metadata_base.ArgumentType.VALUE, data=True
+        )
+        step.add_argument(
+            name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+            data_reference=imputed_attributes_data_reference
+        )
+        step.add_argument(
+            name='outputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+            data_reference=true_targets_data_reference
+        )
+        step.add_output('produce')
+        pipeline.add_step(step)
+        step_counter += 1
+
+    else:
+        raise ValueError('Invalid task_type: {}'.format(task_type))
+
+
+    step = pipeline_module.PrimitiveStep(
+        primitive=d3m_index.get_primitive(
+            'd3m.primitives.data_transformation.construct_predictions.Common'
+        )
+    )
+    step.add_argument(
+        name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference='steps.{}.produce'.format(step_counter - 1)
+    )
+    step.add_argument(
+        name='reference', argument_type=metadata_base.ArgumentType.CONTAINER,
+        data_reference=raw_data_data_reference
+    )
+    step.add_output('produce')
+    pipeline.add_step(step)
+    step_counter += 1
+
+
+    pipeline.add_output(
+        name='predictions',
+        data_reference='steps.{}.produce'.format(step_counter - 1)
+    )
+
+    return pipeline
+
+
 def remove_digests(
     pipeline_json_structure, *, exclude_primitives: set = set()
 ):
@@ -583,18 +771,24 @@ def main():
     challenge_names = []
     challenge_problems = []
     primitives_data = [
+        # {
+        #     'primitive': RandomSamplingImputer,
+        #     'gen_method': generate_imputer_pipeline,
+        #     'version': __imputer_version__,
+        #     'primitive_simple_name': 'random_sampling_imputer',
+        # },
+        # {
+        #     'primitive': MetafeatureExtractor,
+        #     'gen_method': generate_metafeature_pipeline,
+        #     'version': __metafeature_version__,
+        #     'primitive_simple_name': 'metafeature_extractor',
+        # },
         {
-            'primitive': RandomSamplingImputer,
+            'primitive': SemanticProfilerPrimitive,
             'gen_method': generate_imputer_pipeline,
-            'version': __imputer_version__,
-            'primitive_simple_name': 'random_sampling_imputer'
+            'version': __profiler_version__,
+            'primitive_simple_name': 'semantic_profiler'
         },
-        {
-            'primitive': MetafeatureExtractor,
-            'gen_method': generate_metafeature_pipeline,
-            'version': __metafeature_version__,
-            'primitive_simple_name': 'metafeature_extractor'
-        }
     ]
 
     # add our basic pipelines to the submission
