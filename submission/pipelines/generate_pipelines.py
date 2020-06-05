@@ -24,6 +24,7 @@ from submission.utils import (
     write_pipeline_for_submission,
     get_pipeline_from_database,
     seed_datasets_exlines,
+    is_blacklisted
 )
 from submission.pipelines.run_pipeline import run_and_save_pipeline_for_submission
 from submission.problems import get_tabular_problems
@@ -31,6 +32,7 @@ from submission import config
 
 real_mongo_port = 12345
 lab_hostname = "computer"
+
 
 def generate_imputer_pipeline(task_type, random_id=False):
     if random_id:
@@ -436,6 +438,7 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
     return pipeline
 
+
 def remove_digests(
     pipeline_json_structure, *, exclude_primitives: set = set()
 ):
@@ -611,7 +614,7 @@ def main():
 
     # add our basic pipelines to the submission
     for problem in problems + challenge_problems:
-        if problem.name in config.PROBLEM_BLACKLIST:
+        if is_blacklisted(problem):
             continue
         is_challenge_prob = problem.name in challenge_names
 
