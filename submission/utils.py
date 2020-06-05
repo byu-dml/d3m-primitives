@@ -12,7 +12,7 @@ def get_new_d3m_path():
     Gets the name of the newest version path for d3m/byudml
     :return:
     """
-    new_directory = max(glob.glob('submission/primitives/v????.?.?'))
+    new_directory = max(glob.glob('submission/primitives/v????.?.??'))
     byu_path = "byu-dml"
     byu_dir = os.path.join(new_directory, byu_path)
     return byu_dir
@@ -29,6 +29,7 @@ def clear_directory(dir_path):
     for f in files:
         shutil.rmtree(f)
 
+
 def write_pipeline_for_testing(primitive_name: str, pipeline_json: dict):
     pipeline_dir = os.path.join("submission", "pipelines", primitive_name)
 
@@ -43,6 +44,7 @@ def write_pipeline_for_testing(primitive_name: str, pipeline_json: dict):
         os.chmod(pipeline_path, 0o777)
 
     return pipeline_path
+
 
 def write_pipeline_for_submission(submission_path: str, pipeline_json: dict):
     """
@@ -65,6 +67,7 @@ def write_pipeline_for_submission(submission_path: str, pipeline_json: dict):
 
     return pipeline_path
 
+
 def get_pipeline_from_database(pipeline_id, mongo_client):
     """
     This function gets a pipeline from our local database given an id
@@ -83,12 +86,14 @@ def get_pipeline_from_database(pipeline_id, mongo_client):
         return pipeline
     raise FileExistsError("Pipeline ID does not exist in the database")
 
+
 def check_pipeline_run_was_successful(pipeline_run_path: str) -> None:
     with open(pipeline_run_path, 'r') as f:
         for pipeline_run in yaml.full_load_all(f):
             run_status = pipeline_run['status']['state']
             if run_status != 'SUCCESS':
                 raise AssertionError(f'pipeline run {pipeline_run_path} was unsuccessful, with status: {run_status}')
+
 
 def gzip_file(file_path: str, *, remove_original: bool = False) -> str:
     """
@@ -103,6 +108,7 @@ def gzip_file(file_path: str, *, remove_original: bool = False) -> str:
     if remove_original:
         os.remove(file_path)
     return zipped_file_name
+
 
 seed_datasets_exlines = {
     "1491_one_hundred_plants_margin": {"score" : 0.862722, "mit-score": 0.693786, "problem": "accuracy"},
