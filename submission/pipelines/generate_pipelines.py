@@ -614,8 +614,6 @@ def main():
 
     # add our basic pipelines to the submission
     for problem in problems + challenge_problems:
-        if is_blacklisted(problem):
-            continue
         is_challenge_prob = problem.name in challenge_names
 
         for primitive_data in primitives_data:

@@ -2,6 +2,8 @@ import os
 import json
 import typing as t
 
+from submission.config import PROBLEM_BLACKLIST
+
 
 class ProblemReference:
 
@@ -77,13 +79,22 @@ class ProblemReference:
         self.dataset_digest = dataset_doc["about"]["digest"]
 
 
+def is_blacklisted(problem: ProblemReference) -> bool:
+    """
+    Returns `True` if the problem is blacklisted i.e. if we don't want
+    to run any pipelines on it because its too big or of the wrong format.
+    """
+    normalized_name = problem.name.replace("_MIN_METADATA", "")
+    return normalized_name in PROBLEM_BLACKLIST
+
+
 def get_tabular_problems(
     datasets_dir: str,
     problem_types: list = ["classification", "regression"]
 ) -> t.List[ProblemReference]:
     """
-    Gets all tabular problems under `datasets_dir` having problem type
-    in `problem_types`.
+    Gets all non-blacklisted, tabular problems under `datasets_dir` having
+    problem type in `problem_types`.
 
     :param datasets_dir: The path to a directory containing problems.
     :param problem_types: The problem types to get problems for.
@@ -97,7 +108,7 @@ def get_tabular_problems(
         problem = ProblemReference(
             dataset_name, datasets_dir
         )
-        if problem.is_tabular and problem.problem_type in problem_types:
+        if problem.is_tabular and problem.problem_type in problem_types and not is_blacklisted(problem):
             problems.append(problem)
 
     print(f"found {len(problems)} tabular problems.")

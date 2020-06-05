@@ -6,9 +6,6 @@ import gzip
 
 import yaml
 
-from submission.config import PROBLEM_BLACKLIST
-from submission.problems import ProblemReference
-
 
 def get_new_d3m_path():
     """
@@ -111,15 +108,6 @@ def gzip_file(file_path: str, *, remove_original: bool = False) -> str:
     if remove_original:
         os.remove(file_path)
     return zipped_file_name
-
-
-def is_blacklisted(problem: ProblemReference) -> bool:
-    """
-    Returns `True` if the problem is blacklisted i.e. if we don't want
-    to run any pipelines on it because its too big or of the wrong format.
-    """
-    normalized_name = problem.name.replace("_MIN_METADATA", "")
-    return normalized_name in PROBLEM_BLACKLIST
 
 
 seed_datasets_exlines = {
