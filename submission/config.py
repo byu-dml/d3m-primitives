@@ -78,10 +78,12 @@ PROBLEM_BLACKLIST = {
     "uu2_gp_hyperparameter_estimation_v2",  # has extra data
     "uu2_gp_hyperparameter_estimation",  # has extra data
     "57_hypothyroid",  # always NAN's out
+    "32_fma",  # audio data
     "LL0_315_us_crime",  # the next are due to timeouts
     "LL0_688_visualizing_soil",
     "LL0_189_kin8nm",
     "LL0_572_bank8fm",
     "LL0_308_puma32h",
-    "32_fma",  # audio data
+    "SEMI_1040_sylva_prior",
+    "LL1_h1b_visa_apps_7480",
 }
