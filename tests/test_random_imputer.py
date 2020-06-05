@@ -4,15 +4,11 @@ import unittest
 import d3m
 from d3m import index, container
 from d3m.metadata import base as metadata_base
-import numpy as np
-import pandas as pd
 
 from byudml.imputer.random_sampling_imputer import Hyperparams, RandomSamplingImputer
+from tests import utils, config
 
-from tests import utils
 
-
-DATASETS_DIR = '/datasets/seed_datasets_current'
 PIPELINES_BASE_DIR = 'submission/pipelines'
 PIPELINES_DIR = os.path.join(PIPELINES_BASE_DIR, 'random_sampling_imputer')
 CLASSIFICATION_PIPELINE_FILENAMES = [
@@ -30,13 +26,13 @@ class RandomSamplingImputerTestCase(unittest.TestCase):
     def setUpClass(cls):
         index.register_primitive(RandomSamplingImputer.metadata.query()['python_path'], RandomSamplingImputer)
 
-        # cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '38_sick_MIN_METADATA')
-        cls.classification_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '185_baseball_MIN_METADATA')
+        # cls.classification_dataset_util = utils.D3MDatasetUtil(config.DATASETS_DIR, '38_sick_MIN_METADATA')
+        cls.classification_dataset_util = utils.D3MDatasetUtil(config.DATASETS_DIR, '185_baseball_MIN_METADATA')
         cls.classification_pipeline_paths = []
         for filename in CLASSIFICATION_PIPELINE_FILENAMES:
             cls.classification_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))
 
-        cls.regression_dataset_util = utils.D3MDatasetUtil(DATASETS_DIR, '196_autoMpg_MIN_METADATA')
+        cls.regression_dataset_util = utils.D3MDatasetUtil(config.DATASETS_DIR, '196_autoMpg_MIN_METADATA')
         cls.regression_pipeline_paths = []
         for filename in REGRESSION_PIPELINE_FILENAMES:
             cls.regression_pipeline_paths.append(os.path.join(PIPELINES_DIR, filename))

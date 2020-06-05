@@ -1,17 +1,16 @@
-import subprocess
 import os
 from typing import Tuple
 
 from d3m import cli
 
 from submission.utils import check_pipeline_run_was_successful, gzip_file
+from submission import config
+from submission.problems import ProblemReference
 
-DATASETS_DIR = '/datasets/seed_datasets_current'
-WORKER_ID = os.getenv('WORKER_ID')
 
 def run_pipeline(
     pipeline_path: str,
-    problem_name: str,
+    problem: ProblemReference,
     output_dir: str,
     output_name: str,
     should_output_scores: bool = False
@@ -23,14 +22,13 @@ def run_pipeline(
     ----------
     pipeline_path
         The full path to the pipeline file to be run.
-    problem_name
-        The name of the problem to be run. Should be the name as it
-        exists under the DATASETS environment variable.
+    problem
+        A reference to the problem to be run.
     output_dir
         The path to the directory to save the pipeline run and scores to.
     output_name
         The name to give the pipeline run and scores. The name should not
-        include the file extension. 
+        include the file extension.
     should_output_scores
         Whether to compute and save the pipeline run scores as well. If
         `True`, the scores will be saved in `output_dir`.
@@ -43,12 +41,8 @@ def run_pipeline(
         The full file path to the outputted run scores file, which will only
         be present if `should_output_scores=True`.
     """
-    problem_dir = os.path.join(DATASETS_DIR, problem_name)
     pipeline_run_path = os.path.join(output_dir, f'{output_name}.yml')
     pipeline_run_scores_path = os.path.join(output_dir, f'{output_name}_scores.csv')
-
-    score_subfolder_postfix = 'SCORE' if os.path.isdir(f'{problem_dir}/SCORE/dataset_SCORE') else 'TEST'
-    score_input_path = os.path.join(problem_dir, 'SCORE', f'dataset_{score_subfolder_postfix}', 'datasetDoc.json')
 
     # Run the pipeline, generating the pipeline run and scores
     run_args = [
@@ -56,20 +50,29 @@ def run_pipeline(
         '--strict-resolving',
         '--strict-digest',
         'runtime',
-        '--worker-id', WORKER_ID,
+        '--worker-id', config.WORKER_ID,
         'fit-score',
         '--pipeline', pipeline_path,
-        '--problem', os.path.join(problem_dir, f'{problem_name}_problem', 'problemDoc.json'),
-        '--input', os.path.join(problem_dir, 'TRAIN', 'dataset_TRAIN', 'datasetDoc.json'),
-        '--test-input', os.path.join(problem_dir, 'TEST', 'dataset_TEST', 'datasetDoc.json'),
-        '--score-input', score_input_path,
+        '--problem', problem.problem_doc_path,
+        '--input', problem.get_subset_dataset_doc_path("TRAIN"),
+        '--test-input', problem.get_subset_dataset_doc_path("TEST"),
+        '--score-input', problem.get_subset_dataset_doc_path("SCORE"),
         '--output-run', pipeline_run_path
     ]
     if should_output_scores:
         run_args += ['--scores', pipeline_run_scores_path]
-    cli.main(run_args)
+    print(f"Running pipeline {pipeline_path} on problem '{problem.name}'")
+
+    try:
+        cli.main(run_args)
+    except Exception as e:
+        # Let's clean up after ourselves. We don't want to keep the document
+        # of a pipeline run that failed.
+        os.remove(pipeline_run_path)
+        raise e
 
     return pipeline_run_path, pipeline_run_scores_path
+
 
 def run_pipeline_run(
     pipeline_run_path: str,
@@ -114,38 +117,45 @@ def run_pipeline_run(
         '',
         '--pipelines-path', pipelines_dir,
         'runtime',
-        '--datasets', DATASETS_DIR,
+        '--datasets', config.DATASETS_DIR,
         '--context', 'TESTING',
-        '--worker-id', WORKER_ID,
+        '--worker-id', config.WORKER_ID,
         'fit-score',
         '--input-run', pipeline_run_path,
         '--output-run', pipeline_rerun_path,
     ]
     if should_output_scores:
         rerun_args += ['--scores', pipeline_rerun_scores_path]
-    cli.main(rerun_args)
+    try:
+        cli.main(rerun_args)
+    except Exception as e:
+        # Let's clean up after ourselves. We don't want to keep documents
+        # for pipeline runs that failed.
+        os.remove(pipeline_run_path)
+        os.remove(pipeline_rerun_path)
+        raise e
 
     return pipeline_rerun_path, pipeline_rerun_scores_path
 
+
 def run_and_save_pipeline_for_submission(
     pipeline_path: str,
-    problem_name: str,
+    problem: ProblemReference,
     submission_path: str,
     run_output_name: str,
     should_output_scores: bool = False
-) -> str:
+):
     """
     Run a pipeline on a problem using the d3m reference runtime and
     save the pipeline run in gzip format to the proper submission_path.
-    Also verifies that the run can be rerun successfully. 
+    Also verifies that the run can be rerun successfully.
 
     Parameters
     ----------
     pipeline_path
         The full path to the pipeline file to be run.
-    problem_name
-        The name of the problem to be run. Should be the name as it
-        exists under the DATASETS environment variable.
+    problem
+        A reference to the problem to run the pipeline on.
     submission_path
         The directory where the primitive's pipelines and pipeline_runs go
     run_output_name
@@ -169,15 +179,14 @@ def run_and_save_pipeline_for_submission(
     # First, run the pipeline and create the pipeline run doc.
     pipeline_run_path, _ = run_pipeline(
         pipeline_path,
-        problem_name,
+        problem,
         pipeline_runs_dir,
         run_output_name,
         should_output_scores
     )
-    print(f'checking {pipeline_run_path} was successful')
     check_pipeline_run_was_successful(pipeline_run_path)
 
-    # Next, rerun the pipeline run doc to verify reproducibility.
+    print(f"Rerunning pipeline run {pipeline_run_path} to verify reproducibility.")
     rerun_output_name = f'{run_output_name}_rerun'
     pipeline_rerun_path, _ = run_pipeline_run(
         pipeline_run_path,
@@ -186,10 +195,8 @@ def run_and_save_pipeline_for_submission(
         rerun_output_name,
         should_output_scores
     )
-    print(f'checking {pipeline_rerun_path} was successful')
     check_pipeline_run_was_successful(pipeline_rerun_path)
 
+    # The pipeline run and rerun were successful. Let's keep the submission.
     os.remove(pipeline_rerun_path)  # the rerun isn't part of the submission
     gzip_file(pipeline_run_path, remove_original=True)
-
-    return pipeline_run_path
