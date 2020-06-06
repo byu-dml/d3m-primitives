@@ -188,7 +188,7 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
         'description': 'Predicts semantic column types using a natural language embeddings of the the dataset name, dataset description, and column name. The internal model was trained using the dataset annotations created by MIT Lincoln Labs.',
         'python_path': __profiler_path__,
         'source': {
-            'name': 'Brandon Schoenfeld',
+            'name': 'byu-dml',
             'contact': 'mailto:bjschoenfeld@gmail.com',
             'uris': [
                 'https://github.com/byu-dml/d3m-primitives'
