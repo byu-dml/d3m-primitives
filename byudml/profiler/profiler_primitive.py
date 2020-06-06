@@ -10,7 +10,7 @@ import sys
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
 from pandas.io import parsers as pandas_parsers  # type: ignore
-import sent2vec
+from sentence_transformers import SentenceTransformer
 
 from d3m import container, exceptions, utils as d3m_utils
 from d3m.base import utils as base_utils
@@ -215,25 +215,18 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
         self._remove_semantic_types: typing.List[typing.List[str]] = None
         self._fitted: bool = False
 
-        emb_weight_path = './torontobooks_unigrams.bin'
-        self._emb_model = sent2vec.Sent2vecModel()
-        self._emb_model.load_model(emb_weight_path)
-        self._emb_size = self._emb_model.get_emb_size()
+        self._emb_model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 
-        profiler_model_state_path = './RF_public_model.sav'
-        with open(profiler_model_state_path, 'rb') as f:
+        model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'model.bin')
+        with open(model_path, 'rb') as f:
             self._profiler_model = pickle.load(f)
 
     def _predict_semantic_type(self, input_column: container.DataFrame) -> str:
         column_name = input_column.metadata.query(('ALL_ELEMENTS', 0))['name']
 
-        dataset_name_emb = self._emb_model.embed_sentences([self._dataset_name.lower()], num_threads=1)  # todo make num_threads hyperparam
-        dataset_desc_emb = self._emb_model.embed_sentences([self._dataset_description.lower()], num_threads=1)
-        column_name_emb = self._emb_model.embed_sentences([column_name.lower()], num_threads=1)
+        column_name_emb = self._emb_model.encode([column_name.lower()])
 
-        column_emb = np.hstack((dataset_name_emb, dataset_desc_emb, column_name_emb)).reshape(1, 3 * self._emb_size)
-
-        prediction = self._profiler_model.predict(column_emb.reshape(1,-1))
+        prediction = self._profiler_model.predict(column_name_emb)
         assert prediction.shape[0] == 1
 
         return prediction[0]
