@@ -812,12 +812,12 @@ def main():
             'version': __metafeature_version__,
             'primitive_simple_name': 'metafeature_extractor',
         },
-        {
-            'primitive': SemanticProfilerPrimitive,
-            'gen_method': generate_profiler_pipeline,
-            'version': __profiler_version__,
-            'primitive_simple_name': 'semantic_profiler'
-        },
+        # {
+        #     'primitive': SemanticProfilerPrimitive,
+        #     'gen_method': generate_profiler_pipeline,
+        #     'version': __profiler_version__,
+        #     'primitive_simple_name': 'semantic_profiler'
+        # },
     ]
 
     # add our basic pipelines to the submission
