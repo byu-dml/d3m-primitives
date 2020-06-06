@@ -1,4 +1,4 @@
-__version__ = '0.7.0'
+__version__ = '0.7.1'
 __metafeature_version__ = '0.4.6'
 __metafeature_path__ = 'd3m.primitives.metalearning.metafeature_extractor.BYU'
 __imputer_version__ = '0.2.2'
