@@ -34,6 +34,6 @@ IMPUTER_JSON_PATH = os.path.join(byu_dir, __imputer_path__, __imputer_version__,
 METAFEATURE_JSON_PATH = os.path.join(byu_dir, __metafeature_path__, __metafeature_version__, PRIMITIVE_JSON)
 PROFILER_JSON_PATH = os.path.join(byu_dir, __profiler_path__, __profiler_version__, PRIMITIVE_JSON)
 
-# save_primitive_json(RandomSamplingImputer, IMPUTER_JSON_PATH)
-# save_primitive_json(MetafeatureExtractor, METAFEATURE_JSON_PATH)
+save_primitive_json(RandomSamplingImputer, IMPUTER_JSON_PATH)
+save_primitive_json(MetafeatureExtractor, METAFEATURE_JSON_PATH)
 save_primitive_json(SemanticProfilerPrimitive, PROFILER_JSON_PATH)

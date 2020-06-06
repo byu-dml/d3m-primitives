@@ -800,18 +800,18 @@ def main():
     challenge_problems = []
     challenge_names = {p.name for p in challenge_problems}
     primitives_data = [
-        # {
-        #     'primitive': RandomSamplingImputer,
-        #     'gen_method': generate_imputer_pipeline,
-        #     'version': __imputer_version__,
-        #     'primitive_simple_name': 'random_sampling_imputer',
-        # },
-        # {
-        #     'primitive': MetafeatureExtractor,
-        #     'gen_method': generate_metafeature_pipeline,
-        #     'version': __metafeature_version__,
-        #     'primitive_simple_name': 'metafeature_extractor',
-        # },
+        {
+            'primitive': RandomSamplingImputer,
+            'gen_method': generate_imputer_pipeline,
+            'version': __imputer_version__,
+            'primitive_simple_name': 'random_sampling_imputer',
+        },
+        {
+            'primitive': MetafeatureExtractor,
+            'gen_method': generate_metafeature_pipeline,
+            'version': __metafeature_version__,
+            'primitive_simple_name': 'metafeature_extractor',
+        },
         {
             'primitive': SemanticProfilerPrimitive,
             'gen_method': generate_profiler_pipeline,
@@ -821,7 +821,7 @@ def main():
     ]
 
     # add our basic pipelines to the submission
-    for problem in (problems + challenge_problems)[:2]:
+    for problem in (problems + challenge_problems):
         is_challenge_prob = problem.name in challenge_names
 
         for primitive_data in primitives_data:
