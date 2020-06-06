@@ -15,7 +15,10 @@ from d3m.metadata import (
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
 from byudml.profiler.profiler_primitive import SemanticProfilerPrimitive
-from byudml import __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__
+from byudml import (
+    __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__,
+    __profiler_version__, __profiler_path__
+)
 import sys
 sys.path.append('.')
 from submission.utils import (
@@ -440,7 +443,14 @@ def generate_metafeature_pipeline(task_type, random_id=False):
 
 
 def generate_profiler_pipeline(task_type, random_id=False):
-    pipeline_id = str(uuid.uuid4())
+    if random_id:
+        pipeline_id = str(uuid.uuid4())
+    elif task_type == 'classification':
+        pipeline_id = 'f4ebb9c9-ef15-491d-9a39-595c20f3e78e'
+    elif task_type == 'regression':
+        pipeline_id = '9f5f6042-6582-494a-bc4b-92c7797a6614'
+    else:
+        raise ValueError('Invalid task_type: {}'.format(task_type))
 
     d3m_index.register_primitive(
         SemanticProfilerPrimitive.metadata.query()['python_path'],
@@ -537,8 +547,12 @@ def generate_profiler_pipeline(task_type, random_id=False):
 
     step = pipeline_module.PrimitiveStep(
         primitive=d3m_index.get_primitive(
-            'd3m.primitives.data_preprocessing.random_sampling_imputer.BYU'
+            'd3m.primitives.data_cleaning.imputer.SKlearn'
         )
+    )
+    step.add_hyperparameter(
+        name='use_semantic_types',
+        argument_type=metadata_base.ArgumentType.VALUE, data=True
     )
     step.add_argument(
         name='inputs', argument_type=metadata_base.ArgumentType.CONTAINER,
@@ -785,7 +799,7 @@ def main():
     problems = get_tabular_problems(config.DATASETS_DIR)
     challenge_problems = []
     challenge_names = {p.name for p in challenge_problems}
-    primitives_data = [https://public.ukp.informatik.tu-darmstadt.de/reimers/sentence-transformers/v0.2/distilbert-base-nli-stsb-mean-tokens.zip
+    primitives_data = [
         # {
         #     'primitive': RandomSamplingImputer,
         #     'gen_method': generate_imputer_pipeline,
@@ -800,14 +814,14 @@ def main():
         # },
         {
             'primitive': SemanticProfilerPrimitive,
-            'gen_method': generate_imputer_pipeline,
+            'gen_method': generate_profiler_pipeline,
             'version': __profiler_version__,
             'primitive_simple_name': 'semantic_profiler'
         },
     ]
 
     # add our basic pipelines to the submission
-    for problem in problems + challenge_problems:
+    for problem in (problems + challenge_problems)[:2]:
         is_challenge_prob = problem.name in challenge_names
 
         for primitive_data in primitives_data:

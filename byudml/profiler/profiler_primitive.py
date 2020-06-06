@@ -181,31 +181,31 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
     """
 
     __author__ = 'Brandon Schoenfeld'
-    metadata = metadata_base.PrimitiveMetadata(
-        {
-            'id': 'af214333-e67b-4e59-a49b-b16f5501a925',
-            'version': __profiler_version__,
-            'name': 'TODO',
-            'python_path': __profiler_path__,
-            'source': {
-                'name': 'Brandon Schoenfeld',
-                'contact': 'mailto:bjschoenfeld@gmail.com',
-                'uris': [
-                    # TODO
-                ],
-            },
-            'installation': [{
-                'type': metadata_base.PrimitiveInstallationType.PIP,
-                'package_uri': 'git+https://github.com/byu-dml/d3m-primitives.git@{git_commit}#egg=common_primitives'.format(
-                    git_commit=d3m_utils.current_git_commit(os.path.dirname(__file__)),
-                ),
-            }],
-            'algorithm_types': [
-                metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,
+    metadata = metadata_base.PrimitiveMetadata({
+        'id': 'af214333-e67b-4e59-a49b-b16f5501a925',
+        'version': __profiler_version__,
+        'name': 'Natural Language Semantic Profiler',
+        'description': 'Predicts semantic column types using a natural language embeddings of the the dataset name, dataset description, and column name. The internal model was trained using the dataset annotations created by MIT Lincoln Labs.',
+        'python_path': __profiler_path__,
+        'source': {
+            'name': 'Brandon Schoenfeld',
+            'contact': 'mailto:bjschoenfeld@gmail.com',
+            'uris': [
+                'https://github.com/byu-dml/d3m-primitives'
             ],
-            'primitive_family': metadata_base.PrimitiveFamily.SCHEMA_DISCOVERY,
         },
-    )
+        'installation': [
+            {
+                'type': metadata_base.PrimitiveInstallationType.PIP,
+                'package': 'byudml',
+                'version': __package_version__
+            }
+        ],
+        'algorithm_types': [
+            metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,
+        ],
+        'primitive_family': metadata_base.PrimitiveFamily.SCHEMA_DISCOVERY,
+    })
 
     def __init__(self, *, hyperparams: Hyperparams) -> None:
         super().__init__(hyperparams=hyperparams)
@@ -214,8 +214,31 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
         self._add_semantic_types: typing.List[typing.List[str]] = None
         self._remove_semantic_types: typing.List[typing.List[str]] = None
         self._fitted: bool = False
-        self._our_model = pickle.load(open("RF_public_model.sav",'rb'))
-        self.model_weights_path = '../data_files/torontobooks_unigrams.bin'
+
+        emb_weight_path = './torontobooks_unigrams.bin'
+        self._emb_model = sent2vec.Sent2vecModel()
+        self._emb_model.load_model(emb_weight_path)
+        self._emb_size = self._emb_model.get_emb_size()
+
+        profiler_model_state_path = './RF_public_model.sav'
+        with open(profiler_model_state_path, 'rb') as f:
+            self._profiler_model = pickle.load(f)
+
+    def _predict_semantic_type(self, input_column: container.DataFrame) -> str:
+        dataset_name = input_column.metadata.dataset_name
+        dataset_description = input_column.metadata.dataset_description
+        column_name = input_column.metadata.name
+
+        dataset_name_emb = self._emb_model.embed_sentences(dataset_name.lower(), num_threads=1)  # todo make num_threads hyperparam
+        dataset_desc_emb = self._emb_model.embed_sentences(dataset_description.lower(), num_threads=1)
+        column_name_emb = self._emb_model.embed_sentences(column_name.lower(), num_threads=1)
+
+        column_emb = np.hstack((dataset_name_emb, dataset_desc_emb, column_name_emb)).reshape(1, 3 * self._emb_size)
+
+        prediction = self._profiler_model.predict(column_emb.reshape(1,-1))
+        assert prediction.shape[0] == 1
+
+        return prediction[0]
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
@@ -476,65 +499,26 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
 
         return columns_to_use, output_columns
 
-    def initialize_model(self, model_weights_path: str) -> (sent2vec.Sent2vecModel, int):
-        model = sent2vec.Sent2vecModel()
-        model.load_model(model_weights_path)
-        emb_size = model.get_emb_size()
-    
-        return model, emb_size
-    
-    def embed(self, df: pd.DataFrame, model_weights_path: str) -> pd.DataFrame:
-        model, emb_size = self.initialize_model(model_weights_path)
-        #now embed
-        dataset_name_embs = model.embed_sentences([df['datasetName'].lower()], num_threads=_NUM_THREADS)
-        description_embs = model.embed_sentences([df['description'].lower()], num_threads=_NUM_THREADS)
-        col_name_embs = model.embed_sentences([df['colName'].lower()], num_threads=_NUM_THREADS)
-        #create the pandas dataframe
-        embeddings_df = pd.DataFrame(data=np.hstack((dataset_name_embs, description_embs, col_name_embs)),     columns=['emb_{}'.format(i) for i in range(3*emb_size)])
-
-        return embeddings_df
-
     def _is_boolean(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.apply(str)
-        #embed the data using the embed function in the profiler
-        column_info = self.embed(input_column,self.model_weights_path)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'boolean'
+        return self._predict_semantic_type(input_column) == 'boolean'
 
     def _is_categorical(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.apply(str)
-        #embed the data using the embed function in the profiler
-        column_info = self.embed(input_column,self.model_weights_path)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'categorical'
+        return self._predict_semantic_type(input_column) == 'categorical'
 
     def _is_integer(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.apply(str)
-        #embed the data using the embed function in the profiler
-        column_info = self.embed(input_column,self.model_weights_path)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'integer'
+        return self._predict_semantic_type(input_column) == 'integer'
 
     def _is_text(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.apply(str)
-        #embed the data using the embed function in the profiler
-        column_info = self.embed(input_column,self.model_weights_path)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'string'
-        
+        return self._predict_semantic_type(input_column) == 'string'
+
     def _is_datetime(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.apply(str)
-        #embed the data using the embed function in the profiler
-        column_info = self.embed(input_column,self.model_weights_path)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'dateTime'
-        
+        return self._predict_semantic_type(input_column) == 'dateTime'
+
     def _is_float(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.apply(str)
-        #embed the data using the embed function in the profiler
-        column_info = self.embed(input_column,self.model_weights_path)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'real'
-        
+        return self._predict_semantic_type(input_column) == 'real'
+
     def _is_float_vector(self, input_column: container.DataFrame) -> bool:
-        input_column = input_column.apply(str)
-        #embed the data using the embed function in the profiler
-        column_info = self.embed(input_column,self.model_weights_path)
-        return self._our_model.predict(column_info.to_numpy().reshape(1,-1))[0] == 'realVector'  
+        return self._predict_semantic_type(input_column) == 'realVector'
 
     def _is_unique_key(self, input_column: container.DataFrame) -> bool:
         column_values = input_column.iloc[:, 0]
