@@ -225,13 +225,11 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
             self._profiler_model = pickle.load(f)
 
     def _predict_semantic_type(self, input_column: container.DataFrame) -> str:
-        dataset_name = input_column.metadata.dataset_name
-        dataset_description = input_column.metadata.dataset_description
-        column_name = input_column.metadata.name
+        column_name = input_column.metadata.query(('ALL_ELEMENTS', 0))['name']
 
-        dataset_name_emb = self._emb_model.embed_sentences(dataset_name.lower(), num_threads=1)  # todo make num_threads hyperparam
-        dataset_desc_emb = self._emb_model.embed_sentences(dataset_description.lower(), num_threads=1)
-        column_name_emb = self._emb_model.embed_sentences(column_name.lower(), num_threads=1)
+        dataset_name_emb = self._emb_model.embed_sentences([self._dataset_name.lower()], num_threads=1)  # todo make num_threads hyperparam
+        dataset_desc_emb = self._emb_model.embed_sentences([self._dataset_description.lower()], num_threads=1)
+        column_name_emb = self._emb_model.embed_sentences([column_name.lower()], num_threads=1)
 
         column_emb = np.hstack((dataset_name_emb, dataset_desc_emb, column_name_emb)).reshape(1, 3 * self._emb_size)
 
@@ -243,6 +241,9 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
         self._fitted = False
+
+        self._dataset_name = ''  # todo
+        self._dataset_description = ''  # todo
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
         # The logic of detecting values tries to mirror also the logic of parsing
