@@ -4,7 +4,7 @@ reset
 pip3 install .
 mv byudml tmp_byudml
 python3 submission/primitive_jsons/generate_primitive_jsons.py
-python3 submission/pipelines/generate_pipelines.py
+# python3 submission/pipelines/generate_pipelines.py
 python3 run_tests.py
 python3 submission/ci_validation.py
 mv tmp_byudml byudml

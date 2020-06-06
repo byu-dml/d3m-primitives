@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 from byudml import __version__
 from byudml import __imputer_path__
 from byudml import __metafeature_path__
+from byudml import __profiler_path__
 
 
 setup(
@@ -18,12 +19,14 @@ setup(
         'd3m',
         'metalearn==0.6.1',
         'numpy<=1.18.2',
-        'pandas<=1.0.3'
+        'pandas<=1.0.3',
+        'sentence-transformers<=1.2.3',
     ],
     entry_points = {
         'd3m.primitives': [
             '{} = byudml.imputer.random_sampling_imputer:RandomSamplingImputer'.format(".".join(__imputer_path__.split(".")[2:])),
-            '{} = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'.format(".".join(__metafeature_path__.split(".")[2:]))
+            '{} = byudml.metafeature_extraction.metafeature_extraction:MetafeatureExtractor'.format(".".join(__metafeature_path__.split(".")[2:])),
+            '{} = byudml.profiler.profiler_primitive:SemanticProfilerPrimitive'.format(".".join(__profiler_path__.split(".")[2:])),
         ]
     }
 )
