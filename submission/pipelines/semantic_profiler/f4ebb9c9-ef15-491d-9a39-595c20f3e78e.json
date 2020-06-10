@@ -1,7 +1,7 @@
 {
     "id": "f4ebb9c9-ef15-491d-9a39-595c20f3e78e",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2020-06-06T04:08:05.472249Z",
+    "created": "2020-06-10T23:05:18.297260Z",
     "inputs": [
         {
             "name": "inputs"
@@ -42,7 +42,7 @@
                 "version": "0.0.1",
                 "python_path": "d3m.primitives.schema_discovery.profiler.BYU",
                 "name": "Natural Language Semantic Profiler",
-                "digest": "6371c220a8b23c0515003c232f5ba8f6a55e15a2e4100427d5da8d47c1d521d0"
+                "digest": "b0ef5ed1c95dbde5550cb4f6fed79a77f8ec601b7229fd91ea03593bced0ca65"
             },
             "arguments": {
                 "inputs": {
@@ -219,5 +219,5 @@
             ]
         }
     ],
-    "digest": "db4732a7f83169ee7e90feb22486a7ebdb9b7119771576544a203dfdad1d1b96"
+    "digest": "3a32f599c5a235ddb526506527fff2b41cb47e3c4102cc3ec556c5579323336f"
 }

@@ -6,6 +6,7 @@ import typing
 import multiprocessing as mp
 import pickle
 import sys
+import zipfile
 
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
@@ -181,6 +182,14 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
     """
 
     __author__ = 'Brandon Schoenfeld'
+    _weights_configs = [
+        {
+            'type': 'FILE',
+            'key': 'distilbert-base-nli-stsb-mean-tokens.zip',
+            'file_uri': 'https://public.ukp.informatik.tu-darmstadt.de/reimers/sentence-transformers/v0.2/distilbert-base-nli-stsb-mean-tokens.zip',
+            'file_digest': '87a361052ca09566b805bdfa168dc775eaa689686a1124401868a9b96fcbc19f',
+        },
+    ]
     metadata = metadata_base.PrimitiveMetadata({
         'id': 'af214333-e67b-4e59-a49b-b16f5501a925',
         'version': __profiler_version__,
@@ -199,32 +208,68 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
                 'type': metadata_base.PrimitiveInstallationType.PIP,
                 'package': 'byudml',
                 'version': __package_version__
-            }
-        ],
+            },
+        ] + _weights_configs,
         'algorithm_types': [
             metadata_base.PrimitiveAlgorithmType.DATA_PROFILING,
         ],
         'primitive_family': metadata_base.PrimitiveFamily.SCHEMA_DISCOVERY,
     })
 
-    def __init__(self, *, hyperparams: Hyperparams) -> None:
-        super().__init__(hyperparams=hyperparams)
+    def __init__(self, *, hyperparams: Hyperparams, volumes: typing.Optional[typing.Dict[str, str]]=None) -> None:
+        super().__init__(hyperparams=hyperparams, volumes=volumes)
 
         self._training_inputs: Inputs = None
         self._add_semantic_types: typing.List[typing.List[str]] = None
         self._remove_semantic_types: typing.List[typing.List[str]] = None
         self._fitted: bool = False
 
-        self._emb_model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
+        self._emb_model = self._init_embedding_model()
+        self._profiler_model = self._init_profiler_model()
 
+    def _init_embedding_model(self) -> SentenceTransformer:
+        weights_path = self._find_weights_path(self._weights_configs[0]['key'])
+        weights_path = self._extract_weights(weights_path)
+        with d3m_utils.silence():
+            emb_model = SentenceTransformer(weights_path)
+        return emb_model
+
+    def _find_weights_path(self, key_filename):
+        if key_filename in self.volumes:
+            weight_file_path = self.volumes[key_filename]
+        else:
+            weight_file_path = os.path.join('.', self._weights_configs['file_digest'], key_filename)
+
+        if not os.path.isfile(weight_file_path):
+            raise ValueError(
+                "Can't get weights file from volumes by key '{key_filename}' and at path '{path}'.".format(
+                    key_filename=key_filename,
+                    path=weight_file_path,
+                ),
+            )
+
+        return weight_file_path
+
+    def _extract_weights(self, weights_path):
+        extracted_weights_path = weights_path[:-4]  # remove .zip
+
+        if not os.path.isfile(extracted_weights_path):
+            with zipfile.ZipFile(weights_path, 'r') as zf:
+                zf.extractall(extracted_weights_path)
+
+        return extracted_weights_path
+
+    def _init_profiler_model(self):
         model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'model.bin')
         with open(model_path, 'rb') as f:
-            self._profiler_model = pickle.load(f)
+            profiler_model = pickle.load(f)
+        return profiler_model
 
     def _predict_semantic_type(self, input_column: container.DataFrame) -> str:
         column_name = input_column.metadata.query(('ALL_ELEMENTS', 0))['name']
 
-        column_name_emb = self._emb_model.encode([column_name.lower()])
+        with d3m_utils.silence():
+            column_name_emb = self._emb_model.encode([column_name.lower()], show_progress_bar=False)
 
         prediction = self._profiler_model.predict(column_name_emb)
         assert prediction.shape[0] == 1
