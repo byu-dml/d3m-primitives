@@ -1,3 +1,7 @@
+"""
+This code has been copied and modified from https://gitlab.com/datadrivendiscovery/common-primitives/-/blob/c170029e9a0f875af28c6b9af20adc90bd4df0bb/common_primitives/simple_profiler.py
+"""
+
 import collections
 import copy
 import os.path
