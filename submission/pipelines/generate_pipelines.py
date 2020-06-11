@@ -812,12 +812,12 @@ def main():
             'version': __metafeature_version__,
             'primitive_simple_name': 'metafeature_extractor',
         },
-        # {
-        #     'primitive': SemanticProfilerPrimitive,
-        #     'gen_method': generate_profiler_pipeline,
-        #     'version': __profiler_version__,
-        #     'primitive_simple_name': 'semantic_profiler'
-        # },
+        {
+            'primitive': SemanticProfilerPrimitive,
+            'gen_method': generate_profiler_pipeline,
+            'version': __profiler_version__,
+            'primitive_simple_name': 'profiler'
+        },
     ]
 
     # add our basic pipelines to the submission
@@ -869,11 +869,6 @@ def main():
                 )
                 print(traceback.format_exc())
                 # Continue on and try the next one.
-
-
-    # add other best pipelines
-    # TODO: update the experimenter to produce valid pipelines
-    # add_best_pipelines(byu_dir)
 
 
 if __name__ == '__main__':
