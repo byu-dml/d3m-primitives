@@ -1,7 +1,7 @@
 {
     "id": "168d3fbf-a3fe-456a-93a3-d2720ef8cb42",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2020-06-04T23:01:16.381949Z",
+    "created": "2020-06-11T03:25:11.487683Z",
     "inputs": [
         {
             "name": "inputs"
@@ -139,10 +139,10 @@
             "type": "PRIMITIVE",
             "primitive": {
                 "id": "ebfeb6f0-e366-4082-b1a7-602fd50acc96",
-                "version": "0.2.1",
+                "version": "0.2.2",
                 "python_path": "d3m.primitives.data_preprocessing.random_sampling_imputer.BYU",
                 "name": "Random Sampling Imputer",
-                "digest": "8e5df1fc4f0e2a9abefbabfa70df61f308aa72d4d70c0470411836912567b572"
+                "digest": "e92df5bb3461815157a3eaeb1a8455e3116ac6f5e8d5c13c4b95c0967cf410f3"
             },
             "arguments": {
                 "inputs": {
@@ -213,5 +213,5 @@
             ]
         }
     ],
-    "digest": "7cb9cbc74a04dfef54be6c2b681d9acb4df31b05e74753b3353a0e767b3aa2e1"
+    "digest": "96088b8ee91700e834ebab17b343495fb6e0f3fca0e78910f4d5b5e6cf04e214"
 }
