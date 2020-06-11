@@ -264,7 +264,9 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
         return extracted_weights_path
 
     def _init_profiler_model(self):
-        model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'model.bin')
+        zip_model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'model.zip')
+        model_path = os.path.join(self._extract_weights(zip_model_path), 'model.bin')
+
         with open(model_path, 'rb') as f:
             profiler_model = pickle.load(f)
         return profiler_model
