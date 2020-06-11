@@ -4,13 +4,12 @@ pip3 install . > /dev/null
 mv byudml tmp_byudml
 
 python3 submission/primitive_jsons/generate_primitive_jsons.py
-python3 submission/pipelines/generate_pipelines.py
 
-
-# test static file download and use in profiler
 mkdir /static
 
 python3 -m d3m primitive download -p d3m.primitives.schema_discovery.profiler.BYU -o /static
+
+python3 submission/pipelines/generate_pipelines.py
 
 predictions_path=./38_sick_predictions.csv
 pipeline_run_path=./38_sick_pipeline_run.yml
