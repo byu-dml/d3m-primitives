@@ -197,8 +197,8 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
     metadata = metadata_base.PrimitiveMetadata({
         'id': 'af214333-e67b-4e59-a49b-b16f5501a925',
         'version': __profiler_version__,
-        'name': 'Natural Language Semantic Profiler',
-        'description': 'Predicts semantic column types using a natural language embeddings of the the dataset name, dataset description, and column name. The internal model was trained using the dataset annotations created by MIT Lincoln Labs.',
+        'name': 'Semantic Profiler',
+        'description': 'This primitive is an adapatation of the d3m common profiler (https://gitlab.com/datadrivendiscovery/common-primitives/-/blob/c170029e9a0f875af28c6b9af20adc90bd4df0bb/common_primitives/simple_profiler.py). It predicts semantic column types using a natural language embeddings of the the column name. The internal model uses these embeddings to predict the semantic types found in the dataset annotations created by MIT Lincoln Labs.',
         'python_path': __profiler_path__,
         'source': {
             'name': 'byu-dml',
