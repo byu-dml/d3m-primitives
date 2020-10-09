@@ -191,7 +191,7 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
             'type': 'FILE',
             'key': 'distilbert-base-nli-stsb-mean-tokens.zip',
             'file_uri': 'https://public.ukp.informatik.tu-darmstadt.de/reimers/sentence-transformers/v0.2/distilbert-base-nli-stsb-mean-tokens.zip',
-            'file_digest': '87a361052ca09566b805bdfa168dc775eaa689686a1124401868a9b96fcbc19f',
+            'file_digest': '9d3dfdf353743741a4be36250868636d377b0dcc16067bfcdfc192fe7239d7c8',
         },
     ]
     metadata = metadata_base.PrimitiveMetadata({

@@ -12,7 +12,7 @@ def get_new_d3m_path():
     Gets the name of the newest version path for d3m/byudml
     :return:
     """
-    new_directory = max(glob.glob('submission/primitives/v????.?.??'))
+    new_directory = max(glob.glob('submission/primitives/primitives'))
     byu_path = "byu-dml"
     byu_dir = os.path.join(new_directory, byu_path)
     return byu_dir
