@@ -1,7 +1,7 @@
 {
     "id": "f4ebb9c9-ef15-491d-9a39-595c20f3e78e",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2020-10-09T20:20:14.976008Z",
+    "created": "2020-11-23T22:24:34.340394Z",
     "inputs": [
         {
             "name": "inputs"
@@ -39,10 +39,10 @@
             "type": "PRIMITIVE",
             "primitive": {
                 "id": "af214333-e67b-4e59-a49b-b16f5501a925",
-                "version": "0.0.3",
+                "version": "0.0.4",
                 "python_path": "d3m.primitives.schema_discovery.profiler.BYU",
                 "name": "Semantic Profiler",
-                "digest": "c439fcfefeab2475b26acf212e16695f95a965b0dea5a6b5256debd532b7da41"
+                "digest": "0b545a58c9a5fbf6b9d27d0229206fd5d6d56e55c1ba584038715eb67f603e83"
             },
             "arguments": {
                 "inputs": {
@@ -219,5 +219,5 @@
             ]
         }
     ],
-    "digest": "2ad403a468700ba5d34e54bd6246a56d453cb41f2cd5906a14a6297d6b16ee7e"
+    "digest": "90a9fd4e5e715ea5f53b1829db8de0ac3055558249a760fc4e037b951d91e6d2"
 }
