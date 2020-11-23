@@ -20,7 +20,7 @@ setup(
         'metalearn==0.6.1',
         'numpy<=1.18.2',
         'pandas<=1.0.3',
-        'sentence-transformers<=1.2.3',
+        'sentence-transformers<=0.3.0',
     ],
     entry_points = {
         'd3m.primitives': [
