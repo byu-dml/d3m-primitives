@@ -22,8 +22,7 @@ from d3m.base import utils as base_utils
 from d3m.metadata import base as metadata_base, hyperparams as hyperparams_module, params
 from d3m.primitive_interfaces import base, unsupervised_learning
 
-from byudml import __version__ as __package_version__
-from byudml import __profiler_path__, __profiler_version__
+from byudml import __profiler_path__, __version__
 
 import common_primitives
 from common_primitives import utils
@@ -196,7 +195,7 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
     ]
     metadata = metadata_base.PrimitiveMetadata({
         'id': 'af214333-e67b-4e59-a49b-b16f5501a925',
-        'version': __profiler_version__,
+        'version': __version__,
         'name': 'Semantic Profiler',
         'description': 'This primitive is an adapatation of the d3m common profiler (https://gitlab.com/datadrivendiscovery/common-primitives/-/blob/c170029e9a0f875af28c6b9af20adc90bd4df0bb/common_primitives/simple_profiler.py). It predicts semantic column types using a natural language embeddings of the the column name. The internal model uses these embeddings to predict the semantic types found in the dataset annotations created by MIT Lincoln Labs.',
         'python_path': __profiler_path__,
@@ -211,7 +210,7 @@ class SemanticProfilerPrimitive(unsupervised_learning.UnsupervisedLearnerPrimiti
             {
                 'type': metadata_base.PrimitiveInstallationType.PIP,
                 'package': 'byudml',
-                'version': __package_version__
+                'version': __version__,
             },
         ] + _weights_configs,
         'algorithm_types': [

@@ -15,10 +15,8 @@ from d3m.metadata import (
 from byudml.imputer.random_sampling_imputer import RandomSamplingImputer
 from byudml.metafeature_extraction.metafeature_extraction import MetafeatureExtractor
 from byudml.profiler.profiler_primitive import SemanticProfilerPrimitive
-from byudml import (
-    __imputer_version__, __imputer_path__,  __metafeature_version__,  __metafeature_path__,
-    __profiler_version__, __profiler_path__
-)
+from byudml import __imputer_path__,  __metafeature_path__, __profiler_path__, __version__
+
 import sys
 sys.path.append('.')
 from submission.utils import (
@@ -708,68 +706,6 @@ def update_pipeline(
     return pipeline_to_update
 
 
-# TODO: do we still want this code?
-# def add_best_pipelines(base_dir):
-#     """
-#     This function checks the best_pipelines.csv for the best pipelines for a dataset, prepares and updates it, and writes it to the submodule.
-#     It also check how many pipelines beat MIT-LL and the EXlines.
-#     """
-#     mongo_client = pymongo.MongoClient(lab_hostname, real_mongo_port)
-
-#     imputer_version = None
-#     best_pipelines_df = pd.read_csv("submission/pipelines/best_pipelines.csv", index_col=0)
-
-#     beat_mit = 0
-#     beat_exlines = 0
-#     has_pipeline = 0
-#     for index, dataset in enumerate(best_pipelines_df):
-#         dataset_id = dataset.replace("_dataset", "", 1)
-#         if dataset_id not in list(seed_datasets_exlines.keys()):
-#             continue
-
-#         # grab the best pipeline
-#         pipelines = best_pipelines_df[dataset]
-#         best_pipeline_id = pipelines.idxmax()
-#         best_pipeline_score = pipelines.max()
-#         has_pipeline += 1
-
-#         # See how well we do compared to others
-#         problem_details = seed_datasets_exlines[dataset_id]
-#         if problem_details["problem"] == "accuracy":
-#             if problem_details["score"] <= best_pipeline_score:
-#                 beat_exlines += 1
-#             if problem_details["mit-score"] <= best_pipeline_score:
-#                 beat_mit += 1
-#         else:
-#             ## is regression
-#             if problem_details["score"] >= best_pipeline_score:
-#                 beat_exlines += 1
-#             if problem_details["mit-score"] >= best_pipeline_score:
-#                 beat_mit += 1
-
-#         # get the best pipeline and update it
-#         best_pipeline_json = get_pipeline_from_database(best_pipeline_id, mongo_client)
-#         del best_pipeline_json["_id"]
-#         no_digest_pipeline = remove_digests(best_pipeline_json)
-#         updated_pipeline = update_pipeline(no_digest_pipeline)
-            
-#         # get directory to put new pipelines
-#         if imputer_version == None:
-#             IMPUTER_PIPELINE_PATH = os.path.join(base_dir, __imputer_path__, __imputer_version__, "pipelines/")
-
-#         print("Writing pipeline for dataset: {} to {}".format(dataset, IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json"))
-#         with open(IMPUTER_PIPELINE_PATH + best_pipeline_id + ".json", "w") as file:
-#             file.write(json.dumps(updated_pipeline, indent=4))
-        
-#         # TODO: Run the pipeline and save the pipeline run as well.
-
-
-#     print("############## RESULTS #################")
-#     print(beat_mit, " pipelines beat MIT")
-#     print(beat_exlines, " pipelines beat EXlines")
-#     print(has_pipeline, " pipelines for seed datasets")
-
-
 def generate_and_update_primitive_pipeline(
     primitive: PrimitiveBase,
     pipeline_gen_f: Callable,
@@ -803,19 +739,19 @@ def main():
         {
             'primitive': RandomSamplingImputer,
             'gen_method': generate_imputer_pipeline,
-            'version': __imputer_version__,
+            'version': __version__,
             'primitive_simple_name': 'random_sampling_imputer',
         },
         {
             'primitive': MetafeatureExtractor,
             'gen_method': generate_metafeature_pipeline,
-            'version': __metafeature_version__,
+            'version': __version__,
             'primitive_simple_name': 'metafeature_extractor',
         },
         {
             'primitive': SemanticProfilerPrimitive,
             'gen_method': generate_profiler_pipeline,
-            'version': __profiler_version__,
+            'version': __version__,
             'primitive_simple_name': 'profiler'
         },
     ]

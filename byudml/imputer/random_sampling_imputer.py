@@ -6,8 +6,7 @@ from d3m.metadata import base as metadata_base, hyperparams, params
 from d3m.primitive_interfaces.base import CallResult
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 
-from byudml import __imputer_path__, __imputer_version__
-from byudml import __version__ as __package_version__
+from byudml import __imputer_path__, __version__
 
 
 Inputs = container.pandas.DataFrame
@@ -43,33 +42,33 @@ class RandomSamplingImputer(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Pa
 
     metadata = metadata_base.PrimitiveMetadata({
         'id': 'ebfeb6f0-e366-4082-b1a7-602fd50acc96',
-        'version': __imputer_version__,
+        'version': __version__,
         'name': 'Random Sampling Imputer',
         'source': {
             'name': 'byu-dml',
             'contact': 'mailto:bjschoenfeld@gmail.com',
             'uris': [
-                'https://github.com/byu-dml/d3m-primitives'
+                'https://github.com/byu-dml/d3m-primitives',
             ]
         },
         'installation': [
             {
                 'type': metadata_base.PrimitiveInstallationType.PIP,
                 'package': 'byudml',
-                'version': __package_version__
+                'version': __version__,
             }
         ],
         'location_uris': [
-            'https://github.com/byu-dml/d3m-primitives/blob/master/byudml/imputer/random_sampling_imputer.py'
+            'https://github.com/byu-dml/d3m-primitives/blob/master/byudml/imputer/random_sampling_imputer.py',
         ],
         'python_path': __imputer_path__,
         'primitive_family': metadata_base.PrimitiveFamily.DATA_PREPROCESSING,
         'algorithm_types': [
-            metadata_base.PrimitiveAlgorithmType.IMPUTATION
+            metadata_base.PrimitiveAlgorithmType.IMPUTATION,
         ],
         'effects': [
             # not the case if empty columns are just ignored
-            metadata_base.PrimitiveEffect.NO_MISSING_VALUES
+            metadata_base.PrimitiveEffect.NO_MISSING_VALUES,
         ]
     })
 

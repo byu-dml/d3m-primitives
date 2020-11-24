@@ -13,8 +13,7 @@ from d3m.metadata import base as metadata_base, hyperparams
 from metalearn.metafeatures.metafeatures import Metafeatures
 import metalearn.metafeatures.constants as mf_consts
 
-from byudml import __version__ as __package_version__
-from byudml import __metafeature_path__, __metafeature_version__
+from byudml import __metafeature_path__, __version__
 
 
 Inputs = DataFrame
@@ -67,7 +66,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_base.PrimitiveMetadata({
         'id': '28d12214-8cb0-4ac0-8946-d31fcbcd4142',
-        'version': __metafeature_version__,
+        'version': __version__,
         'name': 'Dataset Metafeature Extraction',
         'source': {
             'name': 'byu-dml',
@@ -80,7 +79,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
             {
                 'type': metadata_base.PrimitiveInstallationType.PIP,
                 'package': 'byudml',
-                'version': __package_version__
+                'version': __version__,
             }
         ],
         'location_uris': [
@@ -179,7 +178,7 @@ class MetafeatureExtractor(FeaturizationTransformerPrimitiveBase[Inputs, Outputs
         if landmarking_name not in data_metafeatures:
             primitive_field_path = [landmarking_name, 'primitive']
             random_seed_field_path = [landmarking_name, 'random_seed']
-            primitive_field_val = {'id': self.metadata.query()['id'], 'version': __metafeature_version__, 'python_path': self.metadata.query()['python_path'], 'name': self.metadata.query()['name']}
+            primitive_field_val = {'id': self.metadata.query()['id'], 'version': __version__, 'python_path': self.metadata.query()['python_path'], 'name': self.metadata.query()['name']}
             if 'digest' in self.metadata.query():
                 primitive_field_val['digest'] = self.metadata.query()['digest']
             random_seed_field_val = self.random_seed
