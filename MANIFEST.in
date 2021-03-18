@@ -1,2 +1,3 @@
 include byudml/metafeature_extraction/metalearn_to_d3m_map.json
 include byudml/profiler/model.zip
+include LICENSE

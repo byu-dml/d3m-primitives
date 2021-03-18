@@ -13,6 +13,7 @@ setup(
     description = 'A collection of DARPA D3M primitives developed by BYU',
     author = 'Roland Laboulaye, Brandom Schoenfeld, Jarom Christensen',
     url = 'https://github.com/byu-dml/d3m-primitives',
+    license = 'MIT',
     include_package_data=True,
     keywords = ['metalearning', 'metafeature', 'machine learning', 'metalearn', 'd3m_primitive'],
     install_requires = [
